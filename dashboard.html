@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>My Learning Dashboard | OAV Mantra Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="OAV3.CSS">
+    <style>
+        body {
+            background: #f1f5f9;
+            color: #1e293b;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .dashboard-header {
+            background: #091a38;
+            color: #ffffff;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dashboard-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dash-container {
+            max-width: 1140px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .profile-banner {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            border-radius: 18px;
+            padding: 32px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 24px;
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.25);
+            margin-bottom: 28px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ffffff;
+        }
+
+        .profile-text h1 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        .profile-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dash-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-dash-action {
+            background: #ffffff;
+            color: #1e3a8a;
+            font-weight: 700;
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-dash-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            background: #f8fafc;
+        }
+
+        .btn-dash-primary {
+            background: #f59e0b;
+            color: #ffffff;
+        }
+        .btn-dash-primary:hover {
+            background: #d97706;
+            color: #ffffff;
+        }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .dash-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 26px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+
+        .dash-card h2 {
+            font-size: 1.3rem;
+            color: #0f172a;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-verified { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        .progress-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #2563eb, #10b981);
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .course-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .course-item:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+            transform: translateX(4px);
+        }
+
+        .course-info h3 {
+            font-size: 1.1rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .course-info p {
+            font-size: 0.88rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .notice-item {
+            padding: 14px;
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 0.92rem;
+        }
+
+        /* Digital ID Modal */
+        .id-card-view {
+            background: linear-gradient(135deg, #091a38, #1e3a8a);
+            color: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .id-card-view::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 140px;
+            height: 140px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        @media (max-width: 840px) {
+            .dash-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-banner {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 24px 18px;
+            }
+            .dash-actions {
+                width: 100%;
+            }
+            .btn-dash-action {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dash-container {
+                padding: 0 12px;
+                margin: 16px auto;
+            }
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            .profile-meta {
+                justify-content: center;
+            }
+            .dash-actions {
+                flex-direction: column;
+            }
+            .btn-dash-action {
+                width: 100%;
+            }
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="container dashboard-nav">
+            <a href="Index.html" class="logo" style="text-decoration:none; display:flex; align-items:center; gap:10px;">
+                <img src="OAV LOGO.png" alt="OAV Mantra" height="42">
+                <div class="logo-text-container">
+                    <div class="logo-main-text" style="color:#ffffff;">OAV MANTRA</div>
+                    <div class="logo-subtext" style="color:#93c5fd;">STUDENT PORTAL</div>
+                </div>
+            </a>
+            
+            <div style="display:flex; align-items:center; gap:14px;">
+                <a href="Index.html" style="color:#cbd5e1; font-weight:600; text-decoration:none; font-size:0.92rem;"><i class="fas fa-home"></i> Home</a>
+                <button id="logoutBtn" style="background:rgba(239, 68, 68, 0.15); color:#fca5a5; border:1px solid rgba(239, 68, 68, 0.3); padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dash-container">
+        <!-- Student Profile Banner -->
+        <section class="profile-banner">
+            <div class="profile-info">
+                <div class="profile-avatar" id="profileAvatar"><i class="fas fa-user-graduate"></i></div>
+                <div class="profile-text">
+                    <h1 id="studentNameDisplay">Loading Profile...</h1>
+                    <div class="profile-meta">
+                        <span><i class="fas fa-id-card"></i> ID: <strong id="studentIdDisplay">---</strong></span>
+                        <span><i class="fas fa-graduation-cap"></i> <span id="studentClassDisplay">---</span></span>
+                        <span><i class="fas fa-map-marker-alt"></i> <span id="studentDistrictDisplay">---</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-actions">
+                <button class="btn-dash-action" id="viewIdCardBtn"><i class="fas fa-id-badge"></i> Digital ID Card</button>
+                <a href="#" class="btn-dash-action btn-dash-primary" id="openStudyRoomBtn"><i class="fas fa-play-circle"></i> Open Study Portal</a>
+            </div>
+        </section>
+
+        <div class="dash-grid">
+            <!-- Left Column: Syllabus Courses & Learning Progress -->
+            <div>
+                <!-- Learning Progress Card -->
+                <div class="dash-card">
+                    <h2><i class="fas fa-chart-pie" style="color:#2563eb;"></i> Learning Progress & Activity</h2>
+                    <div class="progress-box">
+                        <div class="progress-header">
+                            <span>Syllabus Completion</span>
+                            <span id="progressPercentDisplay">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progressBarFill"></div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; text-align:center;">
+                        <div style="background:#f8fafc; padding:14px; border-radius:10px; border:1px solid #e2e8f0;">
+                            <div style="font-size:1.4rem; font-weight:800; color:#2563eb;" id="lessonsCompletedCount">0</div>
+                            <div style="font-size:0.8rem; color:#64748b;">Lessons Done</div>
+                        </div>
+                        <div style="background:#f8fafc; padding:14px; border-radius:10px; border:1px solid #e2e8f0;">
+                            <div style="font-size:1.4rem; font-weight:800; color:#10b981;" id="quizzesTakenCount">0</div>
+                            <div style="font-size:0.8rem; color:#64748b;">Quizzes Done</div>
+                        </div>
+                        <div style="background:#f8fafc; padding:14px; border-radius:10px; border:1px solid #e2e8f0;">
+                            <div style="font-size:1.4rem; font-weight:800; color:#f59e0b;" id="activeSubjectsCount">6</div>
+                            <div style="font-size:0.8rem; color:#64748b;">Subjects</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Subjects Portal Access -->
+                <div class="dash-card">
+                    <h2><i class="fas fa-book-reader" style="color:#2563eb;"></i> Enrolled Academic Modules</h2>
+                    <div id="courseModulesList">
+                        <p style="color:#64748b;">Loading course modules...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Status, Receipts, Announcements -->
+            <div>
+                <!-- Account Status & Payment Receipt -->
+                <div class="dash-card">
+                    <h2><i class="fas fa-receipt" style="color:#10b981;"></i> Fee & Enrollment Status</h2>
+                    <div id="paymentStatusBox" style="background:#f8fafc; border-radius:10px; padding:16px; border:1px solid #e2e8f0; margin-bottom:16px;">
+                        <p style="color:#64748b;">Loading status...</p>
+                    </div>
+                    <button class="btn-dash-action" id="downloadReceiptBtn" style="width:100%; justify-content:center; border:1px solid #cbd5e1;">
+                        <i class="fas fa-file-invoice"></i> Print Payment Receipt
+                    </button>
+                </div>
+
+                <!-- Live Announcements & Notices -->
+                <div class="dash-card">
+                    <h2><i class="fas fa-bullhorn" style="color:#f59e0b;"></i> Class Notices</h2>
+                    <div id="dashAnnouncementsList">
+                        <p style="color:#64748b;">Loading announcements...</p>
+                    </div>
+                </div>
+
+                <!-- Support Card -->
+                <div class="dash-card" style="background: linear-gradient(135deg, #091a38, #1e3a8a); color:#fff;">
+                    <h2 style="color:#ffffff;"><i class="fas fa-headset"></i> Need Academic Help?</h2>
+                    <p style="font-size:0.9rem; color:#cbd5e1; margin-bottom:14px;">Contact our teacher support hotline for doubt clearing or enrollment queries.</p>
+                    <a href="tel:8917531123" style="color:#facc15; font-weight:700; font-size:1.05rem; text-decoration:none;">
+                        <i class="fas fa-phone-alt"></i> +91 89175 31123
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Digital ID Card Modal -->
+    <div class="modal-overlay" id="idCardModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <button class="close-btn" id="closeIdModalBtn">&times;</button>
+            <div class="id-card-view">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:12px;">
+                    <div style="font-weight:800; font-size:1.1rem; color:#ffffff;">OAV MANTRA CLASSES</div>
+                    <span class="status-pill status-verified" style="font-size:0.75rem;">VERIFIED STUDENT</span>
+                </div>
+
+                <div style="display:flex; gap:16px; align-items:center; margin-bottom:20px;">
+                    <div id="idCardPhotoContainer" style="width:70px; height:70px; min-width:70px; background:rgba(255,255,255,0.2); border:2px solid rgba(255,255,255,0.4); border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:1.8rem;">
+                        <img id="idCardPhotoImg" src="" alt="Student Photo" style="width:100%; height:100%; object-fit:cover; display:none;">
+                        <i id="idCardPhotoIcon" class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <h3 id="idCardName" style="color:#fff; margin-bottom:4px; font-size:1.25rem;">Student Name</h3>
+                        <div id="idCardClass" style="color:#93c5fd; font-weight:600;">Class ---</div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(0,0,0,0.2); border-radius:8px; padding:14px; font-size:0.9rem; line-height:1.8;">
+                    <div><strong>Enrollment ID:</strong> <span id="idCardId" style="font-family:monospace; color:#facc15;">---</span></div>
+                    <div><strong>Mobile:</strong> <span id="idCardMobile">---</span></div>
+                    <div><strong>District:</strong> <span id="idCardDistrict">---</span></div>
+                    <div><strong>School:</strong> <span id="idCardSchool">---</span></div>
+                    <div><strong>Academic Session:</strong> 2026-2027</div>
+                </div>
+            </div>
+
+            <!-- Upload Photo Action with ultra-compact compression -->
+            <div style="margin-top:16px; display:flex; gap:10px;">
+                <label for="studentPhotoInput" class="btn-dash-action" style="flex:1; justify-content:center; cursor:pointer; background:#2563eb; color:#fff; border:none; padding:10px 14px; border-radius:8px; font-size:0.9rem;">
+                    <i class="fas fa-camera"></i> Upload / Change Photo
+                </label>
+                <input type="file" id="studentPhotoInput" accept="image/*" style="display:none;">
+            </div>
+
+            <button class="submit-btn" onclick="window.print()" style="margin-top:10px;">
+                <i class="fas fa-print"></i> Print ID Card / Save as PDF
+            </button>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
+

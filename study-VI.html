@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Class VI - OAV Mantra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="study-VI.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="Index.html" class="class-header" style="text-decoration:none; color:inherit;">
+                    <img src="OAV LOGO.png" alt="OAV Mantra Logo" class="brand-logo" style="height:44px; width:auto;">
+                    <div>
+                        <h1 class="class-title">Class VI</h1>
+                        <p class="class-subtitle">Foundation Building - OAV Mantra</p>
+                    </div>
+                </a>
+                
+                <div class="header-right" style="display:flex; align-items:center; gap:10px; margin-left:auto;">
+                    <div id="userPill"></div>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                
+                <nav class="nav-links" id="navLinks">
+                    <a href="dashboard.html" class="nav-link"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                    <a href="#videos" class="nav-link">Videos</a>
+                    <a href="#materials" class="nav-link">Study Materials</a>
+                    <a href="#quiz" class="nav-link">Chapter Quiz</a>
+                    <a href="#subjects" class="nav-link">Subjects</a>
+                    <a href="#live" class="nav-link">Live Classes</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Class VI Learning Resources</h1>
+            <p>Access comprehensive video lessons, study materials, quizzes, and assignments specifically designed for Class VI students. Build strong foundations for academic success.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <!-- Video Lessons -->
+        <section class="video-section" id="videos">
+            <div class="section-header">
+                <h2 class="section-title">Video Lessons</h2>
+                <span class="video-count">Syllabus Video Classes</span>
+            </div>
+            
+            <div class="video-grid">
+                <p>Loading video classes...</p>
+            </div>
+        </section>
+
+        <!-- Study Materials -->
+        <section class="video-section" id="materials">
+            <div class="section-header">
+                <h2 class="section-title">Study Materials & Notes</h2>
+                <span class="video-count">Class VI Revision Notes</span>
+            </div>
+            
+            <div class="materials-grid">
+                <p>Loading study materials...</p>
+            </div>
+        </section>
+
+        <!-- Chapter Quiz Section -->
+        <section id="quiz">
+            <div id="interactiveQuizContainer"></div>
+        </section>
+
+        <!-- Subjects -->
+        <section class="video-section" id="subjects">
+            <div class="section-header">
+                <h2 class="section-title">Academic Subjects</h2>
+                <span class="video-count">Click Subject to Filter</span>
+            </div>
+            
+            <div class="subjects-grid">
+                <p>Loading subjects...</p>
+            </div>
+        </section>
+
+        <!-- Live Classes -->
+        <section class="live-classes" id="live">
+            <h2 class="live-title">Live Classes</h2>
+            <div class="schedule-grid">
+                <p>Loading live class schedule...</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Class VI Resources</h3>
+                    <p>Comprehensive learning materials and video lessons for Class VI students. Quality education for academic excellence.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <div class="footer-links">
+                        <a href="dashboard.html">Student Dashboard</a>
+                        <a href="#videos">Video Lessons</a>
+                        <a href="#materials">Study Materials</a>
+                        <a href="#quiz">Chapter Quiz</a>
+                        <a href="#live">Live Classes</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <div class="footer-links">
+                        <a href="tel:8917531123"><i class="fas fa-phone"></i> +91 89175 31123</a>
+                        <a href="mailto:info@oavmantra.com"><i class="fas fa-envelope"></i> info@oavmantra.com</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2026 OAV Mantra - Class VI Resources. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Video Modal -->
+    <div class="modal" id="videoModal">
+        <div class="modal-content" style="max-width:900px; width:94%; background:#0f172a; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
+            <div class="modal-header" style="background:#1e293b; color:#fff; border-bottom:1px solid rgba(255,255,255,0.1); padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-play-circle" style="color:#3b82f6; font-size:1.2rem;"></i>
+                    <h3 id="modalTitle" style="color:#ffffff; font-size:1.05rem; margin:0; font-weight:700;">Video Class</h3>
+                </div>
+                <button class="close-modal" id="closeModalBtn" onclick="studyEngine.closeVideoModal()" style="color:#cbd5e1; font-size:1.6rem; line-height:1; background:transparent; border:none; cursor:pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:0;">
+                <div class="video-container" id="videoContainerBox" style="position:relative; padding-bottom:56.25%; height:0; background:#000;">
+                    <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
+                </div>
+                <div style="padding:14px 20px; background:#1e293b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid rgba(255,255,255,0.08);">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button onclick="studyEngine.togglePlayerFullscreen()" style="background:#2563eb; color:#ffffff; border:none; padding:8px 16px; border-radius:6px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;">
+                            <i class="fas fa-expand"></i> Fullscreen
+                        </button>
+                        <button onclick="studyEngine.reloadPlayer()" style="background:#334155; color:#ffffff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                            <i class="fas fa-redo"></i> Replay
+                        </button>
+                        <button onclick="studyEngine.switchPlayerStream()" style="background:#334155; color:#ffffff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Switch stream mode">
+                            <i class="fas fa-sync-alt"></i> Switch Stream
+                        </button>
+                    </div>
+                    <span style="font-size:0.82rem; color:#94a3b8;"><i class="fas fa-info-circle"></i> Plays directly in website • Press ESC to close</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="study-engine.js"></script>
+    <script src="study-VI.js"></script>
+</body>
+</html>
+

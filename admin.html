@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Administration Console | OAV Mantra Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="OAV3.CSS">
+    <style>
+        body {
+            background: #f1f5f9;
+            color: #0f172a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .admin-nav {
+            background: #091a38;
+            color: #ffffff;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .admin-nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-container {
+            max-width: 1240px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .auth-bar {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 22px 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 26px;
+        }
+
+        .auth-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .auth-input-group input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .auth-input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .btn-admin {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-admin-primary {
+            background: #2563eb;
+            color: #ffffff;
+        }
+        .btn-admin-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-admin-secondary {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+        }
+        .btn-admin-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-admin-success {
+            background: #10b981;
+            color: #ffffff;
+        }
+        .btn-admin-danger {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-card span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .metric-card strong {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+
+        .workspace-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 12px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 22px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .filter-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #ffffff;
+        }
+
+        .search-box {
+            padding: 10px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            min-width: 260px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 14px 12px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .action-btn-group {
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-badge.verified, .status-badge.active { background: #dcfce7; color: #166534; }
+        .status-badge.pending_verification { background: #fef3c7; color: #92400e; }
+        .status-badge.rejected { background: #fee2e2; color: #991b1b; }
+
+        @media (max-width: 992px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+            .admin-container { padding: 0 16px; margin: 20px auto; }
+        }
+
+        @media (max-width: 768px) {
+            .auth-bar { padding: 16px; gap: 12px; }
+            .auth-input-group { min-width: 100%; flex-wrap: wrap; }
+            .auth-input-group input { min-width: 100%; }
+            .auth-input-group button { width: 100%; justify-content: center; }
+            .nav-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                flex-wrap: nowrap;
+                padding-bottom: 6px;
+            }
+            .tab-btn {
+                white-space: nowrap;
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+            .filter-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-controls {
+                flex-direction: column;
+            }
+            .search-box {
+                min-width: 100%;
+            }
+            .workspace-card {
+                padding: 18px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metrics-grid { grid-template-columns: 1fr; gap: 12px; }
+            .metric-card { padding: 16px; }
+            .metric-card strong { font-size: 1.8rem; }
+            th, td { padding: 10px 8px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-nav">
+        <div class="container admin-nav-container">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <a href="Index.html" style="text-decoration:none;">
+                    <img src="OAV LOGO.png" alt="OAV Mantra Logo" height="38">
+                </a>
+                <div>
+                    <strong style="color:#ffffff; font-size:1.1rem;">OAV MANTRA</strong>
+                    <span style="color:#93c5fd; font-size:0.8rem; display:block;">ADMINISTRATOR CONTROL PANEL</span>
+                </div>
+            </div>
+            <a href="Index.html" style="color:#cbd5e1; text-decoration:none; font-size:0.9rem; font-weight:600;">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <!-- Auth Bar -->
+        <div class="auth-bar">
+            <div class="auth-input-group">
+                <label for="adminToken" style="font-weight:700; font-size:0.9rem;"><i class="fas fa-key"></i> Token:</label>
+                <input type="password" id="adminToken" placeholder="Enter server ADMIN_TOKEN" autocomplete="current-password">
+                <button class="btn-admin btn-admin-primary" id="unlockBtn">
+                    <i class="fas fa-unlock"></i> Unlock
+                </button>
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn-admin btn-admin-secondary" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+                <button class="btn-admin btn-admin-secondary" id="exportBtn">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </button>
+            </div>
+        </div>
+
+        <div id="statusMessage" style="color:#dc2626; font-weight:600; margin-bottom:18px; min-height:22px;"></div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span>Total Enrolled</span>
+                <strong id="metricTotal">--</strong>
+            </div>
+            <div class="metric-card">
+                <span>Verified Students</span>
+                <strong id="metricActive" style="color:#10b981;">--</strong>
+            </div>
+            <div class="metric-card">
+                <span>Pending Verification</span>
+                <strong id="metricPending" style="color:#f59e0b;">--</strong>
+            </div>
+            <div class="metric-card">
+                <span>Payment Review</span>
+                <strong id="metricReview" style="color:#2563eb;">--</strong>
+            </div>
+        </div>
+
+        <!-- Workspace Tabs -->
+        <div class="workspace-card">
+            <div class="nav-tabs">
+                <button class="tab-btn active" data-tab="payments">
+                    <i class="fas fa-receipt"></i> Payment Verification
+                </button>
+                <button class="tab-btn" data-tab="students">
+                    <i class="fas fa-users"></i> Student Directory
+                </button>
+                <button class="tab-btn" data-tab="lessons">
+                    <i class="fas fa-video"></i> Video & Live Classes
+                </button>
+                <button class="tab-btn" data-tab="notes">
+                    <i class="fas fa-file-pdf"></i> Notes & Materials
+                </button>
+                <button class="tab-btn" data-tab="broadcast">
+                    <i class="fas fa-bullhorn"></i> Broadcast Notice
+                </button>
+            </div>
+
+            <!-- Toolbar Filters -->
+            <div class="filter-toolbar" id="filterToolbar">
+                <div class="filter-controls">
+                    <select id="classFilter" class="filter-select">
+                        <option value="">All Classes (VI - X)</option>
+                        <option value="VI">Class VI</option>
+                        <option value="VII">Class VII</option>
+                        <option value="VIII">Class VIII</option>
+                        <option value="IX">Class IX</option>
+                        <option value="X">Class X</option>
+                    </select>
+
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Statuses</option>
+                        <option value="pending_verification">Pending Verification</option>
+                        <option value="verified">Verified / Active</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+
+                <input type="text" id="searchInput" class="search-box" placeholder="Search student, subject, topic, or UTR...">
+            </div>
+
+            <!-- Data Table Container (For Payments & Students) -->
+            <div id="tableContent" class="table-responsive">
+                <p style="color:#64748b; padding:20px 0;">Enter your administrator token above and click "Unlock" to view records.</p>
+            </div>
+
+            <!-- Video & Live Classes Section -->
+            <div id="lessonsSection" style="display:none; padding:10px 0;">
+                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:24px; margin-bottom:28px;">
+                    <h3 style="margin-top:0; color:#1e3a8a; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-plus-circle" style="color:#2563eb;"></i> Add Video Lesson or Live Stream
+                    </h3>
+                    <p style="color:#64748b; font-size:0.9rem; margin-bottom:18px;">
+                        Provide recorded video lectures or live class stream links for students. Standard YouTube links, YouTube Live, YouTube Shorts, Google Meet, or Zoom links are automatically formatted.
+                    </p>
+
+                    <form id="addLessonForm">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Target Grade / Class *</label>
+                                <select id="lessonClass" class="filter-select" style="width:100%;" required>
+                                    <option value="VI">Class VI</option>
+                                    <option value="VII">Class VII</option>
+                                    <option value="VIII">Class VIII</option>
+                                    <option value="IX">Class IX</option>
+                                    <option value="X">Class X</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Academic Subject *</label>
+                                <select id="lessonSubject" class="filter-select" style="width:100%;" required>
+                                    <option value="Mathematics">Mathematics</option>
+                                    <option value="Science">Science</option>
+                                    <option value="English">English</option>
+                                    <option value="Social Studies">Social Studies / SST</option>
+                                    <option value="Odia">Odia (First Language)</option>
+                                    <option value="Sanskrit">Sanskrit (Third Language)</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="ICT">Information & Communication Tech (ICT)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Content Type *</label>
+                                <select id="lessonType" class="filter-select" style="width:100%;" required>
+                                    <option value="video">🎬 Recorded Video Lesson</option>
+                                    <option value="live">🔴 Live Class / Live Stream</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:16px;">
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Lesson / Class Title *</label>
+                            <input type="text" id="lessonTitle" class="search-box" style="width:100%;" placeholder="e.g. Chapter 1: Real Numbers - Fundamental Theorem of Arithmetic" required>
+                        </div>
+
+                        <div style="margin-bottom:16px;">
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Video Link / Stream URL *</label>
+                            <input type="text" id="lessonVideoUrl" class="search-box" style="width:100%;" placeholder="Paste YouTube link, Google Drive video link, Direct MP4 URL, or Google Meet" required>
+                            <div style="margin-top:6px; font-size:0.8rem; color:#64748b; display:flex; gap:12px; flex-wrap:wrap;">
+                                <span><i class="fab fa-youtube" style="color:#ef4444;"></i> <strong>YouTube:</strong> Paste watch or embed link</span>
+                                <span><i class="fab fa-google-drive" style="color:#10b981;"></i> <strong>Google Drive:</strong> Paste share link</span>
+                                <span><i class="fas fa-file-video" style="color:#2563eb;"></i> <strong>Direct MP4:</strong> Paste video URL (100% watermark-free)</span>
+                            </div>
+                            <div id="videoUrlPreviewBox" style="display:none; margin-top:10px; padding:12px; border-radius:10px; background:#eff6ff; border:1px solid #bfdbfe;"></div>
+                        </div>
+
+                        <div style="margin-bottom:20px;">
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Class Description & Key Summary</label>
+                            <textarea id="lessonDescription" class="search-box" style="width:100%;" rows="3" placeholder="Brief summary of topics or live meeting instructions..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-admin btn-admin-primary" id="saveLessonBtn">
+                            <i class="fas fa-upload"></i> Publish Video / Live Class
+                        </button>
+                    </form>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                    <h3 style="color:#1e3a8a; margin:0;">Published Classes & Videos</h3>
+                    <span style="font-size:0.88rem; color:#64748b;">(Separated into Recorded & Live)</span>
+                </div>
+                <div id="lessonsTableContent" class="table-responsive">
+                    <p style="color:#64748b;">Loading video catalog...</p>
+                </div>
+            </div>
+
+            <!-- Notes & Study Materials Section -->
+            <div id="notesSection" style="display:none; padding:10px 0;">
+                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:24px; margin-bottom:28px;">
+                    <h3 style="margin-top:0; color:#1e3a8a; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-file-pdf" style="color:#ef4444;"></i> Provide Notes & Study Materials
+                    </h3>
+                    <p style="color:#64748b; font-size:0.9rem; margin-bottom:18px;">
+                        Upload revision PDF links, Google Drive links, formula cheat sheets, or chapter summaries for students.
+                    </p>
+
+                    <form id="addNoteForm">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Target Grade / Class *</label>
+                                <select id="noteClass" class="filter-select" style="width:100%;" required>
+                                    <option value="VI">Class VI</option>
+                                    <option value="VII">Class VII</option>
+                                    <option value="VIII">Class VIII</option>
+                                    <option value="IX">Class IX</option>
+                                    <option value="X">Class X</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Academic Subject *</label>
+                                <select id="noteSubject" class="filter-select" style="width:100%;" required>
+                                    <option value="Mathematics">Mathematics</option>
+                                    <option value="Science">Science</option>
+                                    <option value="English">English</option>
+                                    <option value="Social Studies">Social Studies / SST</option>
+                                    <option value="Odia">Odia (First Language)</option>
+                                    <option value="Sanskrit">Sanskrit (Third Language)</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="ICT">Information & Communication Tech (ICT)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:16px;">
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Note / Document Title *</label>
+                            <input type="text" id="noteTitle" class="search-box" style="width:100%;" placeholder="e.g. Chapter 1: Real Numbers - Handwritten Formula Sheet & Summary" required>
+                        </div>
+
+                        <div style="margin-bottom:16px;">
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">PDF / File URL / Google Drive Link (Optional)</label>
+                            <input type="url" id="noteFileUrl" class="search-box" style="width:100%;" placeholder="e.g. https://drive.google.com/file/d/... or PDF direct link">
+                        </div>
+
+                        <div style="margin-bottom:20px;">
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Note Content / Key Summary Points</label>
+                            <textarea id="noteContent" class="search-box" style="width:100%;" rows="4" placeholder="Enter key formulas, important board questions, or study pointers for students..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-admin btn-admin-primary" id="saveNoteBtn">
+                            <i class="fas fa-plus-circle"></i> Publish Study Note
+                        </button>
+                    </form>
+                </div>
+
+                <h3 style="color:#1e3a8a; margin-bottom:14px;">Published Study Materials</h3>
+                <div id="notesTableContent" class="table-responsive">
+                    <p style="color:#64748b;">Loading study notes...</p>
+                </div>
+            </div>
+
+            <!-- Broadcast Section (Hidden by default) -->
+            <div id="broadcastSection" style="display:none; padding:10px 0;">
+                <h3 style="margin-bottom:14px; color:#1e3a8a;">Publish Live Notice / Announcement</h3>
+                <p style="font-size:0.9rem; color:#64748b; margin-bottom:18px;">This notice will appear on the student dashboard and homepage banner ticker in real time.</p>
+                <form id="broadcastForm">
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-weight:700; margin-bottom:6px;">Notice Title *</label>
+                        <input type="text" id="noticeTitle" class="search-box" style="width:100%;" placeholder="e.g. Class X Mathematics Live Class Scheduled for 6 PM" required>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block; font-weight:700; margin-bottom:6px;">Notice Message Details *</label>
+                        <textarea id="noticeMessage" class="search-box" style="width:100%;" rows="4" placeholder="Enter complete details, joining instructions, or updates..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-admin btn-admin-primary">
+                        <i class="fas fa-paper-plane"></i> Publish Live Announcement
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Video & Live Preview Modal -->
+    <div id="adminVideoModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
+        <div style="background:#0f172a; width:92%; max-width:850px; border-radius:16px; overflow:hidden; box-shadow:0 25px 50px rgba(0,0,0,0.6); max-height:92vh; display:flex; flex-direction:column; border:1px solid rgba(255,255,255,0.15);">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#1e293b; border-bottom:1px solid rgba(255,255,255,0.1);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="adminModalBadge" style="background:#2563eb; color:#fff; font-size:0.75rem; font-weight:800; padding:3px 8px; border-radius:4px;">VIDEO</span>
+                    <strong id="adminModalTitle" style="color:#ffffff; font-size:1.05rem;">Video Preview</strong>
+                </div>
+                <button id="closeAdminVideoModalBtn" style="background:none; border:none; color:#cbd5e1; font-size:1.8rem; cursor:pointer; line-height:1;">&times;</button>
+            </div>
+            <div id="videoContainerBox" style="position:relative; padding-bottom:56.25%; height:0; background:#000;">
+                <iframe id="adminVideoFrame" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <div style="padding:14px 20px; background:#1e293b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid rgba(255,255,255,0.1);">
+                <button id="adminFullscreenBtn" style="background:#2563eb; color:#ffffff; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fas fa-expand"></i> Fullscreen
+                </button>
+                <span style="color:#94a3b8; font-size:0.82rem;"><i class="fas fa-info-circle"></i> In-App Player • Press ESC to Close</span>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="admin.js"></script>
+</body>
+</html>
+
+
