@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
+    },
+    {
+      "source": "/study-VI",
+      "destination": "/study-VI.html"
+    },
+    {
+      "source": "/study-VII",
+      "destination": "/study-VII.html"
+    },
+    {
+      "source": "/study-VIII",
+      "destination": "/study-VIII.html"
+    },
+    {
+      "source": "/study-IX",
+      "destination": "/study-IX.html"
+    },
+    {
+      "source": "/study-X",
+      "destination": "/study-X.html"
+    }
+  ]
+}
