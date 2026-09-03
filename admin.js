@@ -87,13 +87,24 @@ async function loadAdminData() {
             sessionStorage.setItem("oav_admin_token", token);
         }
 
-        const [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
-            adminFetch("/api/admin/overview"),
-            adminFetch("/api/admin/payments"),
-            adminFetch("/api/admin/students"),
-            adminFetch("/api/admin/lessons"),
-            adminFetch("/api/admin/notes")
-        ]);
+        let overview, paymentsRes, studentsRes, lessonsRes, notesRes;
+        if (window.OAV_SUPABASE) {
+            [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
+                window.OAV_SUPABASE.getAdminOverview(),
+                window.OAV_SUPABASE.getAdminPayments(),
+                window.OAV_SUPABASE.getAdminStudents(),
+                window.OAV_SUPABASE.getAdminLessons(),
+                window.OAV_SUPABASE.getAdminNotes()
+            ]);
+        } else {
+            [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
+                adminFetch("/api/admin/overview"),
+                adminFetch("/api/admin/payments"),
+                adminFetch("/api/admin/students"),
+                adminFetch("/api/admin/lessons"),
+                adminFetch("/api/admin/notes")
+            ]);
+        }
 
         paymentsList = paymentsRes.payments || [];
         studentsList = studentsRes.students || [];
@@ -444,7 +455,7 @@ document.addEventListener("click", async (e) => {
     if (action === "verify-pay") {
         if (!confirm("Are you sure you want to verify this payment claim and activate student access?")) return;
         try {
-            await adminFetch(`/api/admin/payments/${id}/verify`, { method: "POST" });
+            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.verifyPaymentById(id); } else { await adminFetch(`/api/admin/payments/${id}/verify`, { method: "POST" }); }
             alert("✅ Student payment verified successfully! Student can now log in.");
             await loadAdminData();
         } catch (err) {
@@ -457,7 +468,7 @@ document.addEventListener("click", async (e) => {
         const reason = prompt("Enter the reason for rejection (e.g. Invalid UTR / Payment not received):", "Payment transaction could not be verified in UPI account.");
         if (!reason) return;
         try {
-            await adminFetch(`/api/admin/payments/${id}/reject`, {
+            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.rejectPaymentById(id, reason); } else { await adminFetch(`/api/admin/payments/${id}/reject`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason })
@@ -491,7 +502,7 @@ document.addEventListener("click", async (e) => {
         if (!confirm(`⚠️ Are you sure you want to PERMANENTLY REMOVE student "${studentName}" (ID: ${id})?\n\nThis will completely delete their enrollment, fee records, and study progress from the database.`)) return;
 
         try {
-            await adminFetch(`/api/admin/students/${encodeURIComponent(id)}`, { method: "DELETE" });
+            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.deleteStudent(id); } else { await adminFetch(`/api/admin/students/${encodeURIComponent(id)}`, { method: "DELETE" }); }
             alert(`✅ Student ${studentName} (${id}) has been permanently removed.`);
             await loadAdminData();
         } catch (err) {
@@ -599,7 +610,7 @@ document.addEventListener("click", async (e) => {
         if (!confirm(`Are you sure you want to delete the lesson "${lessonTitle}"?`)) return;
 
         try {
-            await adminFetch(`/api/admin/lessons/${id}`, { method: "DELETE" });
+            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.deleteLesson(id); } else { await adminFetch(`/api/admin/lessons/${id}`, { method: "DELETE" }); }
             alert(`✅ Class / Lesson deleted successfully.`);
             await loadAdminData();
         } catch (err) {
@@ -613,7 +624,7 @@ document.addEventListener("click", async (e) => {
         if (!confirm(`Are you sure you want to delete the note "${noteTitle}"?`)) return;
 
         try {
-            await adminFetch(`/api/admin/notes/${id}`, { method: "DELETE" });
+            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.deleteStudyNote(id); } else { await adminFetch(`/api/admin/notes/${id}`, { method: "DELETE" }); }
             alert(`✅ Study Note deleted successfully.`);
             await loadAdminData();
         } catch (err) {
@@ -669,7 +680,7 @@ if (addLessonForm) {
         saveBtn.disabled = true;
 
         try {
-            await adminFetch("/api/admin/lessons", {
+            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.addLesson(payload); } else { await adminFetch("/api/admin/lessons", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -712,7 +723,7 @@ if (addNoteForm) {
         saveBtn.disabled = true;
 
         try {
-            await adminFetch("/api/admin/notes", {
+            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.addStudyNote(payload); } else { await adminFetch("/api/admin/notes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

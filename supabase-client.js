@@ -406,6 +406,8 @@
             }
         }
 
+        const reqMethod = String(init.method || "GET").toUpperCase();
+
         // Parse body if present
         let body = {};
         if (init.body) {
@@ -418,67 +420,67 @@
                 const overview = await SupabaseAPI.getAdminOverview();
                 return jsonResponse(overview, 200);
             }
-            if (url.startsWith("/api/admin/payments") && init.method === "GET") {
+            if (url.startsWith("/api/admin/payments") && reqMethod === "GET") {
                 const payments = await SupabaseAPI.getAdminPayments();
                 return jsonResponse(payments, 200);
             }
-            if (url.startsWith("/api/admin/students") && init.method === "GET") {
+            if (url.startsWith("/api/admin/students") && reqMethod === "GET") {
                 const students = await SupabaseAPI.getAdminStudents();
                 return jsonResponse(students, 200);
             }
-            if (url.startsWith("/api/admin/lessons") && init.method === "GET") {
+            if (url.startsWith("/api/admin/lessons") && reqMethod === "GET") {
                 const lessons = await SupabaseAPI.getAdminLessons();
                 return jsonResponse(lessons, 200);
             }
-            if (url.startsWith("/api/admin/notes") && init.method === "GET") {
+            if (url.startsWith("/api/admin/notes") && reqMethod === "GET") {
                 const notes = await SupabaseAPI.getAdminNotes();
                 return jsonResponse(notes, 200);
             }
-            if (url.includes("/verify") && init.method === "POST") {
+            if (url.includes("/verify") && reqMethod === "POST") {
                 const match = url.match(/\/payments\/([^\/]+)\/verify/);
                 const id = match ? match[1] : (body.paymentId || body.enrollmentId);
                 await SupabaseAPI.verifyPaymentById(id);
                 return jsonResponse({ success: true }, 200);
             }
-            if (url.includes("/reject") && init.method === "POST") {
+            if (url.includes("/reject") && reqMethod === "POST") {
                 const match = url.match(/\/payments\/([^\/]+)\/reject/);
                 const id = match ? match[1] : body.paymentId;
                 await SupabaseAPI.rejectPaymentById(id, body.reason);
                 return jsonResponse({ success: true }, 200);
             }
-            if (url.includes("/status") && init.method === "POST") {
+            if (url.includes("/status") && reqMethod === "POST") {
                 const match = url.match(/\/students\/([^\/]+)\/status/);
                 const id = match ? match[1] : body.studentId;
                 await SupabaseAPI.setStudentStatus(id, body.status);
                 return jsonResponse({ success: true }, 200);
             }
-            if (url.startsWith("/api/admin/students/") && init.method === "DELETE") {
+            if (url.startsWith("/api/admin/students/") && reqMethod === "DELETE") {
                 const parts = url.split("/");
                 const id = decodeURIComponent(parts[parts.length - 1]);
                 await SupabaseAPI.deleteStudent(id);
                 return jsonResponse({ success: true }, 200);
             }
-            if (url.startsWith("/api/admin/lessons") && init.method === "POST") {
+            if (url.startsWith("/api/admin/lessons") && reqMethod === "POST") {
                 await SupabaseAPI.addLesson(body);
                 return jsonResponse({ success: true }, 201);
             }
-            if (url.startsWith("/api/admin/lessons/") && init.method === "DELETE") {
+            if (url.startsWith("/api/admin/lessons/") && reqMethod === "DELETE") {
                 const parts = url.split("/");
                 const id = parts[parts.length - 1];
                 await SupabaseAPI.deleteLesson(id);
                 return jsonResponse({ success: true }, 200);
             }
-            if (url.startsWith("/api/admin/notes") && init.method === "POST") {
+            if (url.startsWith("/api/admin/notes") && reqMethod === "POST") {
                 await SupabaseAPI.addStudyNote(body);
                 return jsonResponse({ success: true }, 201);
             }
-            if (url.startsWith("/api/admin/notes/") && init.method === "DELETE") {
+            if (url.startsWith("/api/admin/notes/") && reqMethod === "DELETE") {
                 const parts = url.split("/");
                 const id = parts[parts.length - 1];
                 await SupabaseAPI.deleteStudyNote(id);
                 return jsonResponse({ success: true }, 200);
             }
-            if (url.startsWith("/api/admin/announcements") && init.method === "POST") {
+            if (url.startsWith("/api/admin/announcements") && reqMethod === "POST") {
                 await SupabaseAPI.addAnnouncement(body);
                 return jsonResponse({ success: true }, 201);
             }
