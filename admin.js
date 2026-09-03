@@ -72,7 +72,7 @@ async function adminFetch(url, options = {}) {
 }
 
 // --- Load Admin Records ---
-async function loadAdminData() {
+async function loadAdminData(isManual = false) {
     statusMessage.style.color = "#2563eb";
     statusMessage.textContent = "Loading secure records...";
 
@@ -127,6 +127,9 @@ async function loadAdminData() {
         }
 
         renderView();
+        if (isManual) {
+            alert("✅ Administrator Access Granted! Connected live to Supabase Cloud Database.");
+        }
 
     } catch (err) {
         statusMessage.style.color = "#dc2626";
@@ -803,7 +806,7 @@ document.getElementById("exportBtn").addEventListener("click", () => {
 });
 
 // --- Search and Filter Listeners ---
-document.getElementById("unlockBtn").addEventListener("click", loadAdminData);
+document.getElementById("unlockBtn").addEventListener("click", () => loadAdminData(true));
 document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
 searchInput.addEventListener("input", renderView);
 classFilter.addEventListener("change", renderView);
