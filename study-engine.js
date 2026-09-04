@@ -243,10 +243,14 @@ window.studyEngine = (function () {
 
     async function loadLessons() {
         try {
-            const res = await fetch(`${API_BASE}/api/lessons?class=${encodeURIComponent(currentGrade)}`);
-            if (res.ok) {
-                const data = await res.json();
-                classLessons = data.lessons || [];
+            if (window.OAV_SUPABASE) {
+                classLessons = await window.OAV_SUPABASE.getLessons(currentGrade);
+            } else {
+                const res = await fetch(`${API_BASE}/api/lessons?class=${encodeURIComponent(currentGrade)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    classLessons = Array.isArray(data) ? data : (data.lessons || []);
+                }
             }
         } catch (e) {
             console.warn('Could not load lessons from server:', e.message);
@@ -256,10 +260,14 @@ window.studyEngine = (function () {
 
     async function loadNotes() {
         try {
-            const res = await fetch(`${API_BASE}/api/notes?class=${encodeURIComponent(currentGrade)}`);
-            if (res.ok) {
-                const data = await res.json();
-                classNotes = data.notes || [];
+            if (window.OAV_SUPABASE) {
+                classNotes = await window.OAV_SUPABASE.getStudyNotes(currentGrade);
+            } else {
+                const res = await fetch(`${API_BASE}/api/notes?class=${encodeURIComponent(currentGrade)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    classNotes = Array.isArray(data) ? data : (data.notes || []);
+                }
             }
         } catch (e) {
             console.warn('Could not load notes from server:', e.message);
