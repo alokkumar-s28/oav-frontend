@@ -52,10 +52,10 @@ function extractYouTubeId(url) {
 async function adminFetch(url, options = {}) {
     let token = adminTokenInput ? adminTokenInput.value.trim() : '';
     if (!token) {
-        token = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token") || "admin123";
-        if (adminTokenInput) adminTokenInput.value = token;
+        token = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
+        if (token && adminTokenInput) adminTokenInput.value = token;
     }
-    if (!token) throw new Error("Please enter your administrator token.");
+    if (!token) throw new Error("Please enter your administrator password.");
 
     const res = await fetch(`${API_BASE}${url}`, {
         ...options,
@@ -73,19 +73,31 @@ async function adminFetch(url, options = {}) {
 
 // --- Load Admin Records ---
 async function loadAdminData() {
+    let token = adminTokenInput ? adminTokenInput.value.trim() : '';
+    if (!token) {
+        token = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
+        if (token && adminTokenInput) adminTokenInput.value = token;
+    }
+
+    if (!token) {
+        statusMessage.style.color = "#dc2626";
+        statusMessage.textContent = "🔒 Please enter the administrator password to unlock.";
+        return;
+    }
+
+    if (token !== "oav-mantra.2026") {
+        statusMessage.style.color = "#dc2626";
+        statusMessage.textContent = "❌ Incorrect password. Access denied.";
+        alert("❌ Incorrect admin password. Please try again.");
+        return;
+    }
+
     statusMessage.style.color = "#2563eb";
     statusMessage.textContent = "Loading secure records...";
 
     try {
-        let token = adminTokenInput ? adminTokenInput.value.trim() : '';
-        if (!token) {
-            token = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token") || "admin123";
-            if (adminTokenInput) adminTokenInput.value = token;
-        }
-        if (token) {
-            localStorage.setItem("oav_admin_token", token);
-            sessionStorage.setItem("oav_admin_token", token);
-        }
+        localStorage.setItem("oav_admin_token", token);
+        sessionStorage.setItem("oav_admin_token", token);
 
         const [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
             adminFetch("/api/admin/overview"),
@@ -788,12 +800,14 @@ if (adminTokenInput) {
 
 // Auto-load and boot admin console
 function bootAdmin() {
-    const savedToken = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token") || "admin123";
-    if (adminTokenInput) {
-        if (!adminTokenInput.value.trim()) {
-            adminTokenInput.value = savedToken;
-        }
+    const savedToken = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
+    if (savedToken && savedToken === "oav-mantra.2026") {
+        if (adminTokenInput) adminTokenInput.value = savedToken;
         loadAdminData();
+    } else {
+        if (adminTokenInput) adminTokenInput.value = "";
+        statusMessage.style.color = "#64748b";
+        statusMessage.textContent = "🔒 Enter admin password and click Unlock.";
     }
 
     // Real-time Video Link Detector & Validator
