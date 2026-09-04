@@ -340,11 +340,22 @@
         },
 
         async addLesson(lessonData) {
+            const payload = {
+                student_class: lessonData.student_class || lessonData.studentClass || "VI",
+                subject: lessonData.subject || "General",
+                title: lessonData.title,
+                video_url: lessonData.video_url || lessonData.videoUrl,
+                lesson_type: lessonData.lesson_type || lessonData.lessonType || "video",
+                description: lessonData.description || ""
+            };
             const res = await sbFetch("lessons", {
                 method: "POST",
-                body: JSON.stringify(lessonData)
+                body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error("Failed to publish lesson to Supabase.");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Failed to publish lesson to Supabase.");
+            }
             return { success: true };
         },
 
@@ -355,11 +366,21 @@
         },
 
         async addStudyNote(noteData) {
+            const payload = {
+                student_class: noteData.student_class || noteData.studentClass || "VI",
+                subject: noteData.subject || "General",
+                title: noteData.title,
+                file_url: noteData.file_url || noteData.fileUrl || "",
+                content: noteData.content || ""
+            };
             const res = await sbFetch("study_notes", {
                 method: "POST",
-                body: JSON.stringify(noteData)
+                body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error("Failed to save study note to Supabase.");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Failed to save study note to Supabase.");
+            }
             return { success: true };
         },
 
@@ -370,11 +391,20 @@
         },
 
         async addAnnouncement(data) {
+            const payload = {
+                title: data.title,
+                message: data.message,
+                type: data.type || "general",
+                is_active: true
+            };
             const res = await sbFetch("announcements", {
                 method: "POST",
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error("Failed to broadcast announcement to Supabase.");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Failed to broadcast announcement to Supabase.");
+            }
             return { success: true };
         }
     };
