@@ -253,6 +253,7 @@ nav ul li a.active {
   color: #93c5fd;
   margin-bottom: 20px;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .hero-content h1#jayjagannath {
@@ -276,7 +277,9 @@ nav ul li a.active {
 .hero-content h2 span {
   background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .hero-content p {
@@ -332,6 +335,7 @@ nav ul li a.active {
   border: 1px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: var(--transition);
 }
 
