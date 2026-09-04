@@ -72,7 +72,7 @@ async function adminFetch(url, options = {}) {
 }
 
 // --- Load Admin Records ---
-async function loadAdminData(isManual = false) {
+async function loadAdminData() {
     statusMessage.style.color = "#2563eb";
     statusMessage.textContent = "Loading secure records...";
 
@@ -87,24 +87,13 @@ async function loadAdminData(isManual = false) {
             sessionStorage.setItem("oav_admin_token", token);
         }
 
-        let overview, paymentsRes, studentsRes, lessonsRes, notesRes;
-        if (window.OAV_SUPABASE) {
-            [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
-                window.OAV_SUPABASE.getAdminOverview(),
-                window.OAV_SUPABASE.getAdminPayments(),
-                window.OAV_SUPABASE.getAdminStudents(),
-                window.OAV_SUPABASE.getAdminLessons(),
-                window.OAV_SUPABASE.getAdminNotes()
-            ]);
-        } else {
-            [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
-                adminFetch("/api/admin/overview"),
-                adminFetch("/api/admin/payments"),
-                adminFetch("/api/admin/students"),
-                adminFetch("/api/admin/lessons"),
-                adminFetch("/api/admin/notes")
-            ]);
-        }
+        const [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
+            adminFetch("/api/admin/overview"),
+            adminFetch("/api/admin/payments"),
+            adminFetch("/api/admin/students"),
+            adminFetch("/api/admin/lessons"),
+            adminFetch("/api/admin/notes")
+        ]);
 
         paymentsList = paymentsRes.payments || [];
         studentsList = studentsRes.students || [];
@@ -117,19 +106,8 @@ async function loadAdminData(isManual = false) {
         document.getElementById("metricPending").textContent = overview.pendingPayments ?? 0;
         document.getElementById("metricReview").textContent = overview.paymentReview ?? 0;
 
-        statusMessage.style.color = "#10b981";
-        statusMessage.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Admin Access Granted!</strong> Connected live to Supabase Cloud Database.`;
-
-        const unlockBtn = document.getElementById("unlockBtn");
-        if (unlockBtn) {
-            unlockBtn.innerHTML = '<i class="fas fa-check"></i> Unlocked';
-            unlockBtn.style.background = '#10b981';
-        }
-
+        statusMessage.textContent = "";
         renderView();
-        if (isManual) {
-            alert("✅ Administrator Access Granted! Connected live to Supabase Cloud Database.");
-        }
 
     } catch (err) {
         statusMessage.style.color = "#dc2626";
@@ -211,20 +189,7 @@ function renderView() {
     if (currentTab === "payments") {
         const filtered = filterRecords(paymentsList);
         if (!filtered.length) {
-            tableContent.innerHTML = `
-                <div style="text-align:center; padding:36px 20px; background:#f8fafc; border-radius:12px; border:1.5px dashed #cbd5e1; margin:16px 0;">
-                    <div style="width:52px; height:52px; line-height:52px; border-radius:50%; background:#e0f2fe; color:#0284c7; font-size:1.5rem; margin:0 auto 14px; display:flex; align-items:center; justify-content:center;">
-                        <i class="fas fa-receipt"></i>
-                    </div>
-                    <h3 style="margin:0 0 6px 0; color:#1e293b; font-size:1.15rem;">No Payment Verification Claims Yet</h3>
-                    <p style="color:#64748b; font-size:0.9rem; max-width:480px; margin:0 auto 16px;">
-                        When students complete their ₹500 UPI registration and submit their UTR transaction reference, their verification requests will appear here for 1-click instant approval.
-                    </p>
-                    <span style="display:inline-flex; align-items:center; gap:6px; background:#dcfce7; color:#15803d; padding:5px 14px; border-radius:20px; font-size:0.82rem; font-weight:700;">
-                        <i class="fas fa-circle" style="font-size:0.55rem;"></i> Database Ready & Listening (Supabase Cloud)
-                    </span>
-                </div>
-            `;
+            tableContent.innerHTML = "<p style='color:#64748b; padding:20px 0;'>No payment records match your filters.</p>";
             return;
         }
 
@@ -479,7 +444,7 @@ document.addEventListener("click", async (e) => {
     if (action === "verify-pay") {
         if (!confirm("Are you sure you want to verify this payment claim and activate student access?")) return;
         try {
-            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.verifyPaymentById(id); } else { await adminFetch(`/api/admin/payments/${id}/verify`, { method: "POST" }); }
+            await adminFetch(`/api/admin/payments/${id}/verify`, { method: "POST" });
             alert("✅ Student payment verified successfully! Student can now log in.");
             await loadAdminData();
         } catch (err) {
@@ -492,7 +457,7 @@ document.addEventListener("click", async (e) => {
         const reason = prompt("Enter the reason for rejection (e.g. Invalid UTR / Payment not received):", "Payment transaction could not be verified in UPI account.");
         if (!reason) return;
         try {
-            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.rejectPaymentById(id, reason); } else { await adminFetch(`/api/admin/payments/${id}/reject`, {
+            await adminFetch(`/api/admin/payments/${id}/reject`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason })
@@ -526,7 +491,7 @@ document.addEventListener("click", async (e) => {
         if (!confirm(`⚠️ Are you sure you want to PERMANENTLY REMOVE student "${studentName}" (ID: ${id})?\n\nThis will completely delete their enrollment, fee records, and study progress from the database.`)) return;
 
         try {
-            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.deleteStudent(id); } else { await adminFetch(`/api/admin/students/${encodeURIComponent(id)}`, { method: "DELETE" }); }
+            await adminFetch(`/api/admin/students/${encodeURIComponent(id)}`, { method: "DELETE" });
             alert(`✅ Student ${studentName} (${id}) has been permanently removed.`);
             await loadAdminData();
         } catch (err) {
@@ -634,7 +599,7 @@ document.addEventListener("click", async (e) => {
         if (!confirm(`Are you sure you want to delete the lesson "${lessonTitle}"?`)) return;
 
         try {
-            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.deleteLesson(id); } else { await adminFetch(`/api/admin/lessons/${id}`, { method: "DELETE" }); }
+            await adminFetch(`/api/admin/lessons/${id}`, { method: "DELETE" });
             alert(`✅ Class / Lesson deleted successfully.`);
             await loadAdminData();
         } catch (err) {
@@ -648,7 +613,7 @@ document.addEventListener("click", async (e) => {
         if (!confirm(`Are you sure you want to delete the note "${noteTitle}"?`)) return;
 
         try {
-            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.deleteStudyNote(id); } else { await adminFetch(`/api/admin/notes/${id}`, { method: "DELETE" }); }
+            await adminFetch(`/api/admin/notes/${id}`, { method: "DELETE" });
             alert(`✅ Study Note deleted successfully.`);
             await loadAdminData();
         } catch (err) {
@@ -704,7 +669,7 @@ if (addLessonForm) {
         saveBtn.disabled = true;
 
         try {
-            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.addLesson(payload); } else { await adminFetch("/api/admin/lessons", {
+            await adminFetch("/api/admin/lessons", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -747,7 +712,7 @@ if (addNoteForm) {
         saveBtn.disabled = true;
 
         try {
-            if (window.OAV_SUPABASE) { await window.OAV_SUPABASE.addStudyNote(payload); } else { await adminFetch("/api/admin/notes", {
+            await adminFetch("/api/admin/notes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -806,7 +771,7 @@ document.getElementById("exportBtn").addEventListener("click", () => {
 });
 
 // --- Search and Filter Listeners ---
-document.getElementById("unlockBtn").addEventListener("click", () => loadAdminData(true));
+document.getElementById("unlockBtn").addEventListener("click", loadAdminData);
 document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
 searchInput.addEventListener("input", renderView);
 classFilter.addEventListener("change", renderView);
