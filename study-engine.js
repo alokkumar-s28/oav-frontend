@@ -488,6 +488,16 @@ window.studyEngine = (function () {
         const grid = document.querySelector('.video-grid');
         if (!grid) return;
 
+        // Ensure filter container exists immediately before .video-grid (outside grid to avoid grid blowout)
+        let filterContainer = document.getElementById('videoFilterContainer');
+        if (!filterContainer) {
+            filterContainer = document.createElement('div');
+            filterContainer.id = 'videoFilterContainer';
+            filterContainer.className = 'subject-filter-wrapper';
+            grid.parentNode.insertBefore(filterContainer, grid);
+        }
+        filterContainer.innerHTML = renderSubjectFilterBar('videoFilterBar');
+
         let filteredLessons = classLessons;
         if (activeSubject !== 'All') {
             filteredLessons = classLessons.filter(l => (l.subject || '').toLowerCase() === activeSubject.toLowerCase());
@@ -495,125 +505,118 @@ window.studyEngine = (function () {
 
         const recordedLessons = filteredLessons.filter(l => l.lesson_type !== 'live');
 
-        // Render Subject Filter Bar above video grid
-        let filterBarHtml = renderSubjectFilterBar('videoFilterBar');
-
         // Render Recorded Video Lessons
         if (!recordedLessons.length) {
             grid.innerHTML = `
-                <div style="grid-column: 1 / -1; width: 100%;">
-                    ${filterBarHtml}
-                    <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:14px; padding:36px 20px; text-align:center;">
-                        <div style="width:56px; height:56px; background:#eff6ff; color:#2563eb; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:1.5rem;">
+                <div style="grid-column: 1 / -1; width: 100%; box-sizing: border-box;">
+                    <div class="empty-state-box">
+                        <div class="empty-state-icon">
                             <i class="fas fa-video"></i>
                         </div>
-                        <h3 style="color:#1e3a8a; margin:0 0 6px; font-size:1.15rem;">No Video Lessons in ${escapeHtml(activeSubject)}</h3>
-                        <p style="color:#64748b; font-size:0.9rem; margin:0 auto; max-width:440px;">Syllabus video classes added by teachers in the admin panel will appear here.</p>
+                        <h3 class="empty-state-title">No Video Lessons in ${escapeHtml(activeSubject)}</h3>
+                        <p class="empty-state-desc">Syllabus video classes added by teachers in the admin panel will appear here.</p>
                     </div>
                 </div>
             `;
             return;
         }
 
-        grid.innerHTML = `
-            <div style="grid-column: 1 / -1; width: 100%;">
-                ${filterBarHtml}
-            </div>
-            ${recordedLessons.map(lesson => {
-                const isDone = completedLessonIds.has(lesson.id);
-                const ytId = extractYouTubeId(lesson.video_url || '');
-                const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
+        grid.innerHTML = recordedLessons.map(lesson => {
+            const isDone = completedLessonIds.has(lesson.id);
+            const ytId = extractYouTubeId(lesson.video_url || '');
+            const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
 
-                return `
-                    <div class="video-card ${isDone ? 'lesson-completed' : ''}" id="lesson-card-${lesson.id}">
-                        <div class="video-thumbnail" onclick="studyEngine.playLesson(${lesson.id})">
-                            ${thumbUrl ? `
-                                <img src="${thumbUrl}" alt="${escapeHtml(lesson.title)}" class="video-thumb-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="video-thumb-fallback" style="display:none;">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </div>
-                            ` : `
-                                <div class="video-thumb-fallback">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </div>
-                            `}
-                            <div class="thumb-overlay"></div>
-                            <span class="thumb-badge-subject">${escapeHtml(lesson.subject)}</span>
-                            <div class="thumb-play-btn">
-                                <i class="fas fa-play"></i>
+            return `
+                <div class="video-card ${isDone ? 'lesson-completed' : ''}" id="lesson-card-${lesson.id}">
+                    <div class="video-thumbnail" onclick="studyEngine.playLesson(${lesson.id})">
+                        ${thumbUrl ? `
+                            <img src="${thumbUrl}" alt="${escapeHtml(lesson.title)}" class="video-thumb-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="video-thumb-fallback" style="display:none;">
+                                <i class="fas fa-graduation-cap"></i>
                             </div>
-                            <span class="thumb-badge-duration"><i class="fas fa-video"></i> Video Class</span>
-                            ${isDone ? '<span class="thumb-badge-done"><i class="fas fa-check"></i> Completed</span>' : ''}
+                        ` : `
+                            <div class="video-thumb-fallback">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                        `}
+                        <div class="thumb-overlay"></div>
+                        <span class="thumb-badge-subject">${escapeHtml(lesson.subject)}</span>
+                        <div class="thumb-play-btn">
+                            <i class="fas fa-play"></i>
                         </div>
-                        <div class="video-info">
-                            <span class="video-subject-pill">${escapeHtml(lesson.subject)}</span>
-                            <h3 class="video-title" title="${escapeHtml(lesson.title)}">${escapeHtml(lesson.title)}</h3>
-                            <p class="video-description">${escapeHtml(lesson.description || 'Comprehensive conceptual video class.')}</p>
-                            <div class="video-card-actions">
-                                <button class="watch-btn" onclick="studyEngine.playLesson(${lesson.id})">
-                                    <i class="fas fa-play"></i> Watch Video
-                                </button>
-                                <button class="btn-complete-toggle ${isDone ? 'is-completed' : ''}" id="btn-complete-${lesson.id}" onclick="studyEngine.toggleComplete(${lesson.id})">
-                                    <i class="fas fa-${isDone ? 'check-circle' : 'check'}"></i> ${isDone ? 'Done' : 'Mark Done'}
-                                </button>
-                            </div>
+                        <span class="thumb-badge-duration"><i class="fas fa-video"></i> Video Class</span>
+                        ${isDone ? '<span class="thumb-badge-done"><i class="fas fa-check"></i> Completed</span>' : ''}
+                    </div>
+                    <div class="video-info">
+                        <span class="video-subject-pill">${escapeHtml(lesson.subject)}</span>
+                        <h3 class="video-title" title="${escapeHtml(lesson.title)}">${escapeHtml(lesson.title)}</h3>
+                        <p class="video-description">${escapeHtml(lesson.description || 'Comprehensive conceptual video class.')}</p>
+                        <div class="video-card-actions">
+                            <button class="watch-btn" onclick="studyEngine.playLesson(${lesson.id})">
+                                <i class="fas fa-play"></i> Watch Video
+                            </button>
+                            <button class="btn-complete-toggle ${isDone ? 'is-completed' : ''}" id="btn-complete-${lesson.id}" onclick="studyEngine.toggleComplete(${lesson.id})">
+                                <i class="fas fa-${isDone ? 'check-circle' : 'check'}"></i> ${isDone ? 'Done' : 'Mark Done'}
+                            </button>
                         </div>
                     </div>
-                `;
-            }).join('')}
-        `;
+                </div>
+            `;
+        }).join('');
     }
 
     function renderNotes() {
         const materialsGrid = document.querySelector('.materials-grid');
         if (!materialsGrid) return;
 
+        // Ensure filter container exists immediately before .materials-grid (outside grid to avoid grid blowout)
+        let filterContainer = document.getElementById('notesFilterContainer');
+        if (!filterContainer) {
+            filterContainer = document.createElement('div');
+            filterContainer.id = 'notesFilterContainer';
+            filterContainer.className = 'subject-filter-wrapper';
+            materialsGrid.parentNode.insertBefore(filterContainer, materialsGrid);
+        }
+        filterContainer.innerHTML = renderSubjectFilterBar('notesFilterBar');
+
         let filteredNotes = classNotes;
         if (activeSubject !== 'All') {
             filteredNotes = classNotes.filter(n => (n.subject || '').toLowerCase() === activeSubject.toLowerCase());
         }
 
-        let filterBarHtml = renderSubjectFilterBar('notesFilterBar');
-
         if (filteredNotes && filteredNotes.length > 0) {
-            materialsGrid.innerHTML = `
-                <div style="grid-column: 1 / -1; width: 100%;">
-                    ${filterBarHtml}
-                </div>
-                ${filteredNotes.map(note => `
-                    <div class="material-card">
-                        <div>
-                            <div class="material-icon">
-                                <i class="fas fa-file-pdf" style="color:#ef4444;"></i>
-                            </div>
-                            <span style="font-size:0.78rem; font-weight:800; color:var(--class-color, #2563eb); text-transform:uppercase; letter-spacing:0.4px;">${escapeHtml(note.subject)}</span>
-                            <h3 class="material-title" style="margin:6px 0 8px; font-size:1.05rem; font-weight:700; color:#0f172a;">${escapeHtml(note.title)}</h3>
-                            ${note.content ? `<p style="font-size:0.85rem; color:#64748b; margin-bottom:14px; line-height:1.45;">${escapeHtml(note.content.slice(0, 100))}${note.content.length > 100 ? '...' : ''}</p>` : ''}
+            materialsGrid.innerHTML = filteredNotes.map(note => `
+                <div class="material-card">
+                    <div>
+                        <div class="material-icon">
+                            <i class="fas fa-file-pdf" style="color:#ef4444;"></i>
                         </div>
-                        <div style="margin-top:auto; padding-top:12px; border-top:1px solid #f1f5f9;">
-                            ${note.file_url ? `
-                                <a href="${escapeHtml(note.file_url)}" target="_blank" rel="noopener" class="watch-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box;">
-                                    <i class="fas fa-file-download"></i> Download / View PDF
-                                </a>
-                            ` : `
-                                <button class="watch-btn" onclick="studyEngine.viewCustomNote(${note.id})" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
-                                    <i class="fas fa-book-open"></i> Read Study Notes
-                                </button>
-                            `}
-                        </div>
+                        <span style="font-size:0.78rem; font-weight:800; color:var(--class-color, #2563eb); text-transform:uppercase; letter-spacing:0.4px;">${escapeHtml(note.subject)}</span>
+                        <h3 class="material-title">${escapeHtml(note.title)}</h3>
+                        ${note.content ? `<p class="material-desc">${escapeHtml(note.content.slice(0, 100))}${note.content.length > 100 ? '...' : ''}</p>` : ''}
                     </div>
-                `).join('')}
-            `;
+                    <div class="material-card-actions">
+                        ${note.file_url ? `
+                            <a href="${escapeHtml(note.file_url)}" target="_blank" rel="noopener" class="watch-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box;">
+                                <i class="fas fa-file-download"></i> Download / View PDF
+                            </a>
+                        ` : `
+                            <button class="watch-btn" onclick="studyEngine.viewCustomNote(${note.id})" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+                                <i class="fas fa-book-open"></i> Read Study Notes
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
         } else {
             materialsGrid.innerHTML = `
-                <div style="grid-column: 1 / -1; width: 100%;">
-                    ${filterBarHtml}
-                    <div style="background:#ffffff; border:1.5px dashed #cbd5e1; border-radius:14px; padding:36px 20px; text-align:center;">
-                        <div style="width:56px; height:56px; background:#fef2f2; color:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:1.5rem;">
+                <div style="grid-column: 1 / -1; width: 100%; box-sizing: border-box;">
+                    <div class="empty-state-box">
+                        <div class="empty-state-icon" style="background:#fef2f2; color:#ef4444;">
                             <i class="fas fa-file-pdf"></i>
                         </div>
-                        <h3 style="color:#1e3a8a; margin:0 0 6px; font-size:1.15rem;">No Study Notes Published for ${escapeHtml(activeSubject)}</h3>
-                        <p style="color:#64748b; font-size:0.9rem; margin:0 auto; max-width:440px;">Chapter formulas, revision notes, and PDF download links will appear here once uploaded by the admin.</p>
+                        <h3 class="empty-state-title">No Study Notes Published for ${escapeHtml(activeSubject)}</h3>
+                        <p class="empty-state-desc">Chapter formulas, revision notes, and PDF download links will appear here once uploaded by the admin.</p>
                     </div>
                 </div>
             `;
