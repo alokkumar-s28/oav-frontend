@@ -258,6 +258,9 @@ window.studyEngine = (function () {
         const chipsDiv = document.createElement('div');
         chipsDiv.className = 'hero-quick-chips';
         chipsDiv.innerHTML = `
+            <a href="dashboard.html" class="hero-chip" style="background:rgba(37,99,235,0.85) !important; border-color:#60a5fa !important;">
+                <i class="fas fa-user-graduate"></i> Student Dashboard
+            </a>
             <a href="#videos" class="hero-chip">
                 <i class="fas fa-play-circle"></i> ${vCount} Video Lessons
             </a>
@@ -312,7 +315,7 @@ window.studyEngine = (function () {
                 </div>
             `;
             if (authSlot) authSlot.innerHTML = studentHtml;
-            if (userPill) userPill.innerHTML = studentHtml;
+            if (userPill) userPill.innerHTML = "";
         } else if (isPreview) {
             const previewHtml = `
                 <span style="background:#fef3c7; color:#92400e; font-size:0.8rem; font-weight:700; padding:4px 10px; border-radius:12px;">
@@ -320,7 +323,7 @@ window.studyEngine = (function () {
                 </span>
             `;
             if (authSlot) authSlot.innerHTML = previewHtml;
-            if (userPill) userPill.innerHTML = previewHtml;
+            if (userPill) userPill.innerHTML = "";
         } else {
             const guestHtml = `
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -330,7 +333,7 @@ window.studyEngine = (function () {
                 </div>
             `;
             if (authSlot) authSlot.innerHTML = guestHtml;
-            if (userPill) userPill.innerHTML = guestHtml;
+            if (userPill) userPill.innerHTML = "";
         }
 
         return true;
