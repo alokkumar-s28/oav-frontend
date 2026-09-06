@@ -5,10 +5,18 @@ Allow: /favicon.png
 Allow: /apple-touch-icon.png
 Allow: /favicon-48x48.png
 Allow: /favicon-96x96.png
+Allow: /favicon-144x144.png
 Allow: /favicon-192x192.png
 Allow: /favicon-512x512.png
+Allow: /sitemap.xml
+
+User-agent: Googlebot
+Allow: /
 
 User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
 Allow: /
 
 Sitemap: https://oavmantra.vercel.app/sitemap.xml
