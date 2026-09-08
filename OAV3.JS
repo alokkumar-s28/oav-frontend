@@ -725,7 +725,7 @@ if (enrollmentForm) {
             schoolType,
             class: studentClass,
             city,
-            school: schoolType === 'OAV' ? school : 'State/Private School'
+            school: schoolType === 'OAV' ? school : 'CBSE School'
         };
 
         try {
