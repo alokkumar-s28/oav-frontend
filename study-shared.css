@@ -1168,3 +1168,84 @@ footer {
     flex-shrink: 0 !important;
     margin-left: auto !important;
 }
+
+
+/* ==========================================================================
+   RESPONSIVE FOOTER KEYWORD TOPICS & TAGS (SEO & MOBILE OPTIMIZED)
+   ========================================================================== */
+.footer-seo-topics {
+  margin-top: 36px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.footer-seo-title {
+  color: #e2e8f0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-seo-title i {
+  color: var(--secondary, #38bdf8);
+  font-size: 0.88rem;
+}
+
+.footer-tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.seo-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  color: #cbd5e1;
+  font-size: 0.83rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.22s ease-in-out;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.seo-tag:hover,
+.seo-tag:focus {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+}
+
+@media (max-width: 768px) {
+  .footer-seo-topics {
+    margin-top: 26px;
+    padding-top: 18px;
+    margin-bottom: 18px;
+  }
+  .footer-seo-title {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
+  .footer-tags-cloud {
+    gap: 7px;
+  }
+  .seo-tag {
+    padding: 5px 11px;
+    font-size: 0.78rem;
+  }
+}
