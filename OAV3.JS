@@ -555,11 +555,8 @@ function animateCounter(element, target, duration = 1000, suffix = '') {
 
 async function initPlatformStats() {
     const statEnrolled = document.getElementById('statEnrolled');
-    const statBoard = document.getElementById('statBoard');
     const statDistricts = document.getElementById('statDistricts');
     const statLessons = document.getElementById('statLessons');
-
-    if (statBoard) statBoard.textContent = '98.4%';
 
     try {
         const [sRes, lRes] = await Promise.all([
