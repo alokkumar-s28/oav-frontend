@@ -530,24 +530,98 @@ const INDIA_STATE_DISTRICTS = {
     ]
 };
 
-// Platform Statistics Configuration (Configurable & Extensible)
-const PLATFORM_STATS = {
-    enrolled: '5,000+',
-    boardRate: '98.4%',
-    districts: '30',
-    lessons: '150+'
-};
+// --- Live Platform Dynamic Statistics & Real-Time Counter ---
+window._liveStudentCount = 12;
+window._liveDistricts = new Set(['Balasore', 'Angul', 'Bhadrak', 'Boudh', 'Cuttack']);
 
-function initPlatformStats() {
+function animateCounter(element, target, duration = 1000, suffix = '') {
+    if (!element || isNaN(target)) return;
+    const start = 0;
+    const startTime = performance.now();
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentVal = Math.round(start + (target - start) * easeProgress);
+        element.textContent = currentVal.toLocaleString() + suffix;
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            element.textContent = target.toLocaleString() + suffix;
+        }
+    }
+    requestAnimationFrame(update);
+}
+
+async function initPlatformStats() {
     const statEnrolled = document.getElementById('statEnrolled');
     const statBoard = document.getElementById('statBoard');
     const statDistricts = document.getElementById('statDistricts');
     const statLessons = document.getElementById('statLessons');
 
-    if (statEnrolled) statEnrolled.textContent = PLATFORM_STATS.enrolled;
-    if (statBoard) statBoard.textContent = PLATFORM_STATS.boardRate;
-    if (statDistricts) statDistricts.textContent = PLATFORM_STATS.districts;
-    if (statLessons) statLessons.textContent = PLATFORM_STATS.lessons;
+    if (statBoard) statBoard.textContent = '98.4%';
+
+    try {
+        const [sRes, lRes] = await Promise.all([
+            fetch('https://bnlymzocydhmpuzmiwlz.supabase.co/rest/v1/students?select=id,city,status', {
+                headers: {
+                    'apikey': 'sb_publishable_K9N6nBr03U4ZgtX1cFdERQ_1uppv6uO',
+                    'Authorization': 'Bearer sb_publishable_K9N6nBr03U4ZgtX1cFdERQ_1uppv6uO'
+                }
+            }).catch(() => null),
+            fetch('https://bnlymzocydhmpuzmiwlz.supabase.co/rest/v1/lessons?select=id', {
+                headers: {
+                    'apikey': 'sb_publishable_K9N6nBr03U4ZgtX1cFdERQ_1uppv6uO',
+                    'Authorization': 'Bearer sb_publishable_K9N6nBr03U4ZgtX1cFdERQ_1uppv6uO'
+                }
+            }).catch(() => null)
+        ]);
+
+        if (sRes && sRes.ok) {
+            const students = await sRes.json();
+            if (Array.isArray(students)) {
+                window._liveStudentCount = students.length;
+                window._liveDistricts = new Set(students.map(s => s.city).filter(Boolean));
+                if (statEnrolled) animateCounter(statEnrolled, window._liveStudentCount, 1200);
+                if (statDistricts) animateCounter(statDistricts, Math.max(window._liveDistricts.size, 1), 1000);
+            }
+        }
+
+        if (lRes && lRes.ok) {
+            const lessons = await lRes.json();
+            if (Array.isArray(lessons) && statLessons) {
+                animateCounter(statLessons, Math.max(lessons.length, 1), 1000, '+');
+            }
+        }
+    } catch (err) {
+        console.warn('Live stats fetch note:', err);
+    }
+}
+
+function notifyEnrollmentStatUpdate(city) {
+    if (typeof window._liveStudentCount === 'number') {
+        window._liveStudentCount++;
+    } else {
+        window._liveStudentCount = 13;
+    }
+    const statEnrolled = document.getElementById('statEnrolled');
+    if (statEnrolled) {
+        statEnrolled.textContent = window._liveStudentCount.toLocaleString();
+        statEnrolled.style.transition = 'transform 0.4s ease, color 0.4s ease';
+        statEnrolled.style.transform = 'scale(1.25)';
+        statEnrolled.style.color = '#16a34a';
+        setTimeout(() => {
+            statEnrolled.style.transform = 'scale(1)';
+            statEnrolled.style.color = '';
+        }, 800);
+    }
+    if (city && window._liveDistricts) {
+        window._liveDistricts.add(city);
+        const statDistricts = document.getElementById('statDistricts');
+        if (statDistricts) {
+            statDistricts.textContent = window._liveDistricts.size;
+        }
+    }
 }
 
 const MERCHANT_NAME = 'OAV Mantra Classes';
@@ -961,12 +1035,12 @@ if (enrollmentForm) {
         const name = document.getElementById('studentName').value.trim();
         const mobile = document.getElementById('mobileNumber').value.trim();
         const email = document.getElementById('email').value.trim();
-        const schoolType = schoolTypeSelect.value;
+        const schoolType = schoolTypeSelect ? schoolTypeSelect.value : '';
         const studentClass = document.getElementById('studentClass').value;
-        const city = citySelect.value;
-        const school = schoolSelect.value;
+        const city = citySelect ? citySelect.value : '';
+        const school = schoolSelect ? schoolSelect.value : '';
 
-        // Reset errors
+        // Reset all errors
         showError('studentName', 'nameError', false);
         showError('mobileNumber', 'mobileError', false);
         showError('email', 'emailError', false);
@@ -974,6 +1048,8 @@ if (enrollmentForm) {
         showError('studentClass', 'classError', false);
         showError('city', 'cityError', false);
         showError('school', 'schoolError', false);
+        showError('cbseState', 'cbseStateError', false);
+        showError('cbseDistrict', 'cbseDistrictError', false);
 
         let isValid = true;
         if (!validateName(name)) { showError('studentName', 'nameError', true); isValid = false; }
@@ -981,8 +1057,28 @@ if (enrollmentForm) {
         if (!validateEmail(email)) { showError('email', 'emailError', true); isValid = false; }
         if (!schoolType) { showError('schoolType', 'schoolTypeError', true); isValid = false; }
         if (!studentClass) { showError('studentClass', 'classError', true); isValid = false; }
-        if (!city) { showError('city', 'cityError', true); isValid = false; }
-        if (schoolType === 'OAV' && !school) { showError('school', 'schoolError', true); isValid = false; }
+
+        let finalCity = '';
+        let finalSchool = '';
+
+        if (schoolType === 'OAV') {
+            if (!city) { showError('city', 'cityError', true); isValid = false; }
+            if (!school) { showError('school', 'schoolError', true); isValid = false; }
+            finalCity = city;
+            finalSchool = school;
+        } else if (schoolType === 'CBSE') {
+            const cbseState = cbseStateSelect ? cbseStateSelect.value : '';
+            const cbseDistrict = cbseDistrictSelect ? cbseDistrictSelect.value : '';
+            const cbseSchool = cbseSchoolName ? cbseSchoolName.value.trim() : '';
+
+            if (!cbseState) { showError('cbseState', 'cbseStateError', true); isValid = false; }
+            if (!cbseDistrict) { showError('cbseDistrict', 'cbseDistrictError', true); isValid = false; }
+            finalCity = cbseDistrict ? (cbseDistrict + ', ' + cbseState) : cbseState;
+            finalSchool = cbseSchool || 'CBSE School';
+        } else {
+            finalCity = city;
+            finalSchool = school || 'General School';
+        }
 
         if (!isValid) {
             showToast('Please fix the errors in the form before submitting.', 'warning');
@@ -1005,8 +1101,8 @@ if (enrollmentForm) {
             email,
             schoolType,
             class: studentClass,
-            city,
-            school: schoolType === 'OAV' ? school : 'CBSE School'
+            city: finalCity,
+            school: finalSchool
         };
 
         try {
@@ -1058,6 +1154,7 @@ if (enrollmentForm) {
         `;
 
         showToast('Enrollment details saved! Proceed to payment.', 'success');
+        notifyEnrollmentStatUpdate(finalCity);
         submitBtn.innerHTML = origText;
         submitBtn.disabled = false;
     });
