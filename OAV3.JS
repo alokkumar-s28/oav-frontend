@@ -382,6 +382,174 @@ const schoolData = {
 
 // Global State
 const UPI_ID = 'kumaralok952p@okicici';
+
+// Comprehensive Indian States and Districts for CBSE Students
+const INDIA_STATE_DISTRICTS = {
+    "Odisha": [
+        "Angul", "Balangir", "Balasore", "Bargarh", "Bhadrak", "Boudh", "Cuttack", "Deogarh",
+        "Dhenkanal", "Gajapati", "Ganjam", "Jagatsinghpur", "Jajapur", "Jharsuguda", "Kalahandi",
+        "Kandhamal", "Kendrapara", "Kendujhar", "Khordha (Bhubaneswar)", "Koraput", "Malkangiri",
+        "Mayurbhanj", "Nabarangpur", "Nayagarh", "Nuapada", "Puri", "Rayagada", "Sambalpur",
+        "Subarnapur", "Sundargarh"
+    ],
+    "Andhra Pradesh": [
+        "Alluri Sitharama Raju", "Anakapalli", "Ananthapuramu", "Annamayya", "Bapatla", "Chittoor",
+        "Dr. B.R. Ambedkar Konaseema", "East Godavari", "Eluru", "Guntur", "Kakinada", "Krishna",
+        "Kurnool", "Nandyal", "NTR (Vijayawada)", "Palnadu", "Parvathipuram Manyam", "Prakasam",
+        "Sri Potti Sriramulu Nellore", "Sri Sathya Sai", "Srikakulam", "Tirupati", "Visakhapatnam",
+        "Vizianagaram", "West Godavari", "YSR (Kadapa)"
+    ],
+    "Assam": [
+        "Baksa", "Barpeta", "Biswanath", "Bongaigaon", "Cachar (Silchar)", "Charaideo", "Chirang",
+        "Darrang", "Dhemaji", "Dhubri", "Dibrugarh", "Dima Hasao", "Goalpara", "Golaghat",
+        "Hailakandi", "Hojai", "Jorhat", "Kamrup Metropolitan (Guwahati)", "Kamrup", "Karbi Anglong",
+        "Karimganj", "Kokrajhar", "Lakhimpur", "Majuli", "Morigaon", "Nagaon", "Nalbari", "Sivasagar",
+        "Sonitpur (Tezpur)", "South Salmara-Mankachar", "Tinsukia", "Udalguri", "West Karbi Anglong"
+    ],
+    "Bihar": [
+        "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur (Arrah)",
+        "Buxar", "Darbhanga", "East Champaran (Motihari)", "Gaya", "Gopalganj", "Jamui", "Jehanabad",
+        "Kaimur (Bhabua)", "Katihar", "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani",
+        "Munger", "Muzaffarpur", "Nalanda (Bihar Sharif)", "Nawada", "Patna", "Purnia", "Rohtas (Sasaram)",
+        "Saharsa", "Samastipur", "Saran (Chhapra)", "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan",
+        "Supaul", "Vaishali (Hajipur)", "West Champaran (Bettiah)"
+    ],
+    "Chhattisgarh": [
+        "Balod", "Baloda Bazar", "Balrampur", "Bastar (Jagdalpur)", "Bemetara", "Bijapur", "Bilaspur",
+        "Dantewada", "Dhamtari", "Durg", "Gariaband", "Gaurela-Pendra-Marwahi", "Janjgir-Champa",
+        "Jashpur", "Kabirdham (Kawardha)", "Kanker", "Khairagarh", "Kondagaon", "Korba", "Koriya",
+        "Mahasamund", "Manendragarh", "Mohla-Manpur", "Mungeli", "Narayanpur", "Raigarh", "Raipur",
+        "Rajnandgaon", "Sarangarh-Bilaigarh", "Sakti", "Sukma", "Surajpur", "Surguja (Ambikapur)"
+    ],
+    "Delhi": [
+        "Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi",
+        "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"
+    ],
+    "Gujarat": [
+        "Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", "Bhavnagar",
+        "Botad", "Chhota Udaipur", "Dahod", "Dang", "Devbhoomi Dwarka", "Gandhinagar", "Gir Somnath",
+        "Jamnagar", "Junagadh", "Kheda", "Kutch", "Mahisagar", "Mehsana", "Morbi", "Narmada",
+        "Navsari", "Panchmahal", "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat",
+        "Surendranagar", "Tapi", "Vadodara", "Valsad"
+    ],
+    "Haryana": [
+        "Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar",
+        "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal",
+        "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"
+    ],
+    "Jharkhand": [
+        "Bokaro", "Chatra", "Deoghar", "Dhanbad", "Dumka", "East Singhbhum (Jamshedpur)", "Garhwa",
+        "Giridih", "Godda", "Gumla", "Hazaribagh", "Jamtara", "Khunti", "Koderma", "Latehar",
+        "Lohardaga", "Pakur", "Palamu (Daltonganj)", "Ramgarh", "Ranchi", "Sahibganj", "Seraikela Kharsawan",
+        "Simdega", "West Singhbhum (Chaibasa)"
+    ],
+    "Karnataka": [
+        "Bagalkote", "Ballari", "Belagavi", "Bengaluru Rural", "Bengaluru Urban", "Bidar",
+        "Chamarajanagar", "Chikkaballapura", "Chikkamagaluru", "Chitradurga", "Dakshina Kannada (Mangaluru)",
+        "Davanagere", "Dharwad (Hubli)", "Gadag", "Hassan", "Haveri", "Kalaburagi", "Kodagu",
+        "Kolar", "Koppal", "Mandya", "Mysuru", "Raichur", "Ramanagara", "Shivamogga", "Tumakuru",
+        "Udupi", "Uttara Kannada", "Vijayanagara", "Vijayapura", "Yadgir"
+    ],
+    "Kerala": [
+        "Alappuzha", "Ernakulam (Kochi)", "Idukki", "Kannur", "Kasaragod", "Kollam",
+        "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram",
+        "Thrissur", "Wayanad"
+    ],
+    "Madhya Pradesh": [
+        "Agar Malwa", "Alirajpur", "Anuppur", "Ashoknagar", "Balaghat", "Barwani", "Betul", "Bhind",
+        "Bhopal", "Burhanpur", "Chhatarpur", "Chhindwara", "Damoh", "Datia", "Dewas", "Dhar",
+        "Dindori", "Guna", "Gwalior", "Harda", "Hoshangabad (Narmadapuram)", "Indore", "Jabalpur",
+        "Jhabua", "Katni", "Khandwa", "Khargone", "Mandla", "Mandsaur", "Morena", "Narsinghpur",
+        "Neemuch", "Niwari", "Panna", "Raisen", "Rajgarh", "Ratlam", "Rewa", "Sagar", "Satna",
+        "Sehore", "Seoni", "Shahdol", "Shajapur", "Sheopur", "Shivpuri", "Sidhi", "Singrauli",
+        "Tikamgarh", "Ujjain", "Umaria", "Vidisha"
+    ],
+    "Maharashtra": [
+        "Ahmednagar", "Akola", "Amravati", "Aurangabad (Chhatrapati Sambhajinagar)", "Beed",
+        "Bhandara", "Buldhana", "Chandrapur", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon",
+        "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded",
+        "Nandurbar", "Nashik", "Navi Mumbai", "Osmanabad (Dharashiv)", "Palghar", "Parbhani",
+        "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane",
+        "Wardha", "Washim", "Yavatmal"
+    ],
+    "Punjab": [
+        "Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur",
+        "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Malerkotla", "Mansa",
+        "Moga", "Muktsar", "Pathankot", "Patiala", "Rupnagar (Ropar)", "Sahibzada Ajit Singh Nagar (Mohali)",
+        "Sangrur", "Shahid Bhagat Singh Nagar (Nawanshahr)", "Tarn Taran"
+    ],
+    "Rajasthan": [
+        "Ajmer", "Alwar", "Banswara", "Baran", "Barmer", "Bharatpur", "Bhilwara", "Bikaner",
+        "Bundi", "Chittorgarh", "Churu", "Dausa", "Dholpur", "Dungarpur", "Hanumangarh", "Jaipur",
+        "Jaisalmer", "Jalore", "Jhalawar", "Jhunjhunu", "Jodhpur", "Karauli", "Kota", "Nagaur",
+        "Pali", "Pratapgarh", "Rajsamand", "Sawai Madhopur", "Sikar", "Sirohi", "Sri Ganganagar",
+        "Tonk", "Udaipur"
+    ],
+    "Tamil Nadu": [
+        "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul",
+        "Erode", "Kallakurichi", "Kanchipuram", "Kanyakumari", "Karur", "Krishnagiri", "Madurai",
+        "Mayiladuthurai", "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai",
+        "Ramanathapuram", "Ranipet", "Salem", "Sivaganga", "Tenkasi", "Thanjavur", "Theni",
+        "Thoothukudi", "Tiruchirappalli", "Tirunelveli", "Tirupathur", "Tiruppur", "Tiruvallur",
+        "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"
+    ],
+    "Telangana": [
+        "Adilabad", "Bhadradri Kothagudem", "Hanamkonda", "Hyderabad", "Jagtial", "Jangaon",
+        "Jayashankar Bhupalpally", "Jogulamba Gadwal", "Kamareddy", "Karimnagar", "Khammam",
+        "Kumuram Bheem Asifabad", "Mahabubabad", "Mahbubnagar", "Mancherial", "Medak",
+        "Medchal-Malkajgiri", "Mulugu", "Nagarkurnool", "Nalgonda", "Narayanpet", "Nirmal",
+        "Nizamabad", "Peddapalli", "Rajanna Sircilla", "Ranga Reddy", "Sangareddy", "Siddipet",
+        "Suryapet", "Vikarabad", "Wanaparthy", "Warangal", "Yadadri Bhuvanagiri"
+    ],
+    "Uttar Pradesh": [
+        "Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh",
+        "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti",
+        "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah",
+        "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar (Noida)", "Ghaziabad",
+        "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun",
+        "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kasganj", "Kaushambi",
+        "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura",
+        "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh",
+        "Prayagraj (Allahabad)", "Raebareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar",
+        "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur",
+        "Unnao", "Varanasi"
+    ],
+    "Uttarakhand": [
+        "Almora", "Bageshwar", "Chamoli", "Champawat", "Dehradun", "Haridwar", "Nainital",
+        "Pauri Garhwal", "Pithoragarh", "Rudraprayag", "Tehri Garhwal", "Udham Singh Nagar", "Uttarkashi"
+    ],
+    "West Bengal": [
+        "Alipurduar", "Bankura", "Birbhum", "Cooch Behar", "Dakshin Dinajpur", "Darjeeling",
+        "Hooghly", "Howrah", "Jalpaiguri", "Jhargram", "Kalimpong", "Kolkata", "Malda",
+        "Murshidabad", "Nadia", "North 24 Parganas", "Paschim Bardhaman", "Paschim Medinipur",
+        "Purba Bardhaman", "Purba Medinipur", "Purulia", "Siliguri", "South 24 Parganas", "Uttar Dinajpur"
+    ],
+    "Other State / UT": [
+        "Arunachal Pradesh", "Goa", "Himachal Pradesh", "Jammu and Kashmir", "Ladakh", "Manipur",
+        "Meghalaya", "Mizoram", "Nagaland", "Sikkim", "Tripura", "Chandigarh", "Puducherry", "Other District"
+    ]
+};
+
+// Platform Statistics Configuration (Configurable & Extensible)
+const PLATFORM_STATS = {
+    enrolled: '5,000+',
+    boardRate: '98.4%',
+    districts: '30',
+    lessons: '150+'
+};
+
+function initPlatformStats() {
+    const statEnrolled = document.getElementById('statEnrolled');
+    const statBoard = document.getElementById('statBoard');
+    const statDistricts = document.getElementById('statDistricts');
+    const statLessons = document.getElementById('statLessons');
+
+    if (statEnrolled) statEnrolled.textContent = PLATFORM_STATS.enrolled;
+    if (statBoard) statBoard.textContent = PLATFORM_STATS.boardRate;
+    if (statDistricts) statDistricts.textContent = PLATFORM_STATS.districts;
+    if (statLessons) statLessons.textContent = PLATFORM_STATS.lessons;
+}
+
 const MERCHANT_NAME = 'OAV Mantra Classes';
 const REGISTRATION_FEE = 500;
 let currentEnrollmentId = '';
@@ -414,6 +582,13 @@ const citySelect = document.getElementById('city');
 const schoolTypeSelect = document.getElementById('schoolType');
 const schoolGroup = document.getElementById('schoolGroup');
 const schoolSelect = document.getElementById('school');
+const oavDistrictGroup = document.getElementById('oavDistrictGroup');
+const cbseStateGroup = document.getElementById('cbseStateGroup');
+const cbseStateSelect = document.getElementById('cbseState');
+const cbseDistrictGroup = document.getElementById('cbseDistrictGroup');
+const cbseDistrictSelect = document.getElementById('cbseDistrict');
+const cbseSchoolGroup = document.getElementById('cbseSchoolGroup');
+const cbseSchoolName = document.getElementById('cbseSchoolName');
 const enrollmentIdField = document.getElementById('enrollmentId');
 const studentNamePaymentField = document.getElementById('studentNamePayment');
 const toastContainer = document.getElementById('toastContainer');
@@ -619,28 +794,89 @@ function closeEnrollmentModal() {
     resetEnrollmentForm();
 }
 
-// --- School Type & District Dynamic Filtering ---
-function updateSchoolOptions() {
-    const selectedCity = citySelect.value;
-    schoolSelect.innerHTML = '<option value="">Select School</option>';
+// --- School Type, State & District Dynamic Filtering ---
+function populateCbseStates() {
+    if (!cbseStateSelect) return;
+    cbseStateSelect.innerHTML = '<option value="">Select State</option>';
+    const states = Object.keys(INDIA_STATE_DISTRICTS);
+    states.forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st;
+        opt.textContent = st;
+        cbseStateSelect.appendChild(opt);
+    });
+}
 
-    if (schoolTypeSelect.value === 'OAV' && selectedCity && schoolData[selectedCity]) {
-        schoolGroup.style.display = 'block';
-        schoolData[selectedCity].forEach(sch => {
+function updateCbseDistricts() {
+    if (!cbseDistrictSelect) return;
+    const selectedState = cbseStateSelect ? cbseStateSelect.value : '';
+    cbseDistrictSelect.innerHTML = '<option value="">Select District</option>';
+
+    if (selectedState && INDIA_STATE_DISTRICTS[selectedState]) {
+        if (cbseDistrictGroup) cbseDistrictGroup.style.display = 'block';
+        INDIA_STATE_DISTRICTS[selectedState].forEach(dist => {
             const opt = document.createElement('option');
-            opt.value = sch;
-            opt.textContent = sch;
-            schoolSelect.appendChild(opt);
+            opt.value = dist;
+            opt.textContent = dist;
+            cbseDistrictSelect.appendChild(opt);
         });
-        schoolSelect.required = true;
+        if (cbseSchoolGroup) cbseSchoolGroup.style.display = 'block';
     } else {
-        schoolGroup.style.display = 'none';
-        schoolSelect.required = false;
+        if (cbseDistrictGroup) cbseDistrictGroup.style.display = 'none';
+        if (cbseSchoolGroup) cbseSchoolGroup.style.display = 'none';
+    }
+}
+
+function updateSchoolOptions() {
+    const type = schoolTypeSelect ? schoolTypeSelect.value : '';
+
+    if (type === 'CBSE') {
+        if (oavDistrictGroup) oavDistrictGroup.style.display = 'none';
+        if (schoolGroup) schoolGroup.style.display = 'none';
+        if (citySelect) citySelect.required = false;
+        if (schoolSelect) schoolSelect.required = false;
+
+        if (cbseStateGroup) {
+            cbseStateGroup.style.display = 'block';
+            if (cbseStateSelect && cbseStateSelect.options.length <= 1) {
+                populateCbseStates();
+            }
+        }
+        updateCbseDistricts();
+    } else if (type === 'OAV') {
+        if (cbseStateGroup) cbseStateGroup.style.display = 'none';
+        if (cbseDistrictGroup) cbseDistrictGroup.style.display = 'none';
+        if (cbseSchoolGroup) cbseSchoolGroup.style.display = 'none';
+        if (oavDistrictGroup) oavDistrictGroup.style.display = 'block';
+
+        const selectedCity = citySelect ? citySelect.value : '';
+        if (schoolSelect) schoolSelect.innerHTML = '<option value="">Select School</option>';
+
+        if (selectedCity && schoolData[selectedCity]) {
+            if (schoolGroup) schoolGroup.style.display = 'block';
+            schoolData[selectedCity].forEach(sch => {
+                const opt = document.createElement('option');
+                opt.value = sch;
+                opt.textContent = sch;
+                schoolSelect.appendChild(opt);
+            });
+            if (schoolSelect) schoolSelect.required = true;
+        } else {
+            if (schoolGroup) schoolGroup.style.display = 'none';
+            if (schoolSelect) schoolSelect.required = false;
+        }
+    } else {
+        if (oavDistrictGroup) oavDistrictGroup.style.display = 'block';
+        if (schoolGroup) schoolGroup.style.display = 'none';
+        if (cbseStateGroup) cbseStateGroup.style.display = 'none';
+        if (cbseDistrictGroup) cbseDistrictGroup.style.display = 'none';
+        if (cbseSchoolGroup) cbseSchoolGroup.style.display = 'none';
     }
 }
 
 if (citySelect) citySelect.addEventListener('change', updateSchoolOptions);
 if (schoolTypeSelect) schoolTypeSelect.addEventListener('change', updateSchoolOptions);
+if (cbseStateSelect) cbseStateSelect.addEventListener('change', updateCbseDistricts);
 
 // --- Form Validation Functions ---
 function validateName(name) {
@@ -770,7 +1006,7 @@ if (enrollmentForm) {
             <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin: 16px 0; text-align: left; font-size: 0.95rem; line-height: 1.8;">
                 <strong>Enrollment ID:</strong> <span style="color: var(--secondary); font-family: monospace; font-size: 1.1rem; font-weight: 800;">${currentEnrollmentId}</span><br>
                 <strong>Student:</strong> ${escapeHtml(name)}<br>
-                <strong>Class:</strong> Class ${studentClass} (${city})<br>
+                <strong>Class:</strong> Class ${studentClass} (${payload.city})<br>
                 <strong>Registration Fee:</strong> <span style="color: var(--accent); font-weight: 800;">₹500</span>
             </div>
             <p style="color: var(--text-muted); font-size: 0.9rem;">Your details are recorded. Click below to complete fee verification.</p>
@@ -948,3 +1184,7 @@ function resetEnrollmentForm() {
     if (schoolGroup) schoolGroup.style.display = 'none';
     if (schoolSelect) schoolSelect.innerHTML = '<option value="">Select School</option>';
 }
+
+
+// Initialize Platform Stats on Page Load
+document.addEventListener("DOMContentLoaded", initPlatformStats);
