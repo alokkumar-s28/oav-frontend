@@ -788,6 +788,33 @@ if (closePaymentBtn) {
     }
 });
 
+// Reset Enrollment Form State
+function resetEnrollmentForm() {
+    if (enrollmentForm) {
+        enrollmentForm.reset();
+        enrollmentForm.style.display = 'block';
+    }
+    const successMsg = document.getElementById('successMessage');
+    if (successMsg) successMsg.style.display = 'none';
+
+    if (schoolGroup) schoolGroup.style.display = 'none';
+    if (schoolSelect) {
+        schoolSelect.innerHTML = '<option value="">Select School</option>';
+        schoolSelect.required = false;
+    }
+    if (oavDistrictGroup) oavDistrictGroup.style.display = 'block';
+    if (cbseStateGroup) cbseStateGroup.style.display = 'none';
+    if (cbseDistrictGroup) cbseDistrictGroup.style.display = 'none';
+    if (cbseSchoolGroup) cbseSchoolGroup.style.display = 'none';
+    if (cbseStateSelect) cbseStateSelect.value = '';
+    if (cbseDistrictSelect) cbseDistrictSelect.innerHTML = '<option value="">Select District</option>';
+    if (cbseSchoolName) cbseSchoolName.value = '';
+
+    // Clear all errors
+    document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('error'));
+}
+
 function closeEnrollmentModal() {
     enrollmentModal.classList.remove('active');
     document.body.style.overflow = 'auto';
@@ -908,6 +935,24 @@ function generateEnrollmentId() {
     return `OAV-${timestamp}-${randomStr}`;
 }
 
+
+// Real-time error clearing when student fixes form input
+['studentName', 'mobileNumber', 'email', 'studentClass', 'schoolType', 'city', 'school', 'cbseState', 'cbseDistrict'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        const clear = () => {
+            el.classList.remove('error');
+            let errId = id + 'Error';
+            if (id === 'studentName') errId = 'nameError';
+            if (id === 'mobileNumber') errId = 'mobileError';
+            const err = document.getElementById(errId);
+            if (err) err.classList.remove('show');
+        };
+        el.addEventListener('input', clear);
+        el.addEventListener('change', clear);
+    }
+});
+
 // --- Enrollment Form Submission ---
 if (enrollmentForm) {
     enrollmentForm.addEventListener('submit', async function (e) {
@@ -993,7 +1038,7 @@ if (enrollmentForm) {
                 mobile,
                 email,
                 student_class: studentClass,
-                city,
+                city: finalCity,
                 school: payload.school,
                 status: 'pending_payment'
             }));
