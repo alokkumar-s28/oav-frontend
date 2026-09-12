@@ -590,11 +590,17 @@ document.addEventListener("click", async (e) => {
             fullscreenBtn.onclick = () => {
                 const target = document.getElementById("videoContainerBox") || document.getElementById("adminVideoFrame");
                 if (!target) return;
-                if (!document.fullscreenElement) {
-                    if (target.requestFullscreen) target.requestFullscreen();
+                const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+                if (!isFs) {
+                    if (target.requestFullscreen) target.requestFullscreen().catch(() => {});
                     else if (target.webkitRequestFullscreen) target.webkitRequestFullscreen();
+                    else if (target.mozRequestFullScreen) target.mozRequestFullScreen();
+                    else if (target.msRequestFullscreen) target.msRequestFullscreen();
                 } else {
-                    if (document.exitFullscreen) document.exitFullscreen();
+                    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                    else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+                    else if (document.msExitFullscreen) document.msExitFullscreen();
                 }
             };
         }

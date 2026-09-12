@@ -55,7 +55,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="study-IX.css">
-    <link rel="stylesheet" href="study-shared.css?v=7.0">
+    <link rel="stylesheet" href="study-shared.css?v=7.2">
 </head>
 <body>
     <!-- Header -->
@@ -194,11 +194,14 @@
             </div>
             <div class="modal-body" style="padding:0;">
                 <div class="video-container" id="videoContainerBox" style="position:relative; padding-bottom:56.25%; height:0; background:#000;">
+                    <button type="button" class="video-floating-minimize-btn" id="floatingMinimizeBtn" onclick="studyEngine.togglePlayerFullscreen()" title="Minimize / Exit Fullscreen" aria-label="Minimize video">
+                        <i class="fas fa-compress"></i> Minimize
+                    </button>
                     <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
                 </div>
                 <div style="padding:14px 20px; background:#1e293b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid rgba(255,255,255,0.08);">
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <button onclick="studyEngine.togglePlayerFullscreen()" style="background:#2563eb; color:#ffffff; border:none; padding:8px 16px; border-radius:6px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;">
+                        <button id="playerFullscreenBtn" class="btn-player-fullscreen" onclick="studyEngine.togglePlayerFullscreen()" style="background:#2563eb; color:#ffffff; border:none; padding:8px 16px; border-radius:6px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;">
                             <i class="fas fa-expand"></i> Fullscreen
                         </button>
                         <button onclick="studyEngine.reloadPlayer()" style="background:#334155; color:#ffffff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
@@ -215,7 +218,7 @@
     </div>
 
     <script src="supabase-client.js?v=4.2"></script>
-    <script src="study-engine.js?v=7.0"></script>
+    <script src="study-engine.js?v=7.2"></script>
     <script src="study-IX.js"></script>
 </body>
 </html>

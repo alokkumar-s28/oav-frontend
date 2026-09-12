@@ -720,6 +720,7 @@ window.studyEngine = (function () {
             } else {
                 container.innerHTML = `<iframe id="videoFrame" src="${escapeHtml(cleanUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
             }
+            ensureFloatingMinimizeBtn(container);
         }
 
         if (modal) {
@@ -747,23 +748,127 @@ window.studyEngine = (function () {
         }
     }
 
+    function isElementFullscreen() {
+        return !!(
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement
+        );
+    }
+
+    function ensureFloatingMinimizeBtn(container) {
+        if (!container) return;
+        let btn = container.querySelector('.video-floating-minimize-btn');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'video-floating-minimize-btn';
+            btn.id = 'floatingMinimizeBtn';
+            btn.setAttribute('aria-label', 'Minimize / Exit Fullscreen');
+            btn.setAttribute('title', 'Minimize / Exit Fullscreen');
+            btn.onclick = function(e) {
+                if (e) e.stopPropagation();
+                togglePlayerFullscreen();
+            };
+            btn.innerHTML = '<i class="fas fa-compress"></i> Minimize';
+            container.appendChild(btn);
+        }
+    }
+
+    function requestElemFullscreen(elem) {
+        if (!elem) return;
+        const container = document.getElementById('videoContainerBox') || elem;
+        ensureFloatingMinimizeBtn(container);
+
+        try {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(function(err) {
+                    console.warn('Native requestFullscreen denied, using CSS fallback:', err);
+                    fallbackFullscreen(container, true);
+                });
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            } else {
+                fallbackFullscreen(container, true);
+            }
+        } catch (e) {
+            console.warn('Fullscreen invocation error:', e);
+            fallbackFullscreen(container, true);
+        }
+    }
+
+    function exitElemFullscreen() {
+        try {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(function() {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        } catch (e) {
+            console.warn('Exit fullscreen error:', e);
+        }
+        const container = document.getElementById('videoContainerBox');
+        if (container) fallbackFullscreen(container, false);
+        updateFullscreenButtons(false);
+    }
+
+    function fallbackFullscreen(elem, enable) {
+        if (!elem) return;
+        if (enable === undefined) {
+            elem.classList.toggle('is-fullscreen-video');
+        } else if (enable) {
+            elem.classList.add('is-fullscreen-video');
+        } else {
+            elem.classList.remove('is-fullscreen-video');
+        }
+        updateFullscreenButtons(elem.classList.contains('is-fullscreen-video'));
+    }
+
     function togglePlayerFullscreen() {
         const target = document.getElementById('videoContainerBox') || document.getElementById('videoFrame') || document.getElementById('activePlayerVideo');
         if (!target) return;
 
-        if (!document.fullscreenElement) {
-            if (target.requestFullscreen) {
-                target.requestFullscreen();
-            } else if (target.webkitRequestFullscreen) {
-                target.webkitRequestFullscreen();
-            } else if (target.msRequestFullscreen) {
-                target.msRequestFullscreen();
-            }
+        const container = document.getElementById('videoContainerBox') || target;
+        ensureFloatingMinimizeBtn(container);
+
+        if (isElementFullscreen() || container.classList.contains('is-fullscreen-video')) {
+            exitElemFullscreen();
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
+            requestElemFullscreen(target);
+        }
+    }
+
+    function updateFullscreenButtons(isFs) {
+        const container = document.getElementById('videoContainerBox');
+        if (container) {
+            if (isFs) {
+                container.classList.add('is-fullscreen-video');
+                ensureFloatingMinimizeBtn(container);
+            } else {
+                container.classList.remove('is-fullscreen-video');
             }
         }
+        const btns = document.querySelectorAll('.btn-player-fullscreen, #playerFullscreenBtn');
+        btns.forEach(function(btn) {
+            if (isFs) {
+                btn.innerHTML = '<i class="fas fa-compress"></i> Minimize';
+                btn.style.background = '#dc2626';
+                btn.setAttribute('title', 'Minimize video');
+            } else {
+                btn.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+                btn.style.background = '#2563eb';
+                btn.setAttribute('title', 'Fullscreen video');
+            }
+        });
     }
 
     function reloadPlayer() {
@@ -773,11 +878,16 @@ window.studyEngine = (function () {
     }
 
     function closeVideoModal() {
+        exitElemFullscreen();
         const modal = document.getElementById('videoModal');
         const container = document.getElementById('videoContainerBox');
-        if (container) container.innerHTML = '';
+        if (container) {
+            container.classList.remove('is-fullscreen-video');
+            container.innerHTML = '';
+        }
         if (modal) modal.classList.remove('active');
         document.body.style.overflow = 'auto';
+        updateFullscreenButtons(false);
     }
 
     async function toggleComplete(id) {
@@ -813,6 +923,14 @@ window.studyEngine = (function () {
         }
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && modal && modal.classList.contains('active')) closeVideoModal();
+        });
+
+        // Synchronize fullscreen UI state across all vendor implementations
+        ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(function(evt) {
+            document.addEventListener(evt, function() {
+                var isFs = isElementFullscreen();
+                updateFullscreenButtons(isFs);
+            });
         });
     }
 
@@ -993,6 +1111,7 @@ window.studyEngine = (function () {
         setSubjectFilter,
         setupQuiz,
         togglePlayerFullscreen,
+        exitPlayerFullscreen: exitElemFullscreen,
         reloadPlayer,
         switchPlayerStream,
         closeVideoModal,
