@@ -426,7 +426,7 @@ window.studyEngine = (function () {
         },
         { 
             name: "Hindi", 
-            icon: "fa-font", 
+            iconText: "अ",
             color: "#ea580c",
             bgGradient: "linear-gradient(135deg, #ffedd5 0%, #fff7ed 100%)",
             borderTint: "#fed7aa"
@@ -480,7 +480,9 @@ window.studyEngine = (function () {
                 <div class="subject-card ${isSelected ? 'subject-active' : ''}" onclick="studyEngine.setSubjectFilter('${sub.name}')" role="button" tabindex="0" aria-label="${escapeHtml(sub.name)} - ${vCount} Videos, ${nCount} Notes">
                     <div class="subject-card-glow" style="background:${sub.color};"></div>
                     <div class="subject-icon-wrapper" style="background:${sub.bgGradient}; border-color:${sub.borderTint};">
-                        <i class="fas ${sub.icon}" style="color:${sub.color};"></i>
+                        ${sub.iconText 
+                            ? `<span class="subject-lang-glyph" style="color:${sub.color}; font-family:'Noto Sans Devanagari', 'Kohinoor Devanagari', 'Nirmala UI', 'Segoe UI', sans-serif; font-weight:800; font-size:1.85rem; line-height:1; display:inline-block;">${sub.iconText}</span>`
+                            : `<i class="fas ${sub.icon}" style="color:${sub.color};"></i>`}
                     </div>
                     <div class="subject-details">
                         <h3 class="subject-title">${escapeHtml(sub.name)}</h3>

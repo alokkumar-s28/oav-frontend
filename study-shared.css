@@ -1523,3 +1523,22 @@ footer {
     height: 100% !important;
     object-fit: contain !important;
 }
+
+.subject-lang-glyph {
+    font-size: 1.85rem !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    transition: transform 0.25s ease !important;
+    display: inline-block !important;
+    user-select: none !important;
+}
+
+.subject-card:hover .subject-lang-glyph {
+    transform: scale(1.15) rotate(4deg) !important;
+}
+
+@media (max-width: 680px) {
+    .subject-lang-glyph {
+        font-size: 1.45rem !important;
+    }
+}
