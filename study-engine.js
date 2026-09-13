@@ -389,14 +389,62 @@ window.studyEngine = (function () {
     let activeSubject = 'All';
 
     const allSubjectList = [
-        { name: "Mathematics", icon: "fa-calculator", color: "#2563eb" },
-        { name: "Science", icon: "fa-flask", color: "#10b981" },
-        { name: "English", icon: "fa-language", color: "#8b5cf6" },
-        { name: "Social Studies", icon: "fa-globe-asia", color: "#f59e0b" },
-        { name: "Odia", icon: "fa-book", color: "#ec4899" },
-        { name: "Hindi", icon: "fa-font", color: "#f97316" },
-        { name: "Sanskrit", icon: "fa-om", color: "#6366f1" },
-        { name: "ICT", icon: "fa-laptop-code", color: "#06b6d4" }
+        { 
+            name: "Mathematics", 
+            icon: "fa-calculator", 
+            color: "#2563eb",
+            bgGradient: "linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%)",
+            borderTint: "#bfdbfe"
+        },
+        { 
+            name: "Science", 
+            icon: "fa-flask", 
+            color: "#059669",
+            bgGradient: "linear-gradient(135deg, #d1fae5 0%, #ecfdf5 100%)",
+            borderTint: "#a7f3d0"
+        },
+        { 
+            name: "English", 
+            icon: "fa-book-open", 
+            color: "#7c3aed",
+            bgGradient: "linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%)",
+            borderTint: "#ddd6fe"
+        },
+        { 
+            name: "Social Studies", 
+            icon: "fa-globe-americas", 
+            color: "#d97706",
+            bgGradient: "linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%)",
+            borderTint: "#fde68a"
+        },
+        { 
+            name: "Odia", 
+            icon: "fa-feather-alt", 
+            color: "#e11d48",
+            bgGradient: "linear-gradient(135deg, #ffe4e6 0%, #fff1f2 100%)",
+            borderTint: "#fecdd3"
+        },
+        { 
+            name: "Hindi", 
+            icon: "fa-font", 
+            color: "#ea580c",
+            bgGradient: "linear-gradient(135deg, #ffedd5 0%, #fff7ed 100%)",
+            borderTint: "#fed7aa"
+        },
+        { 
+            name: "Sanskrit", 
+            icon: "fa-om", 
+            color: "#4f46e5",
+            bgGradient: "linear-gradient(135deg, #e0e7ff 0%, #eef2ff 100%)",
+            borderTint: "#c7d2fe"
+        },
+        { 
+            name: "ICT", 
+            icon: "fa-laptop-code", 
+            color: "#0891b2",
+            bgGradient: "linear-gradient(135deg, #cffafe 0%, #ecfeff 100%)",
+            borderTint: "#a5f3fc"
+        }
     ];
 
     function setSubjectFilter(subj) {
@@ -429,17 +477,20 @@ window.studyEngine = (function () {
             const isSelected = activeSubject.toLowerCase() === sub.name.toLowerCase();
 
             return `
-                <div class="subject-card ${isSelected ? 'subject-active' : ''}" onclick="studyEngine.setSubjectFilter('${sub.name}')" style="cursor:pointer; transition:all 0.25s ease; border:${isSelected ? '2px solid #2563eb' : '1px solid #e2e8f0'}; background:${isSelected ? '#eff6ff' : '#ffffff'}; border-radius:12px; padding:20px; text-align:center;">
-                    <div class="subject-icon" style="color:${sub.color}; font-size:2rem; margin-bottom:10px;">
-                        <i class="fas ${sub.icon}"></i>
+                <div class="subject-card ${isSelected ? 'subject-active' : ''}" onclick="studyEngine.setSubjectFilter('${sub.name}')" role="button" tabindex="0" aria-label="${escapeHtml(sub.name)} - ${vCount} Videos, ${nCount} Notes">
+                    <div class="subject-card-glow" style="background:${sub.color};"></div>
+                    <div class="subject-icon-wrapper" style="background:${sub.bgGradient}; border-color:${sub.borderTint};">
+                        <i class="fas ${sub.icon}" style="color:${sub.color};"></i>
                     </div>
-                    <div class="subject-info">
-                        <h3 style="margin:0 0 6px; font-size:1.1rem; color:#0f172a;">${sub.name}</h3>
-                        <p style="margin:0; font-size:0.85rem; color:#64748b;">${vCount} Videos • ${nCount} Notes</p>
-                        <div style="margin-top:10px;">
-                            <span style="display:inline-block; font-size:0.8rem; font-weight:700; color:${isSelected ? '#1d4ed8' : '#2563eb'}; background:${isSelected ? '#dbeafe' : '#f1f5f9'}; padding:4px 10px; border-radius:14px;">
-                                ${isSelected ? '✓ Showing Lessons' : 'Filter Lessons →'}
-                            </span>
+                    <div class="subject-details">
+                        <h3 class="subject-title">${escapeHtml(sub.name)}</h3>
+                        <div class="subject-count-pill">
+                            <span><i class="fas fa-play-circle"></i> ${vCount} Videos</span>
+                            <span class="dot-sep">•</span>
+                            <span><i class="fas fa-file-alt"></i> ${nCount} Notes</span>
+                        </div>
+                        <div class="subject-action-btn ${isSelected ? 'active-badge' : ''}">
+                            <span>${isSelected ? '✓ Filter Active' : 'Explore Subject →'}</span>
                         </div>
                     </div>
                 </div>
@@ -945,27 +996,27 @@ window.studyEngine = (function () {
         ];
 
         container.innerHTML = `
-            <div style="background:#ffffff; border-radius:16px; padding:28px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1px solid #e2e8f0;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:14px; flex-wrap:wrap; gap:10px;">
+            <div class="quiz-card-wrapper">
+                <div class="quiz-header-bar">
                     <div>
-                        <h3 style="margin:0 0 4px; color:#1e3a8a;"><i class="fas fa-award" style="color:#2563eb;"></i> Class ${currentGrade} Chapter Mastery Quiz</h3>
-                        <p style="margin:0; color:#64748b; font-size:0.88rem;">Test your chapter knowledge with instant explanations.</p>
+                        <h3 class="quiz-header-title"><i class="fas fa-award" style="color:#2563eb;"></i> Class ${currentGrade} Chapter Mastery Quiz</h3>
+                        <p class="quiz-header-desc">Test your chapter knowledge with instant explanations.</p>
                     </div>
-                    <span style="background:#eff6ff; color:#2563eb; font-size:0.85rem; font-weight:800; padding:4px 12px; border-radius:20px;">${questions.length} Questions</span>
+                    <span class="quiz-badge"><i class="fas fa-clipboard-check"></i> ${questions.length} Questions</span>
                 </div>
                 <form id="studyQuizForm">
                     ${questions.map((q, idx) => `
-                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:18px; margin-bottom:18px;">
-                            <p style="font-weight:700; margin-bottom:12px; color:#0f172a; font-size:1rem;">Question ${idx + 1}: ${escapeHtml(q.q)}</p>
-                            <div style="display:grid; gap:8px;">
+                        <div class="quiz-question-card">
+                            <p class="quiz-question-text"><span style="color:#2563eb; font-weight:800;">Q${idx + 1}.</span> ${escapeHtml(q.q)}</p>
+                            <div class="quiz-options-grid">
                                 ${q.options.map((opt, oIdx) => `
-                                    <label style="display:flex; align-items:center; gap:10px; background:#ffffff; border:1px solid #cbd5e1; padding:10px 14px; border-radius:8px; cursor:pointer; font-size:0.92rem; color:#334155; transition:all 0.2s ease;">
-                                        <input type="radio" name="q_${idx}" value="${oIdx}" required style="accent-color:#2563eb;">
+                                    <label class="quiz-option-label">
+                                        <input type="radio" name="q_${idx}" value="${oIdx}" required>
                                         <span>${escapeHtml(opt)}</span>
                                     </label>
                                 `).join('')}
                             </div>
-                            <div id="q_exp_${idx}" style="display:none; margin-top:10px; padding:10px; border-radius:6px; font-size:0.88rem;"></div>
+                            <div id="q_exp_${idx}" style="display:none; margin-top:12px; padding:12px; border-radius:8px; font-size:0.9rem; line-height:1.5;"></div>
                         </div>
                     `).join('')}
                     <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
