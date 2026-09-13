@@ -22,6 +22,7 @@
 }
 
 html {
+    background-color: #0f172a !important;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     width: 100% !important;
@@ -1024,19 +1025,21 @@ header {
 ========================================================= */
 .study-mobile-nav {
     display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: var(--bottom-nav-height);
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    z-index: 1200;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px)) !important;
+    background: #0f172a !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+    z-index: 1200 !important;
+    padding: 0 0 env(safe-area-inset-bottom, 0px) 0 !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5) !important;
     box-sizing: border-box !important;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 @media (max-width: 768px) {
@@ -1045,6 +1048,19 @@ header {
         justify-content: space-around;
         align-items: center;
     }
+}
+
+
+/* Absolute shield below mobile nav: prevents ANY gap or glitch during mobile scrolling/bounce */
+.study-mobile-nav::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: #0f172a !important;
+    pointer-events: none;
 }
 
 .study-mobile-nav-item {
@@ -1095,7 +1111,7 @@ footer {
 
 @media (max-width: 768px) {
     footer {
-        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 24px) !important;
+        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px)) !important;
         margin-bottom: 0 !important;
     }
 }

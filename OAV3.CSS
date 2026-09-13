@@ -42,6 +42,7 @@
 }
 
 html {
+  background-color: #091a38;
   scroll-behavior: smooth;
   font-size: 16px;
 }
@@ -1507,3 +1508,10 @@ footer {
 
 
 /* ==========================================================================
+
+@media (max-width: 768px) {
+  footer {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    margin-bottom: 0 !important;
+  }
+}
