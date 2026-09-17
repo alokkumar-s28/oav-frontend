@@ -336,6 +336,67 @@
             .metric-card strong { font-size: 1.8rem; }
             th, td { padding: 10px 8px; font-size: 0.85rem; }
         }
+
+        /* Live Study Rooms Inspector Bar */
+        .admin-study-preview-bar {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .admin-study-preview-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-study-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .admin-study-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .admin-study-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .btn-class-vi { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
+        .btn-class-vi:hover { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+
+        .btn-class-vii { background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0; }
+        .btn-class-vii:hover { background: #059669; color: #ffffff; border-color: #059669; }
+
+        .btn-class-viii { background: #f5f3ff; color: #6d28d9; border: 1.5px solid #ddd6fe; }
+        .btn-class-viii:hover { background: #7c3aed; color: #ffffff; border-color: #7c3aed; }
+
+        .btn-class-ix { background: #fff7ed; color: #c2410c; border: 1.5px solid #fed7aa; }
+        .btn-class-ix:hover { background: #ea580c; color: #ffffff; border-color: #ea580c; }
+
+        .btn-class-x { background: #fef2f2; color: #b91c1c; border: 1.5px solid #fecaca; }
+        .btn-class-x:hover { background: #dc2626; color: #ffffff; border-color: #dc2626; }
     </style>
 </head>
 <body>
@@ -350,9 +411,19 @@
                     <span style="color:#93c5fd; font-size:0.8rem; display:block;">ADMINISTRATOR CONTROL PANEL</span>
                 </div>
             </div>
-            <a href="index.html" style="color:#cbd5e1; text-decoration:none; font-size:0.9rem; font-weight:600;">
-                <i class="fas fa-home"></i> Home
-            </a>
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div style="display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.08); padding:5px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);">
+                    <span style="color:#93c5fd; font-size:0.8rem; font-weight:700;"><i class="fas fa-eye"></i> Study Rooms:</span>
+                    <a href="study-VI.html?preview=true" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class VI Study Page">VI</a>
+                    <a href="study-VII.html?preview=true" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class VII Study Page">VII</a>
+                    <a href="study-VIII.html?preview=true" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class VIII Study Page">VIII</a>
+                    <a href="study-IX.html?preview=true" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class IX Study Page">IX</a>
+                    <a href="study-X.html?preview=true" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class X Study Page">X</a>
+                </div>
+                <a href="index.html" style="color:#cbd5e1; text-decoration:none; font-size:0.9rem; font-weight:600;">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </div>
         </div>
     </header>
 
@@ -378,6 +449,36 @@
         </div>
 
         <div id="statusMessage" style="color:#dc2626; font-weight:600; margin-bottom:18px; min-height:22px;"></div>
+
+        <!-- Live Study Rooms Inspector -->
+        <div class="admin-study-preview-bar">
+            <div class="admin-study-preview-title">
+                <div style="width:40px; height:40px; border-radius:10px; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div>
+                    <strong style="color:#0f172a; font-size:0.98rem; display:block;">Live Study Pages Inspector</strong>
+                    <span style="color:#64748b; font-size:0.84rem;">Click any class below to inspect its live video classes, study notes, and quizzes:</span>
+                </div>
+            </div>
+            <div class="admin-study-links">
+                <a href="study-VI.html?preview=true" target="_blank" class="admin-study-btn btn-class-vi" title="Open Class VI Study Page">
+                    <i class="fas fa-external-link-alt"></i> Visit Class VI
+                </a>
+                <a href="study-VII.html?preview=true" target="_blank" class="admin-study-btn btn-class-vii" title="Open Class VII Study Page">
+                    <i class="fas fa-external-link-alt"></i> Visit Class VII
+                </a>
+                <a href="study-VIII.html?preview=true" target="_blank" class="admin-study-btn btn-class-viii" title="Open Class VIII Study Page">
+                    <i class="fas fa-external-link-alt"></i> Visit Class VIII
+                </a>
+                <a href="study-IX.html?preview=true" target="_blank" class="admin-study-btn btn-class-ix" title="Open Class IX Study Page">
+                    <i class="fas fa-external-link-alt"></i> Visit Class IX
+                </a>
+                <a href="study-X.html?preview=true" target="_blank" class="admin-study-btn btn-class-x" title="Open Class X Study Page">
+                    <i class="fas fa-external-link-alt"></i> Visit Class X
+                </a>
+            </div>
+        </div>
 
         <!-- Metrics Grid -->
         <div class="metrics-grid">
@@ -520,9 +621,19 @@
                     </form>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                     <h3 style="color:#1e3a8a; margin:0;">Published Classes & Videos</h3>
-                    <span style="font-size:0.88rem; color:#64748b;">(Separated into Recorded & Live)</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:0.84rem; font-weight:700; color:#475569;"><i class="fas fa-external-link-alt" style="color:#2563eb;"></i> Check Study Page:</span>
+                        <select id="quickVisitVideoClassSelect" class="filter-select" style="padding:6px 10px; font-size:0.84rem; font-weight:600;" onchange="if(this.value) window.open(this.value, '_blank')">
+                            <option value="">Select Class to Visit...</option>
+                            <option value="study-VI.html?preview=true">Class VI Study Page</option>
+                            <option value="study-VII.html?preview=true">Class VII Study Page</option>
+                            <option value="study-VIII.html?preview=true">Class VIII Study Page</option>
+                            <option value="study-IX.html?preview=true">Class IX Study Page</option>
+                            <option value="study-X.html?preview=true">Class X Study Page</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="lessonsTableContent" class="table-responsive">
                     <p style="color:#64748b;">Loading video catalog...</p>
@@ -588,7 +699,20 @@
                     </form>
                 </div>
 
-                <h3 style="color:#1e3a8a; margin-bottom:14px;">Published Study Materials</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                    <h3 style="color:#1e3a8a; margin:0;">Published Study Materials</h3>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:0.84rem; font-weight:700; color:#475569;"><i class="fas fa-external-link-alt" style="color:#2563eb;"></i> Check Study Page:</span>
+                        <select id="quickVisitNoteClassSelect" class="filter-select" style="padding:6px 10px; font-size:0.84rem; font-weight:600;" onchange="if(this.value) window.open(this.value, '_blank')">
+                            <option value="">Select Class to Visit...</option>
+                            <option value="study-VI.html?preview=true">Class VI Study Page</option>
+                            <option value="study-VII.html?preview=true">Class VII Study Page</option>
+                            <option value="study-VIII.html?preview=true">Class VIII Study Page</option>
+                            <option value="study-IX.html?preview=true">Class IX Study Page</option>
+                            <option value="study-X.html?preview=true">Class X Study Page</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="notesTableContent" class="table-responsive">
                     <p style="color:#64748b;">Loading study notes...</p>
                 </div>
@@ -639,7 +763,7 @@
 
 
     <script src="supabase-client.js?v=3.2"></script>
-    <script src="admin.js?v=3.2"></script>
+    <script src="admin.js?v=3.3"></script>
 </body>
 </html>
 

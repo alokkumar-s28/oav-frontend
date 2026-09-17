@@ -196,6 +196,38 @@ window.studyEngine = (function () {
         try { setupMobileMenu(); } catch (e) { console.error("setupMobileMenu err:", e); }
         try { setupMobileBottomNav(); } catch (e) { console.error("setupMobileBottomNav err:", e); }
         try { enhanceHeroSection(); } catch (e) { console.error("enhanceHeroSection err:", e); }
+        try { setupAdminPreviewBanner(); } catch (e) { console.error("setupAdminPreviewBanner err:", e); }
+    }
+
+    function setupAdminPreviewBanner() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isPreview = urlParams.get('preview') === 'true' || Boolean(sessionStorage.getItem('oav_admin_token') || localStorage.getItem('oav_admin_token'));
+        if (!isPreview || document.getElementById('adminFloatingPreviewBar')) return;
+
+        const banner = document.createElement('div');
+        banner.id = 'adminFloatingPreviewBar';
+        banner.style.cssText = 'position:sticky; top:0; left:0; right:0; width:100%; z-index:99999; background:#091a38; color:#ffffff; padding:8px 16px; font-size:0.82rem; font-weight:700; display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #3b82f6; box-shadow:0 4px 14px rgba(0,0,0,0.35); flex-wrap:wrap; gap:8px; box-sizing:border-box;';
+        banner.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="background:#dc2626; color:#fff; font-size:0.72rem; padding:3px 8px; border-radius:4px; font-weight:800; letter-spacing:0.5px;">
+                    <i class="fas fa-shield-alt"></i> ADMIN INSPECTOR
+                </span>
+                <span style="color:#ffffff;">Inspecting Class ${escapeHtml(currentGrade)} Study Page</span>
+                <span style="color:#94a3b8; font-size:0.76rem;">(Regular students only see their single enrolled class)</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span style="color:#93c5fd; font-size:0.78rem;">Inspect Other Class:</span>
+                <a href="study-VI.html?preview=true" style="color:${currentGrade==='VI'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VI'?'#2563eb':'rgba(255,255,255,0.1)'};">VI</a>
+                <a href="study-VII.html?preview=true" style="color:${currentGrade==='VII'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VII'?'#059669':'rgba(255,255,255,0.1)'};">VII</a>
+                <a href="study-VIII.html?preview=true" style="color:${currentGrade==='VIII'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VIII'?'#7c3aed':'rgba(255,255,255,0.1)'};">VIII</a>
+                <a href="study-IX.html?preview=true" style="color:${currentGrade==='IX'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='IX'?'#ea580c':'rgba(255,255,255,0.1)'};">IX</a>
+                <a href="study-X.html?preview=true" style="color:${currentGrade==='X'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='X'?'#dc2626':'rgba(255,255,255,0.1)'};">X</a>
+                <a href="admin.html" style="margin-left:8px; background:#f8fafc; color:#0f172a; text-decoration:none; padding:4px 12px; border-radius:6px; font-size:0.78rem; font-weight:700; display:inline-flex; align-items:center; gap:5px; border:1px solid #cbd5e1;">
+                    <i class="fas fa-arrow-left"></i> Return to Admin Panel
+                </a>
+            </div>
+        `;
+        document.body.prepend(banner);
     }
 
     function setupMobileMenu() {
