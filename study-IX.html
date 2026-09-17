@@ -55,7 +55,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="study-IX.css">
-    <link rel="stylesheet" href="study-shared.css?v=8.1">
+    <link rel="stylesheet" href="study-shared.css?v=8.2">
 </head>
 <body>
     <!-- Header -->
@@ -190,43 +190,73 @@
         </div>
     </footer>
 
-    <!-- Video Modal -->
-    <div class="modal" id="videoModal">
-        <div class="modal-content" style="max-width:900px; width:94%; background:#0f172a; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
-            <div class="modal-header" style="background:#1e293b; color:#fff; border-bottom:1px solid rgba(255,255,255,0.1); padding:14px 20px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <i class="fas fa-play-circle" style="color:#3b82f6; font-size:1.2rem;"></i>
-                    <h3 id="modalTitle" style="color:#ffffff; font-size:1.05rem; margin:0; font-weight:700;">Video Class</h3>
+    <!-- Video Cinema Theater Modal -->
+    <div class="modal cinema-modal" id="videoModal">
+        <div class="modal-content cinema-modal-content">
+            <!-- Dynamic Ambient Glow Layer -->
+            <div class="cinema-ambient-glow" id="playerAmbientGlow"></div>
+
+            <!-- Cinema Header -->
+            <div class="cinema-header">
+                <div class="cinema-title-group">
+                    <div class="cinema-badges">
+                        <span class="cinema-grade-pill" id="modalGradeBadge">Class IX</span>
+                        <span class="cinema-subject-pill" id="modalSubjectBadge">Mathematics</span>
+                        <span class="cinema-status-pill"><i class="fas fa-play"></i> Now Playing</span>
+                    </div>
+                    <h3 class="cinema-title" id="modalTitle">Video Class</h3>
                 </div>
-                <button class="close-modal" id="closeModalBtn" onclick="studyEngine.closeVideoModal()" style="color:#cbd5e1; font-size:1.6rem; line-height:1; background:transparent; border:none; cursor:pointer;">&times;</button>
+                <button class="close-modal cinema-close-btn" id="closeModalBtn" onclick="studyEngine.closeVideoModal()" aria-label="Close Video Player">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="modal-body" style="padding:0;">
-                <div class="video-container" id="videoContainerBox" style="position:relative; padding-bottom:56.25%; height:0; background:#000;">
+
+            <!-- Modal Video Viewport -->
+            <div class="modal-body" style="padding:0; position:relative;">
+                <div class="video-container cinema-video-box" id="videoContainerBox">
                     <button type="button" class="video-floating-minimize-btn" id="floatingMinimizeBtn" onclick="studyEngine.togglePlayerFullscreen()" title="Minimize / Exit Fullscreen" aria-label="Minimize video">
                         <i class="fas fa-compress"></i> Minimize
                     </button>
-                    <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
+                    <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
-                <div style="padding:14px 20px; background:#1e293b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid rgba(255,255,255,0.08);">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <button id="playerFullscreenBtn" class="btn-player-fullscreen" onclick="studyEngine.togglePlayerFullscreen()" style="background:#2563eb; color:#ffffff; border:none; padding:8px 16px; border-radius:6px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s ease;">
-                            <i class="fas fa-expand"></i> Fullscreen
+
+                <!-- Up Next Quick Strip (In-Player Continuous Learning) -->
+                <div class="cinema-up-next-strip" id="playerUpNextContainer" style="display:none;">
+                    <div class="up-next-info">
+                        <span class="up-next-tag"><i class="fas fa-step-forward"></i> Up Next in Syllabus</span>
+                        <h4 class="up-next-title" id="playerUpNextTitle">Next Topic</h4>
+                    </div>
+                    <button class="up-next-btn" id="playerUpNextBtn" onclick="studyEngine.playNextLesson()">
+                        <span>Play Next</span> <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Cinema Control Dock -->
+                <div class="cinema-dock">
+                    <div class="cinema-actions-left">
+                        <button id="playerMasteredBtn" class="dock-btn dock-btn-mastered" onclick="studyEngine.togglePlayerMastered()" title="Mark this lesson as mastered">
+                            <i class="far fa-circle"></i> <span id="playerMasteredLabel">Mark Mastered</span>
                         </button>
-                        <button onclick="studyEngine.reloadPlayer()" style="background:#334155; color:#ffffff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
-                            <i class="fas fa-redo"></i> Replay
+                        <button id="playerFullscreenBtn" class="dock-btn dock-btn-fullscreen btn-player-fullscreen" onclick="studyEngine.togglePlayerFullscreen()" title="Fullscreen mode (Press F)">
+                            <i class="fas fa-expand"></i> <span>Fullscreen</span> <kbd class="kbd-hint">F</kbd>
                         </button>
-                        <button onclick="studyEngine.switchPlayerStream()" style="background:#334155; color:#ffffff; border:none; padding:8px 14px; border-radius:6px; font-weight:600; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Switch stream mode">
-                            <i class="fas fa-sync-alt"></i> Switch Stream
+                        <button class="dock-btn dock-btn-secondary" onclick="studyEngine.reloadPlayer()" title="Restart video from beginning">
+                            <i class="fas fa-redo"></i> <span>Replay</span>
+                        </button>
+                        <button class="dock-btn dock-btn-secondary" onclick="studyEngine.switchPlayerStream()" title="Switch CDN stream mode">
+                            <i class="fas fa-satellite-dish"></i> <span>Stream Mode</span>
                         </button>
                     </div>
-                    <span style="font-size:0.82rem; color:#94a3b8;"><i class="fas fa-info-circle"></i> Plays directly in website • Press ESC to close</span>
+                    <div class="cinema-actions-right">
+                        <span class="cinema-help-text"><i class="fas fa-graduation-cap"></i> OAV Mantra Cinema • Press <kbd class="kbd-hint">ESC</kbd> to exit</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="supabase-client.js?v=4.2"></script>
-    <script src="study-engine.js?v=8.3"></script>
+    <script src="study-engine.js?v=8.4"></script>
     <script src="study-IX.js"></script>
 </body>
 </html>

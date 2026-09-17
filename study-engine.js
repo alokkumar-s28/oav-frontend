@@ -787,7 +787,7 @@ window.studyEngine = (function () {
             const badgeColor = subObj ? subObj.color : 'var(--class-color, #2563eb)';
 
             return `
-                <div class="video-card ${isDone ? 'lesson-completed' : ''}" id="lesson-card-${lesson.id}">
+                <div class="video-card ${isDone ? 'lesson-completed' : ''}" id="lesson-card-${lesson.id}" style="--card-accent:${badgeColor};">
                     <div class="video-thumbnail" onclick="studyEngine.playLesson(${lesson.id})">
                         ${thumbUrl ? `
                             <img src="${thumbUrl}" alt="${escapeHtml(lesson.title)}" class="video-thumb-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -820,6 +820,7 @@ window.studyEngine = (function () {
                             </button>
                         </div>
                     </div>
+                    <div class="video-card-progress-bar"></div>
                 </div>
             `;
         }).join('');
@@ -946,6 +947,40 @@ window.studyEngine = (function () {
     }
 
     let currentActiveLesson = null;
+    let nextLessonId = null;
+
+    function syncPlayerMasteredBtn(isDone) {
+        const btn = document.getElementById('playerMasteredBtn');
+        const lbl = document.getElementById('playerMasteredLabel');
+        if (btn) {
+            if (isDone) {
+                btn.classList.add('is-done');
+                btn.setAttribute('title', 'Lesson Mastered! Click to unmark');
+                if (lbl) lbl.textContent = 'Mastered ✓';
+                const icon = btn.querySelector('i');
+                if (icon) icon.className = 'fas fa-check-circle';
+            } else {
+                btn.classList.remove('is-done');
+                btn.setAttribute('title', 'Mark this lesson as mastered');
+                if (lbl) lbl.textContent = 'Mark Mastered';
+                const icon = btn.querySelector('i');
+                if (icon) icon.className = 'far fa-circle';
+            }
+        }
+    }
+
+    async function togglePlayerMastered() {
+        if (!currentActiveLesson) return;
+        await toggleComplete(currentActiveLesson.id);
+        const isDone = completedLessonIds.has(currentActiveLesson.id);
+        syncPlayerMasteredBtn(isDone);
+    }
+
+    function playNextLesson() {
+        if (nextLessonId) {
+            playLesson(nextLessonId);
+        }
+    }
 
     function playLesson(id) {
         const lesson = classLessons.find(l => l.id === id);
@@ -954,10 +989,45 @@ window.studyEngine = (function () {
         currentActiveLesson = lesson;
 
         const modalTitle = document.getElementById('modalTitle');
+        const modalGradeBadge = document.getElementById('modalGradeBadge');
+        const modalSubjectBadge = document.getElementById('modalSubjectBadge');
+        const playerAmbientGlow = document.getElementById('playerAmbientGlow');
         const modal = document.getElementById('videoModal');
         const container = document.getElementById('videoContainerBox') || document.querySelector('.video-container');
 
-        if (modalTitle) modalTitle.textContent = `${lesson.subject}: ${lesson.title}`;
+        if (modalTitle) modalTitle.textContent = lesson.title;
+        if (modalGradeBadge) modalGradeBadge.textContent = `Class ${currentGrade}`;
+        if (modalSubjectBadge) modalSubjectBadge.textContent = lesson.subject || 'Lesson';
+
+        const subObj = allSubjectList.find(s => s.name.toLowerCase() === (lesson.subject || '').toLowerCase());
+        const glowColor = subObj ? subObj.color : 'var(--class-color, #2563eb)';
+        if (playerAmbientGlow) playerAmbientGlow.style.setProperty('--ambient-glow-color', glowColor);
+        const modalContent = document.querySelector('.cinema-modal-content');
+        if (modalContent) modalContent.style.setProperty('--ambient-glow-color', glowColor);
+
+        // Sync Mastered state
+        syncPlayerMasteredBtn(completedLessonIds.has(lesson.id));
+
+        // Calculate Up Next Lesson in Syllabus
+        const recorded = classLessons.filter(l => l.lesson_type !== 'live');
+        const currentIndex = recorded.findIndex(l => l.id === lesson.id);
+        let nextLesson = null;
+        if (currentIndex >= 0 && currentIndex < recorded.length - 1) {
+            nextLesson = recorded[currentIndex + 1];
+        }
+
+        const upNextContainer = document.getElementById('playerUpNextContainer');
+        const upNextTitle = document.getElementById('playerUpNextTitle');
+        if (upNextContainer && upNextTitle) {
+            if (nextLesson) {
+                nextLessonId = nextLesson.id;
+                upNextTitle.textContent = `${nextLesson.subject}: ${nextLesson.title}`;
+                upNextContainer.style.display = 'flex';
+            } else {
+                nextLessonId = null;
+                upNextContainer.style.display = 'none';
+            }
+        }
 
         let rawUrl = (lesson.video_url || '').trim();
 
@@ -1192,6 +1262,10 @@ window.studyEngine = (function () {
             if (newStatus) completedLessonIds.add(id);
             else completedLessonIds.delete(id);
 
+            if (currentActiveLesson && currentActiveLesson.id === id) {
+                syncPlayerMasteredBtn(newStatus);
+            }
+
             renderLessons();
             try { enhanceHeroSection(); } catch(e) {}
         } catch (e) {
@@ -1210,7 +1284,14 @@ window.studyEngine = (function () {
             });
         }
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && modal && modal.classList.contains('active')) closeVideoModal();
+            if (modal && modal.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeVideoModal();
+                } else if ((e.key === 'f' || e.key === 'F') && !['input', 'textarea'].includes((document.activeElement || {}).tagName?.toLowerCase())) {
+                    e.preventDefault();
+                    togglePlayerFullscreen();
+                }
+            }
         });
 
         // Synchronize fullscreen UI state across all vendor implementations
@@ -1394,6 +1475,8 @@ window.studyEngine = (function () {
     return {
         init,
         playLesson,
+        togglePlayerMastered,
+        playNextLesson,
         toggleComplete,
         viewCustomNote,
         setSubjectFilter,
