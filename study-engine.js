@@ -276,27 +276,9 @@ window.studyEngine = (function () {
         const heroContainer = document.querySelector('.hero .container');
         if (!heroContainer) return;
 
-        // 1. Class Switcher Bar (Prepend before Hero H1 if not exists)
-        if (!heroContainer.querySelector('.hero-class-switcher')) {
-            const switcher = document.createElement('div');
-            switcher.className = 'hero-class-switcher';
-            const classes = [
-                { label: 'VI', url: 'study-VI.html' },
-                { label: 'VII', url: 'study-VII.html' },
-                { label: 'VIII', url: 'study-VIII.html' },
-                { label: 'IX', url: 'study-IX.html' },
-                { label: 'X', url: 'study-X.html' }
-            ];
-            switcher.innerHTML = `
-                <span class="hero-class-label"><i class="fas fa-graduation-cap"></i> Class:</span>
-                ${classes.map(c => `
-                    <a href="${c.url}" class="hero-class-pill ${c.label === currentGrade ? 'active' : ''}">
-                        Class ${c.label}
-                    </a>
-                `).join('')}
-            `;
-            heroContainer.insertBefore(switcher, heroContainer.firstChild);
-        }
+        // Ensure any class switcher is completely removed (students access only their enrolled class)
+        const existingSwitcher = heroContainer.querySelector('.hero-class-switcher');
+        if (existingSwitcher) existingSwitcher.remove();
 
         // 2. Interactive Search Bar (Add after Hero p if not exists)
         if (!heroContainer.querySelector('.hero-search-wrapper')) {
@@ -438,6 +420,28 @@ window.studyEngine = (function () {
         const userPill = document.getElementById('userPill');
 
         if (currentStudent) {
+            // Enforce single-class access: paid student only accesses their registered class
+            if (currentStudent.student_class && !isPreview) {
+                const enrolledClass = String(currentStudent.student_class).toUpperCase().replace(/CLASS/i, '').trim();
+                const classNormalMap = { "6": "VI", "7": "VII", "8": "VIII", "9": "IX", "10": "X", "VI": "VI", "VII": "VII", "VIII": "VIII", "IX": "IX", "X": "X" };
+                const myClass = classNormalMap[enrolledClass] || enrolledClass;
+                const targetClass = classNormalMap[currentGrade] || currentGrade;
+
+                if (myClass && targetClass && myClass !== targetClass) {
+                    const classPageMap = {
+                        "VI": "study-VI.html",
+                        "VII": "study-VII.html",
+                        "VIII": "study-VIII.html",
+                        "IX": "study-IX.html",
+                        "X": "study-X.html"
+                    };
+                    const targetPage = classPageMap[myClass] || `study-${myClass}.html`;
+                    alert(`Access Restricted: Your registered enrollment is for Class ${myClass}. Redirecting to your Class ${myClass} study portal.`);
+                    window.location.replace(targetPage);
+                    return false;
+                }
+            }
+
             const studentHtml = `
                 <div style="display:flex; align-items:center; gap:8px;">
                     <a href="dashboard.html" style="color:#2563eb; font-weight:700; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#eff6ff; padding:6px 12px; border-radius:20px; border:1px solid #bfdbfe;">
