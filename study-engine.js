@@ -18,6 +18,30 @@ window.studyEngine = (function () {
     let currentStudent = null;
     let completedLessonIds = new Set();
     let classLessons = [];
+    let searchQuery = '';
+
+    function renderSkeletonLoaders() {
+        const vGrid = document.querySelector('.video-grid');
+        const mGrid = document.querySelector('.materials-grid');
+        const skeletonHtml = (count) => Array(count).fill(0).map(() => `
+            <div class="skeleton-card">
+                <div class="skeleton-thumb"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line pill"></div>
+                    <div class="skeleton-line title"></div>
+                    <div class="skeleton-line" style="width:90%;"></div>
+                    <div class="skeleton-line btn"></div>
+                </div>
+            </div>
+        `).join('');
+
+        if (vGrid && (!classLessons || classLessons.length === 0)) {
+            vGrid.innerHTML = skeletonHtml(3);
+        }
+        if (mGrid && (!classNotes || classNotes.length === 0)) {
+            mGrid.innerHTML = skeletonHtml(3);
+        }
+    }
 
     const escapeHtml = text => String(text || '').replace(/[&<>"']/g, char => ({
         "&": "&amp;",
@@ -148,6 +172,7 @@ window.studyEngine = (function () {
 
     async function init(grade) {
         currentGrade = grade;
+        try { renderSkeletonLoaders(); } catch (e) {}
 
         try {
             await verifyAuth();
@@ -249,9 +274,105 @@ window.studyEngine = (function () {
 
     function enhanceHeroSection() {
         const heroContainer = document.querySelector('.hero .container');
-        if (!heroContainer || heroContainer.querySelector('.hero-quick-chips')) return;
+        if (!heroContainer) return;
 
-        const vCount = classLessons.filter(l => l.lesson_type !== 'live').length;
+        // 1. Class Switcher Bar (Prepend before Hero H1 if not exists)
+        if (!heroContainer.querySelector('.hero-class-switcher')) {
+            const switcher = document.createElement('div');
+            switcher.className = 'hero-class-switcher';
+            const classes = [
+                { label: 'VI', url: 'study-VI.html' },
+                { label: 'VII', url: 'study-VII.html' },
+                { label: 'VIII', url: 'study-VIII.html' },
+                { label: 'IX', url: 'study-IX.html' },
+                { label: 'X', url: 'study-X.html' }
+            ];
+            switcher.innerHTML = `
+                <span class="hero-class-label"><i class="fas fa-graduation-cap"></i> Class:</span>
+                ${classes.map(c => `
+                    <a href="${c.url}" class="hero-class-pill ${c.label === currentGrade ? 'active' : ''}">
+                        Class ${c.label}
+                    </a>
+                `).join('')}
+            `;
+            heroContainer.insertBefore(switcher, heroContainer.firstChild);
+        }
+
+        // 2. Interactive Search Bar (Add after Hero p if not exists)
+        if (!heroContainer.querySelector('.hero-search-wrapper')) {
+            const searchWrap = document.createElement('div');
+            searchWrap.className = 'hero-search-wrapper';
+            searchWrap.innerHTML = `
+                <div class="hero-search-inner">
+                    <i class="fas fa-search hero-search-icon"></i>
+                    <input type="text" id="studySearchInput" class="hero-search-input" placeholder="Search chapters, topics, formulas, or subjects..." aria-label="Search study materials and videos" autocomplete="off" value="${escapeHtml(searchQuery)}">
+                    <button type="button" id="studySearchClear" class="hero-search-clear" title="Clear Search" aria-label="Clear Search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            const pElem = heroContainer.querySelector('p');
+            if (pElem) {
+                pElem.parentNode.insertBefore(searchWrap, pElem.nextSibling);
+            } else {
+                heroContainer.appendChild(searchWrap);
+            }
+
+            const input = searchWrap.querySelector('#studySearchInput');
+            const clearBtn = searchWrap.querySelector('#studySearchClear');
+
+            if (input && clearBtn) {
+                input.addEventListener('input', (e) => {
+                    searchQuery = (e.target.value || '').trim().toLowerCase();
+                    clearBtn.style.display = searchQuery ? 'inline-flex' : 'none';
+                    renderLessons();
+                    renderNotes();
+                });
+
+                clearBtn.addEventListener('click', () => {
+                    input.value = '';
+                    searchQuery = '';
+                    clearBtn.style.display = 'none';
+                    renderLessons();
+                    renderNotes();
+                    input.focus();
+                });
+            }
+        }
+
+        // 3. Dynamic Student Learning Progress Card
+        const existingProgress = heroContainer.querySelector('.hero-progress-card');
+        if (existingProgress) existingProgress.remove();
+
+        const totalRecorded = classLessons.filter(l => l.lesson_type !== 'live').length;
+        const doneCount = completedLessonIds.size;
+        const progressPct = totalRecorded > 0 ? Math.min(100, Math.round((doneCount / totalRecorded) * 100)) : 0;
+
+        const progressCard = document.createElement('div');
+        progressCard.className = 'hero-progress-card';
+        progressCard.innerHTML = `
+            <div class="hero-progress-header">
+                <span class="hero-progress-label">
+                    <i class="fas fa-chart-line" style="color:#34d399;"></i> Class ${currentGrade} Syllabus Tracker
+                </span>
+                <span class="hero-progress-pct">${progressPct}% Completed</span>
+            </div>
+            <div class="hero-progress-track">
+                <div class="hero-progress-fill" style="width: ${progressPct}%;"></div>
+            </div>
+            <div class="hero-progress-subtext">
+                <span><i class="fas fa-check-circle" style="color:#34d399;"></i> ${doneCount} of ${totalRecorded} Lessons Mastered</span>
+                <span>${totalRecorded - doneCount > 0 ? `${totalRecorded - doneCount} remaining` : 'All lessons complete! 🌟'}</span>
+            </div>
+        `;
+        heroContainer.appendChild(progressCard);
+
+        // 4. Quick Action Chips
+        const existingChips = heroContainer.querySelector('.hero-quick-chips');
+        if (existingChips) existingChips.remove();
+
+        const vCount = totalRecorded;
         const nCount = classNotes.length;
         const liveCount = classLessons.filter(l => l.lesson_type === 'live').length;
 
@@ -271,7 +392,7 @@ window.studyEngine = (function () {
                 <i class="fas fa-award"></i> Chapter Quiz
             </a>
             <a href="#subjects" class="hero-chip">
-                <i class="fas fa-shapes"></i> 9 Subjects
+                <i class="fas fa-shapes"></i> 8 Subjects
             </a>
             ${liveCount > 0 ? `
                 <a href="#live" class="hero-chip" style="background:#dc2626 !important; border-color:#ef4444 !important;">
@@ -280,6 +401,16 @@ window.studyEngine = (function () {
             ` : ''}
         `;
         heroContainer.appendChild(chipsDiv);
+    }
+
+    function clearSearch() {
+        searchQuery = '';
+        const input = document.getElementById('studySearchInput');
+        const clearBtn = document.getElementById('studySearchClear');
+        if (input) input.value = '';
+        if (clearBtn) clearBtn.style.display = 'none';
+        renderLessons();
+        renderNotes();
     }
 
     async function verifyAuth() {
@@ -544,7 +675,7 @@ window.studyEngine = (function () {
         const grid = document.querySelector('.video-grid');
         if (!grid) return;
 
-        // Ensure filter container exists immediately before .video-grid (outside grid to avoid grid blowout)
+        // Ensure filter container exists immediately before .video-grid
         let filterContainer = document.getElementById('videoFilterContainer');
         if (!filterContainer) {
             filterContainer = document.createElement('div');
@@ -556,10 +687,30 @@ window.studyEngine = (function () {
 
         let filteredLessons = classLessons;
         if (activeSubject !== 'All') {
-            filteredLessons = classLessons.filter(l => (l.subject || '').toLowerCase() === activeSubject.toLowerCase());
+            filteredLessons = filteredLessons.filter(l => (l.subject || '').toLowerCase() === activeSubject.toLowerCase());
+        }
+
+        if (searchQuery) {
+            filteredLessons = filteredLessons.filter(l => 
+                (l.title || '').toLowerCase().includes(searchQuery) ||
+                (l.description || '').toLowerCase().includes(searchQuery) ||
+                (l.subject || '').toLowerCase().includes(searchQuery)
+            );
         }
 
         const recordedLessons = filteredLessons.filter(l => l.lesson_type !== 'live');
+
+        // Update count badge in section header
+        const countSpan = document.querySelector('#videos .video-count');
+        if (countSpan) {
+            if (searchQuery) {
+                countSpan.textContent = `${recordedLessons.length} Found for "${searchQuery}"`;
+            } else if (activeSubject !== 'All') {
+                countSpan.textContent = `${recordedLessons.length} ${activeSubject} Videos`;
+            } else {
+                countSpan.textContent = `${recordedLessons.length} Syllabus Video Classes`;
+            }
+        }
 
         // Render Recorded Video Lessons
         if (!recordedLessons.length) {
@@ -567,10 +718,15 @@ window.studyEngine = (function () {
                 <div style="grid-column: 1 / -1; width: 100%; box-sizing: border-box;">
                     <div class="empty-state-box">
                         <div class="empty-state-icon">
-                            <i class="fas fa-video"></i>
+                            <i class="fas ${searchQuery ? 'fa-search' : 'fa-video'}"></i>
                         </div>
-                        <h3 class="empty-state-title">No Video Lessons in ${escapeHtml(activeSubject)}</h3>
-                        <p class="empty-state-desc">Syllabus video classes added by teachers in the admin panel will appear here.</p>
+                        <h3 class="empty-state-title">${searchQuery ? `No Videos Found for "${escapeHtml(searchQuery)}"` : `No Video Lessons in ${escapeHtml(activeSubject)}`}</h3>
+                        <p class="empty-state-desc">${searchQuery ? 'Try searching for a different keyword or topic name.' : 'Syllabus video classes added by teachers in the admin panel will appear here.'}</p>
+                        ${searchQuery ? `
+                            <button onclick="studyEngine.clearSearch()" class="cta-button" style="margin-top:14px; padding:8px 18px; font-size:0.88rem; border-radius:20px; cursor:pointer;">
+                                <i class="fas fa-times-circle"></i> Clear Search Filter
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -581,6 +737,10 @@ window.studyEngine = (function () {
             const isDone = completedLessonIds.has(lesson.id);
             const ytId = extractYouTubeId(lesson.video_url || '');
             const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
+
+            // Get subject styling for badge
+            const subObj = allSubjectList.find(s => s.name.toLowerCase() === (lesson.subject || '').toLowerCase());
+            const badgeColor = subObj ? subObj.color : 'var(--class-color, #2563eb)';
 
             return `
                 <div class="video-card ${isDone ? 'lesson-completed' : ''}" id="lesson-card-${lesson.id}">
@@ -596,20 +756,20 @@ window.studyEngine = (function () {
                             </div>
                         `}
                         <div class="thumb-overlay"></div>
-                        <span class="thumb-badge-subject">${escapeHtml(lesson.subject)}</span>
+                        <span class="thumb-badge-subject" style="border-color:${badgeColor}; color:#ffffff; background:rgba(15,23,42,0.88);">${escapeHtml(lesson.subject)}</span>
                         <div class="thumb-play-btn">
                             <i class="fas fa-play"></i>
                         </div>
-                        <span class="thumb-badge-duration"><i class="fas fa-video"></i> Video Class</span>
-                        ${isDone ? '<span class="thumb-badge-done"><i class="fas fa-check"></i> Completed</span>' : ''}
+                        <span class="thumb-badge-duration"><i class="far fa-clock"></i> 15 Mins</span>
+                        ${isDone ? '<span class="thumb-badge-done"><i class="fas fa-check-circle"></i> Mastered</span>' : ''}
                     </div>
                     <div class="video-info">
-                        <span class="video-subject-pill">${escapeHtml(lesson.subject)}</span>
+                        <span class="video-subject-pill" style="color:${badgeColor};">${escapeHtml(lesson.subject)}</span>
                         <h3 class="video-title" title="${escapeHtml(lesson.title)}">${escapeHtml(lesson.title)}</h3>
                         <p class="video-description">${escapeHtml(lesson.description || 'Comprehensive conceptual video class.')}</p>
                         <div class="video-card-actions">
                             <button class="watch-btn" onclick="studyEngine.playLesson(${lesson.id})">
-                                <i class="fas fa-play"></i> Watch Video
+                                <i class="fas fa-play"></i> Watch Lesson
                             </button>
                             <button class="btn-complete-toggle ${isDone ? 'is-completed' : ''}" id="btn-complete-${lesson.id}" onclick="studyEngine.toggleComplete(${lesson.id})">
                                 <i class="fas fa-${isDone ? 'check-circle' : 'check'}"></i> ${isDone ? 'Done' : 'Mark Done'}
@@ -625,7 +785,7 @@ window.studyEngine = (function () {
         const materialsGrid = document.querySelector('.materials-grid');
         if (!materialsGrid) return;
 
-        // Ensure filter container exists immediately before .materials-grid (outside grid to avoid grid blowout)
+        // Ensure filter container exists immediately before .materials-grid
         let filterContainer = document.getElementById('notesFilterContainer');
         if (!filterContainer) {
             filterContainer = document.createElement('div');
@@ -637,42 +797,72 @@ window.studyEngine = (function () {
 
         let filteredNotes = classNotes;
         if (activeSubject !== 'All') {
-            filteredNotes = classNotes.filter(n => (n.subject || '').toLowerCase() === activeSubject.toLowerCase());
+            filteredNotes = filteredNotes.filter(n => (n.subject || '').toLowerCase() === activeSubject.toLowerCase());
+        }
+
+        if (searchQuery) {
+            filteredNotes = filteredNotes.filter(n => 
+                (n.title || '').toLowerCase().includes(searchQuery) ||
+                (n.content || '').toLowerCase().includes(searchQuery) ||
+                (n.subject || '').toLowerCase().includes(searchQuery)
+            );
+        }
+
+        // Update count badge in section header
+        const countSpan = document.querySelector('#materials .video-count');
+        if (countSpan) {
+            if (searchQuery) {
+                countSpan.textContent = `${filteredNotes.length} Found for "${searchQuery}"`;
+            } else if (activeSubject !== 'All') {
+                countSpan.textContent = `${filteredNotes.length} ${activeSubject} Notes`;
+            } else {
+                countSpan.textContent = `${filteredNotes.length} Class ${currentGrade} Revision Notes`;
+            }
         }
 
         if (filteredNotes && filteredNotes.length > 0) {
-            materialsGrid.innerHTML = filteredNotes.map(note => `
-                <div class="material-card">
-                    <div>
-                        <div class="material-icon">
-                            <i class="fas fa-file-pdf" style="color:#ef4444;"></i>
+            materialsGrid.innerHTML = filteredNotes.map(note => {
+                const subObj = allSubjectList.find(s => s.name.toLowerCase() === (note.subject || '').toLowerCase());
+                const accentColor = subObj ? subObj.color : 'var(--class-color, #2563eb)';
+
+                return `
+                    <div class="material-card" style="border-left: 4px solid ${accentColor} !important;">
+                        <div>
+                            <div class="material-icon" style="background:${accentColor}15; color:${accentColor};">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <span style="font-size:0.78rem; font-weight:800; color:${accentColor}; text-transform:uppercase; letter-spacing:0.4px;">${escapeHtml(note.subject)}</span>
+                            <h3 class="material-title">${escapeHtml(note.title)}</h3>
+                            ${note.content ? `<p class="material-desc">${escapeHtml(note.content.slice(0, 110))}${note.content.length > 110 ? '...' : ''}</p>` : ''}
                         </div>
-                        <span style="font-size:0.78rem; font-weight:800; color:var(--class-color, #2563eb); text-transform:uppercase; letter-spacing:0.4px;">${escapeHtml(note.subject)}</span>
-                        <h3 class="material-title">${escapeHtml(note.title)}</h3>
-                        ${note.content ? `<p class="material-desc">${escapeHtml(note.content.slice(0, 100))}${note.content.length > 100 ? '...' : ''}</p>` : ''}
+                        <div class="material-card-actions">
+                            ${note.file_url ? `
+                                <a href="${escapeHtml(note.file_url)}" target="_blank" rel="noopener" class="watch-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box;">
+                                    <i class="fas fa-file-download"></i> Download / View PDF
+                                </a>
+                            ` : `
+                                <button class="watch-btn" onclick="studyEngine.viewCustomNote(${note.id})" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+                                    <i class="fas fa-book-open"></i> Read Study Notes
+                                </button>
+                            `}
+                        </div>
                     </div>
-                    <div class="material-card-actions">
-                        ${note.file_url ? `
-                            <a href="${escapeHtml(note.file_url)}" target="_blank" rel="noopener" class="watch-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box;">
-                                <i class="fas fa-file-download"></i> Download / View PDF
-                            </a>
-                        ` : `
-                            <button class="watch-btn" onclick="studyEngine.viewCustomNote(${note.id})" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
-                                <i class="fas fa-book-open"></i> Read Study Notes
-                            </button>
-                        `}
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             materialsGrid.innerHTML = `
                 <div style="grid-column: 1 / -1; width: 100%; box-sizing: border-box;">
                     <div class="empty-state-box">
                         <div class="empty-state-icon" style="background:#fef2f2; color:#ef4444;">
-                            <i class="fas fa-file-pdf"></i>
+                            <i class="fas ${searchQuery ? 'fa-search' : 'fa-file-pdf'}"></i>
                         </div>
-                        <h3 class="empty-state-title">No Study Notes Published for ${escapeHtml(activeSubject)}</h3>
-                        <p class="empty-state-desc">Chapter formulas, revision notes, and PDF download links will appear here once uploaded by the admin.</p>
+                        <h3 class="empty-state-title">${searchQuery ? `No Study Notes Found for "${escapeHtml(searchQuery)}"` : `No Study Notes Published for ${escapeHtml(activeSubject)}`}</h3>
+                        <p class="empty-state-desc">${searchQuery ? 'Try searching with another keyword.' : 'Chapter formulas, revision notes, and PDF download links will appear here once uploaded.'}</p>
+                        ${searchQuery ? `
+                            <button onclick="studyEngine.clearSearch()" class="cta-button" style="margin-top:14px; padding:8px 18px; font-size:0.88rem; border-radius:20px; cursor:pointer;">
+                                <i class="fas fa-times-circle"></i> Clear Search Filter
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -959,6 +1149,7 @@ window.studyEngine = (function () {
             else completedLessonIds.delete(id);
 
             renderLessons();
+            try { enhanceHeroSection(); } catch(e) {}
         } catch (e) {
             alert('Failed to update lesson progress.');
         }
@@ -1162,6 +1353,7 @@ window.studyEngine = (function () {
         toggleComplete,
         viewCustomNote,
         setSubjectFilter,
+        clearSearch,
         setupQuiz,
         togglePlayerFullscreen,
         exitPlayerFullscreen: exitElemFullscreen,

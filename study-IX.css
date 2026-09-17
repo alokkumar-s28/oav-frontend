@@ -7,8 +7,8 @@
     --dark: #1a202c;
     --text: #2d3748;
     --text-light: #718096;
-    --class-color: rgb(110, 5, 5);
-    --class-bg: linear-gradient(135deg, #9c0202, #3033c5);
+    --class-color: #ea580c;
+    --class-bg: linear-gradient(135deg, #c2410c 0%, #f97316 100%);
 }
 
 * {
