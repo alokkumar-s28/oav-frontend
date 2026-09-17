@@ -71,6 +71,19 @@ async function adminFetch(url, options = {}) {
     return data;
 }
 
+function updateAdminInspectorVisibility(isUnlocked) {
+    const previewBar = document.getElementById("adminStudyPreviewBar");
+    const headerLinks = document.getElementById("adminHeaderStudyLinks");
+    const videoQuickVisit = document.getElementById("quickVisitVideoClassSelect");
+    const noteQuickVisit = document.getElementById("quickVisitNoteClassSelect");
+
+    const displayVal = isUnlocked ? "flex" : "none";
+    if (previewBar) previewBar.style.display = displayVal;
+    if (headerLinks) headerLinks.style.display = displayVal;
+    if (videoQuickVisit && videoQuickVisit.parentElement) videoQuickVisit.parentElement.style.display = isUnlocked ? "flex" : "none";
+    if (noteQuickVisit && noteQuickVisit.parentElement) noteQuickVisit.parentElement.style.display = isUnlocked ? "flex" : "none";
+}
+
 // --- Load Admin Records ---
 async function loadAdminData() {
     let token = adminTokenInput ? adminTokenInput.value.trim() : '';
@@ -80,12 +93,14 @@ async function loadAdminData() {
     }
 
     if (!token) {
+        updateAdminInspectorVisibility(false);
         statusMessage.style.color = "#dc2626";
         statusMessage.textContent = "🔒 Please enter the administrator password to unlock.";
         return;
     }
 
     if (token !== "oav-mantra.2026") {
+        updateAdminInspectorVisibility(false);
         statusMessage.style.color = "#dc2626";
         statusMessage.textContent = "❌ Incorrect password. Access denied.";
         alert("❌ Incorrect admin password. Please try again.");
@@ -98,6 +113,7 @@ async function loadAdminData() {
     try {
         localStorage.setItem("oav_admin_token", token);
         sessionStorage.setItem("oav_admin_token", token);
+        updateAdminInspectorVisibility(true);
 
         const [overview, paymentsRes, studentsRes, lessonsRes, notesRes] = await Promise.all([
             adminFetch("/api/admin/overview"),
@@ -809,11 +825,13 @@ function bootAdmin() {
     const savedToken = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
     if (savedToken && savedToken === "oav-mantra.2026") {
         if (adminTokenInput) adminTokenInput.value = savedToken;
+        updateAdminInspectorVisibility(true);
         loadAdminData();
     } else {
         if (adminTokenInput) adminTokenInput.value = "";
         statusMessage.style.color = "#64748b";
         statusMessage.textContent = "🔒 Enter admin password and click Unlock.";
+        updateAdminInspectorVisibility(false);
     }
 
     // Real-time Video Link Detector & Validator

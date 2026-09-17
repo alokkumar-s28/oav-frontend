@@ -199,10 +199,18 @@ window.studyEngine = (function () {
         try { setupAdminPreviewBanner(); } catch (e) { console.error("setupAdminPreviewBanner err:", e); }
     }
 
+    function isDeviceAdminUnlocked() {
+        try {
+            const token = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
+            return Boolean(token && token === "oav-mantra.2026");
+        } catch(e) {
+            return false;
+        }
+    }
+
     function setupAdminPreviewBanner() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const isPreview = urlParams.get('preview') === 'true' || Boolean(sessionStorage.getItem('oav_admin_token') || localStorage.getItem('oav_admin_token'));
-        if (!isPreview || document.getElementById('adminFloatingPreviewBar')) return;
+        // STRICT DEVICE CHECK: ONLY show on the specific device where the admin panel has been unlocked!
+        if (!isDeviceAdminUnlocked() || document.getElementById('adminFloatingPreviewBar')) return;
 
         const banner = document.createElement('div');
         banner.id = 'adminFloatingPreviewBar';
@@ -213,15 +221,15 @@ window.studyEngine = (function () {
                     <i class="fas fa-shield-alt"></i> ADMIN INSPECTOR
                 </span>
                 <span style="color:#ffffff;">Inspecting Class ${escapeHtml(currentGrade)} Study Page</span>
-                <span style="color:#94a3b8; font-size:0.76rem;">(Regular students only see their single enrolled class)</span>
+                <span style="color:#94a3b8; font-size:0.76rem;">(Visible only on this device because Admin Panel is unlocked)</span>
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                 <span style="color:#93c5fd; font-size:0.78rem;">Inspect Other Class:</span>
-                <a href="study-VI.html?preview=true" style="color:${currentGrade==='VI'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VI'?'#2563eb':'rgba(255,255,255,0.1)'};">VI</a>
-                <a href="study-VII.html?preview=true" style="color:${currentGrade==='VII'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VII'?'#059669':'rgba(255,255,255,0.1)'};">VII</a>
-                <a href="study-VIII.html?preview=true" style="color:${currentGrade==='VIII'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VIII'?'#7c3aed':'rgba(255,255,255,0.1)'};">VIII</a>
-                <a href="study-IX.html?preview=true" style="color:${currentGrade==='IX'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='IX'?'#ea580c':'rgba(255,255,255,0.1)'};">IX</a>
-                <a href="study-X.html?preview=true" style="color:${currentGrade==='X'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='X'?'#dc2626':'rgba(255,255,255,0.1)'};">X</a>
+                <a href="study-VI.html" style="color:${currentGrade==='VI'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VI'?'#2563eb':'rgba(255,255,255,0.1)'};">VI</a>
+                <a href="study-VII.html" style="color:${currentGrade==='VII'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VII'?'#059669':'rgba(255,255,255,0.1)'};">VII</a>
+                <a href="study-VIII.html" style="color:${currentGrade==='VIII'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='VIII'?'#7c3aed':'rgba(255,255,255,0.1)'};">VIII</a>
+                <a href="study-IX.html" style="color:${currentGrade==='IX'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='IX'?'#ea580c':'rgba(255,255,255,0.1)'};">IX</a>
+                <a href="study-X.html" style="color:${currentGrade==='X'?'#ffffff':'#94a3b8'}; text-decoration:none; padding:3px 8px; border-radius:4px; font-weight:700; background:${currentGrade==='X'?'#dc2626':'rgba(255,255,255,0.1)'};">X</a>
                 <a href="admin.html" style="margin-left:8px; background:#f8fafc; color:#0f172a; text-decoration:none; padding:4px 12px; border-radius:6px; font-size:0.78rem; font-weight:700; display:inline-flex; align-items:center; gap:5px; border:1px solid #cbd5e1;">
                     <i class="fas fa-arrow-left"></i> Return to Admin Panel
                 </a>
@@ -428,8 +436,8 @@ window.studyEngine = (function () {
     }
 
     async function verifyAuth() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const isPreview = urlParams.get('preview') === 'true' || Boolean(sessionStorage.getItem('oav_admin_token') || localStorage.getItem('oav_admin_token'));
+        // STRICT DEVICE CHECK: Inspection / preview is ONLY active on the device where Admin Panel is unlocked
+        const isAdminUnlocked = isDeviceAdminUnlocked();
 
         try {
             const res = await fetch(`${API_BASE}/api/student/me`, { credentials: "include" });
@@ -452,8 +460,8 @@ window.studyEngine = (function () {
         const userPill = document.getElementById('userPill');
 
         if (currentStudent) {
-            // Enforce single-class access: paid student only accesses their registered class
-            if (currentStudent.student_class && !isPreview) {
+            // Enforce single-class access: paid student only accesses their registered class unless device is unlocked by administrator
+            if (currentStudent.student_class && !isAdminUnlocked) {
                 const enrolledClass = String(currentStudent.student_class).toUpperCase().replace(/CLASS/i, '').trim();
                 const classNormalMap = { "6": "VI", "7": "VII", "8": "VIII", "9": "IX", "10": "X", "VI": "VI", "VII": "VII", "VIII": "VIII", "IX": "IX", "X": "X" };
                 const myClass = classNormalMap[enrolledClass] || enrolledClass;
@@ -483,10 +491,10 @@ window.studyEngine = (function () {
             `;
             if (authSlot) authSlot.innerHTML = studentHtml;
             if (userPill) userPill.innerHTML = "";
-        } else if (isPreview) {
+        } else if (isAdminUnlocked) {
             const previewHtml = `
-                <span style="background:#fef3c7; color:#92400e; font-size:0.8rem; font-weight:700; padding:4px 10px; border-radius:12px;">
-                    <i class="fas fa-shield-alt"></i> Admin Preview
+                <span style="background:#fef3c7; color:#92400e; font-size:0.8rem; font-weight:700; padding:4px 10px; border-radius:12px; display:inline-flex; align-items:center; gap:5px; border:1px solid #fcd34d;">
+                    <i class="fas fa-shield-alt"></i> Admin Inspector
                 </span>
             `;
             if (authSlot) authSlot.innerHTML = previewHtml;
