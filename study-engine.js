@@ -189,6 +189,8 @@ window.studyEngine = (function () {
         try { renderLessons(); } catch (e) { console.error("renderLessons err:", e); }
         try { renderNotes(); } catch (e) { console.error("renderNotes err:", e); }
         try { renderSubjects(); } catch (e) { console.error("renderSubjects err:", e); }
+        try { renderSubjectCapsules(); } catch (e) { console.error("renderSubjectCapsules err:", e); }
+        try { renderContentSwitcher(); } catch (e) { console.error("renderContentSwitcher err:", e); }
         try { renderLiveSchedule(); } catch (e) { console.error("renderLiveSchedule err:", e); }
         try { setupModals(); } catch (e) { console.error("setupModals err:", e); }
         try { setupQuiz(); } catch (e) { console.error("setupQuiz err:", e); }
@@ -622,11 +624,163 @@ window.studyEngine = (function () {
         }
     ];
 
+    let activeContentTab = 'all'; // 'all' | 'videos' | 'materials' | 'quiz' | 'live'
+
+    function setContentTab(tab, shouldScroll = false) {
+        activeContentTab = tab;
+        const sections = {
+            videos: document.getElementById('videos'),
+            materials: document.getElementById('materials'),
+            quiz: document.getElementById('quiz'),
+            subjects: document.getElementById('subjects'),
+            live: document.getElementById('live')
+        };
+
+        if (tab === 'all') {
+            Object.values(sections).forEach(s => { if (s) s.classList.remove('is-tab-hidden'); });
+        } else {
+            Object.keys(sections).forEach(key => {
+                const s = sections[key];
+                if (!s) return;
+                if (key === tab) {
+                    s.classList.remove('is-tab-hidden');
+                } else {
+                    s.classList.add('is-tab-hidden');
+                }
+            });
+        }
+
+        // Update active tab buttons
+        document.querySelectorAll('.content-switcher-tab').forEach(btn => {
+            const btnTab = btn.getAttribute('data-tab');
+            if (btnTab === tab) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        if (shouldScroll) {
+            const switcher = document.getElementById('studyContentSwitcher');
+            if (switcher) {
+                switcher.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    function renderSubjectCapsules() {
+        let container = document.getElementById('studySubjectCapsules');
+        const mainContent = document.querySelector('.main-content');
+        if (!mainContent) return;
+
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'studySubjectCapsules';
+            container.className = 'subject-capsules-wrapper';
+            mainContent.prepend(container);
+        }
+
+        const totalItems = classLessons.filter(l => l.lesson_type !== 'live').length + classNotes.length;
+
+        container.innerHTML = `
+            <div class="subject-capsules-header">
+                <span class="subject-capsules-title">
+                    <i class="fas fa-shapes" style="color:var(--class-color, #2563eb);"></i> Filter by Academic Subject
+                </span>
+                ${activeSubject !== 'All' ? `
+                    <button onclick="studyEngine.setSubjectFilter('All')" style="background:transparent; border:none; color:var(--class-color, #2563eb); font-size:0.8rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="fas fa-undo"></i> Show All (${totalItems})
+                    </button>
+                ` : ''}
+            </div>
+            <div class="subject-capsules-track">
+                <button class="subject-capsule-item ${activeSubject.toLowerCase() === 'all' ? 'active' : ''}" 
+                        style="--capsule-color:var(--class-color, #2563eb); --capsule-glow:rgba(37,99,235,0.4);" 
+                        onclick="studyEngine.setSubjectFilter('All')">
+                    <div class="subject-capsule-icon"><i class="fas fa-star" style="color:#f59e0b;"></i></div>
+                    <span class="subject-capsule-name">All Subjects</span>
+                    <span class="subject-capsule-count">${totalItems}</span>
+                </button>
+                ${allSubjectList.map(sub => {
+                    const count = classLessons.filter(l => (l.subject || '').toLowerCase() === sub.name.toLowerCase()).length +
+                                  classNotes.filter(n => (n.subject || '').toLowerCase() === sub.name.toLowerCase()).length;
+                    const isSel = activeSubject.toLowerCase() === sub.name.toLowerCase();
+                    return `
+                        <button class="subject-capsule-item ${isSel ? 'active' : ''}" 
+                                style="--capsule-color:${sub.color}; --capsule-bg:${sub.bgGradient}; --capsule-glow:${sub.color}66;" 
+                                onclick="studyEngine.setSubjectFilter('${escapeHtml(sub.name)}')">
+                            <div class="subject-capsule-icon">
+                                ${sub.iconText ? `<span style="font-family:'Noto Sans Devanagari', 'Kohinoor Devanagari', 'Nirmala UI', sans-serif; font-weight:800; font-size:0.95rem;">${sub.iconText}</span>` : `<i class="fas ${sub.icon}"></i>`}
+                            </div>
+                            <span class="subject-capsule-name">${escapeHtml(sub.name)}</span>
+                            <span class="subject-capsule-count">${count}</span>
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    function renderContentSwitcher() {
+        let container = document.getElementById('studyContentSwitcher');
+        const mainContent = document.querySelector('.main-content');
+        if (!mainContent) return;
+
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'studyContentSwitcher';
+            container.className = 'study-content-switcher-bar';
+            
+            const capsules = document.getElementById('studySubjectCapsules');
+            if (capsules && capsules.nextSibling) {
+                mainContent.insertBefore(container, capsules.nextSibling);
+            } else {
+                mainContent.prepend(container);
+            }
+        }
+
+        let filteredLessons = classLessons;
+        let filteredNotes = classNotes;
+        if (activeSubject !== 'All') {
+            filteredLessons = filteredLessons.filter(l => (l.subject || '').toLowerCase() === activeSubject.toLowerCase());
+            filteredNotes = filteredNotes.filter(n => (n.subject || '').toLowerCase() === activeSubject.toLowerCase());
+        }
+
+        const vCount = filteredLessons.filter(l => l.lesson_type !== 'live').length;
+        const nCount = filteredNotes.length;
+        const liveCount = classLessons.filter(l => l.lesson_type === 'live').length;
+
+        container.innerHTML = `
+            <button type="button" class="content-switcher-tab ${activeContentTab === 'all' ? 'active' : ''}" data-tab="all" onclick="studyEngine.setContentTab('all')">
+                <i class="fas fa-layer-group"></i> <span>All Content</span>
+            </button>
+            <button type="button" class="content-switcher-tab ${activeContentTab === 'videos' ? 'active' : ''}" data-tab="videos" onclick="studyEngine.setContentTab('videos', true)">
+                <i class="fas fa-play-circle"></i> <span>Videos</span>
+                <span class="content-switcher-badge">${vCount}</span>
+            </button>
+            <button type="button" class="content-switcher-tab ${activeContentTab === 'materials' ? 'active' : ''}" data-tab="materials" onclick="studyEngine.setContentTab('materials', true)">
+                <i class="fas fa-file-alt"></i> <span>Notes & PDFs</span>
+                <span class="content-switcher-badge">${nCount}</span>
+            </button>
+            <button type="button" class="content-switcher-tab ${activeContentTab === 'quiz' ? 'active' : ''}" data-tab="quiz" onclick="studyEngine.setContentTab('quiz', true)">
+                <i class="fas fa-award"></i> <span>Quiz</span>
+            </button>
+            ${liveCount > 0 ? `
+                <button type="button" class="content-switcher-tab ${activeContentTab === 'live' ? 'active' : ''}" data-tab="live" onclick="studyEngine.setContentTab('live', true)" style="color:#dc2626;">
+                    <i class="fas fa-broadcast-tower"></i> <span>Live</span>
+                    <span class="content-switcher-badge" style="background:#fee2e2; color:#dc2626;">${liveCount}</span>
+                </button>
+            ` : ''}
+        `;
+    }
+
     function setSubjectFilter(subj) {
         activeSubject = subj;
         renderLessons();
         renderNotes();
         renderSubjects();
+        renderSubjectCapsules();
+        renderContentSwitcher();
     }
 
     function renderSubjectFilterBar(containerId) {
@@ -918,32 +1072,56 @@ window.studyEngine = (function () {
         const note = classNotes.find(n => n.id === id);
         if (!note) return;
 
-        const win = window.open('', '_blank');
-        win.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>${escapeHtml(note.title)} - OAV Mantra</title>
-                <style>
-                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #0f172a; line-height: 1.7; max-width: 800px; margin: 0 auto; }
-                    .header { border-bottom: 2px solid #2563eb; padding-bottom: 16px; margin-bottom: 24px; }
-                    .header h1 { margin: 0; color: #1e3a8a; }
-                    .content { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px; white-space: pre-wrap; font-size: 1rem; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>${escapeHtml(note.title)}</h1>
-                    <p style="color:#64748b; margin:4px 0 0;">Class ${escapeHtml(note.student_class)} • ${escapeHtml(note.subject)} • OAV Mantra Classes</p>
+        let modal = document.getElementById('notesReaderModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'notesReaderModal';
+            modal.className = 'notes-reader-modal';
+            modal.innerHTML = `
+                <div class="notes-reader-card">
+                    <div class="notes-reader-header">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span id="noteReaderBadge" style="background:#eff6ff; color:#2563eb; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:6px; text-transform:uppercase;">Class Notes</span>
+                            <h3 id="noteReaderTitle" style="margin:0; font-size:1.15rem; color:#0f172a; font-weight:700;">Note Title</h3>
+                        </div>
+                        <button onclick="studyEngine.closeNoteModal()" style="background:transparent; border:none; font-size:1.6rem; color:#64748b; cursor:pointer; line-height:1;" aria-label="Close notes">&times;</button>
+                    </div>
+                    <div class="notes-reader-body" id="noteReaderBody"></div>
+                    <div class="notes-reader-footer">
+                        <span style="font-size:0.8rem; color:#64748b;"><i class="fas fa-graduation-cap"></i> OAV Mantra Smart Study Notes</span>
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="window.print()" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.85rem; display:inline-flex; align-items:center; gap:6px;">
+                                <i class="fas fa-print"></i> Print Notes
+                            </button>
+                            <button onclick="studyEngine.closeNoteModal()" style="background:#2563eb; color:#ffffff; border:none; padding:8px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.85rem;">
+                                Done Reading
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="content">${escapeHtml(note.content || 'Detailed notes for revision.')}</div>
-                <div style="margin-top:24px; text-align:center;">
-                    <button onclick="window.print()" style="background:#2563eb; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; cursor:pointer;">Print / Save as PDF</button>
-                </div>
-            </body>
-            </html>
-        `);
-        win.document.close();
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeNoteModal();
+            });
+        }
+
+        const titleElem = document.getElementById('noteReaderTitle');
+        const badgeElem = document.getElementById('noteReaderBadge');
+        const bodyElem = document.getElementById('noteReaderBody');
+
+        if (titleElem) titleElem.textContent = note.title;
+        if (badgeElem) badgeElem.textContent = `${note.subject} • Class ${currentGrade}`;
+        if (bodyElem) bodyElem.textContent = note.content || 'No text content available for this revision note.';
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeNoteModal() {
+        const modal = document.getElementById('notesReaderModal');
+        if (modal) modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
     }
 
     let currentActiveLesson = null;
@@ -1284,12 +1462,24 @@ window.studyEngine = (function () {
             });
         }
         document.addEventListener('keydown', e => {
+            const noteModal = document.getElementById('notesReaderModal');
             if (modal && modal.classList.contains('active')) {
                 if (e.key === 'Escape') {
                     closeVideoModal();
                 } else if ((e.key === 'f' || e.key === 'F') && !['input', 'textarea'].includes((document.activeElement || {}).tagName?.toLowerCase())) {
                     e.preventDefault();
                     togglePlayerFullscreen();
+                }
+            } else if (noteModal && noteModal.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeNoteModal();
+                }
+            } else if (e.key === '/' && !['input', 'textarea'].includes((document.activeElement || {}).tagName?.toLowerCase())) {
+                const searchInput = document.getElementById('studySearchInput');
+                if (searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
                 }
             }
         });
@@ -1479,6 +1669,10 @@ window.studyEngine = (function () {
         playNextLesson,
         toggleComplete,
         viewCustomNote,
+        closeNoteModal,
+        setContentTab,
+        renderContentSwitcher,
+        renderSubjectCapsules,
         setSubjectFilter,
         clearSearch,
         setupQuiz,
