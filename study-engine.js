@@ -1128,23 +1128,26 @@ window.studyEngine = (function () {
     let nextLessonId = null;
 
     function syncPlayerMasteredBtn(isDone) {
-        const btn = document.getElementById('playerMasteredBtn');
-        const lbl = document.getElementById('playerMasteredLabel');
-        if (btn) {
+        const pairs = [
+            { btn: document.getElementById('playerMasteredBtn'), lbl: document.getElementById('playerMasteredLabel') },
+            { btn: document.getElementById('topMasteredBtn'), lbl: document.getElementById('topMasteredLabel') }
+        ];
+        pairs.forEach(p => {
+            if (!p.btn) return;
             if (isDone) {
-                btn.classList.add('is-done');
-                btn.setAttribute('title', 'Lesson Mastered! Click to unmark');
-                if (lbl) lbl.textContent = 'Mastered ✓';
-                const icon = btn.querySelector('i');
+                p.btn.classList.add('is-done');
+                p.btn.setAttribute('title', 'Lesson Mastered! Click to unmark');
+                if (p.lbl) p.lbl.textContent = 'Mastered ✓';
+                const icon = p.btn.querySelector('i');
                 if (icon) icon.className = 'fas fa-check-circle';
             } else {
-                btn.classList.remove('is-done');
-                btn.setAttribute('title', 'Mark this lesson as mastered');
-                if (lbl) lbl.textContent = 'Mark Mastered';
-                const icon = btn.querySelector('i');
+                p.btn.classList.remove('is-done');
+                p.btn.setAttribute('title', 'Mark this lesson as mastered');
+                if (p.lbl) p.lbl.textContent = 'Mark Mastered';
+                const icon = p.btn.querySelector('i');
                 if (icon) icon.className = 'far fa-circle';
             }
-        }
+        });
     }
 
     async function togglePlayerMastered() {
@@ -1160,28 +1163,102 @@ window.studyEngine = (function () {
         }
     }
 
+    function ensureTopPlayerStage() {
+        let stage = document.getElementById('topVideoPlayerStage');
+        if (!stage) {
+            const videosSection = document.getElementById('videos');
+            if (videosSection) {
+                stage = document.createElement('div');
+                stage.id = 'topVideoPlayerStage';
+                stage.className = 'top-video-stage';
+                stage.style.display = 'none';
+
+                stage.innerHTML = `
+                    <div class="top-video-stage-inner">
+                        <div class="top-video-header">
+                            <div class="top-video-header-left">
+                                <div class="top-video-badges">
+                                    <span class="top-video-grade-pill" id="topGradeBadge">Class ${escapeHtml(currentGrade)}</span>
+                                    <span class="top-video-subject-pill" id="topSubjectBadge">Subject</span>
+                                    <span class="top-video-status-pill"><i class="fas fa-play"></i> Now Playing</span>
+                                </div>
+                                <h3 class="top-video-title" id="topVideoTitle">Topic Title</h3>
+                            </div>
+                            <button type="button" class="top-video-close-btn" onclick="studyEngine.closeTopPlayer()" title="Close Player" aria-label="Close Video Player">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="top-video-viewport" id="topVideoViewport"></div>
+                        <div class="top-video-toolbar">
+                            <div class="top-video-actions-left">
+                                <button type="button" id="topMasteredBtn" class="top-dock-btn top-btn-mastered" onclick="studyEngine.togglePlayerMastered()" title="Mark this lesson as mastered">
+                                    <i class="far fa-circle"></i> <span id="topMasteredLabel">Mark Mastered</span>
+                                </button>
+                                <button type="button" class="top-dock-btn top-btn-secondary" onclick="studyEngine.reloadPlayer()" title="Restart video from beginning">
+                                    <i class="fas fa-redo"></i> <span>Replay</span>
+                                </button>
+                                <button type="button" class="top-dock-btn top-btn-secondary" onclick="studyEngine.switchPlayerStream()" title="Switch CDN stream mode">
+                                    <i class="fas fa-satellite-dish"></i> <span>Stream Mode</span>
+                                </button>
+                            </div>
+                            <div class="top-video-actions-right" id="topUpNextContainer" style="display:none;">
+                                <span class="top-up-next-label"><i class="fas fa-step-forward"></i> Next:</span>
+                                <span class="top-up-next-title" id="topUpNextTitle">Next Topic</span>
+                                <button type="button" class="top-up-next-btn" onclick="studyEngine.playNextLesson()">
+                                    <span>Play</span> <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const filterContainer = document.getElementById('videoFilterContainer');
+                const grid = videosSection.querySelector('.video-grid');
+                if (filterContainer) {
+                    videosSection.insertBefore(stage, filterContainer);
+                } else if (grid) {
+                    videosSection.insertBefore(stage, grid);
+                } else {
+                    videosSection.appendChild(stage);
+                }
+            }
+        }
+        return stage;
+    }
+
+    function closeTopPlayer() {
+        const stage = document.getElementById('topVideoPlayerStage');
+        if (stage) {
+            stage.style.display = 'none';
+            const viewport = document.getElementById('topVideoViewport');
+            if (viewport) viewport.innerHTML = '';
+        }
+        currentActiveLesson = null;
+    }
+
     function playLesson(id) {
         const lesson = classLessons.find(l => l.id === id);
         if (!lesson) return;
 
         currentActiveLesson = lesson;
 
+        const stage = ensureTopPlayerStage();
+        const topVideoTitle = document.getElementById('topVideoTitle');
+        const topGradeBadge = document.getElementById('topGradeBadge');
+        const topSubjectBadge = document.getElementById('topSubjectBadge');
+        const topViewport = document.getElementById('topVideoViewport');
+
+        if (topVideoTitle) topVideoTitle.textContent = lesson.title;
+        if (topGradeBadge) topGradeBadge.textContent = `Class ${currentGrade}`;
+        if (topSubjectBadge) topSubjectBadge.textContent = lesson.subject || 'Lesson';
+
+        // Also update modal elements if modal is present for backward compatibility
         const modalTitle = document.getElementById('modalTitle');
         const modalGradeBadge = document.getElementById('modalGradeBadge');
         const modalSubjectBadge = document.getElementById('modalSubjectBadge');
-        const playerAmbientGlow = document.getElementById('playerAmbientGlow');
-        const modal = document.getElementById('videoModal');
-        const container = document.getElementById('videoContainerBox') || document.querySelector('.video-container');
-
         if (modalTitle) modalTitle.textContent = lesson.title;
         if (modalGradeBadge) modalGradeBadge.textContent = `Class ${currentGrade}`;
         if (modalSubjectBadge) modalSubjectBadge.textContent = lesson.subject || 'Lesson';
-
-        const subObj = allSubjectList.find(s => s.name.toLowerCase() === (lesson.subject || '').toLowerCase());
-        const glowColor = subObj ? subObj.color : 'var(--class-color, #2563eb)';
-        if (playerAmbientGlow) playerAmbientGlow.style.setProperty('--ambient-glow-color', glowColor);
-        const modalContent = document.querySelector('.cinema-modal-content');
-        if (modalContent) modalContent.style.setProperty('--ambient-glow-color', glowColor);
 
         // Sync Mastered state
         syncPlayerMasteredBtn(completedLessonIds.has(lesson.id));
@@ -1194,22 +1271,33 @@ window.studyEngine = (function () {
             nextLesson = recorded[currentIndex + 1];
         }
 
+        // Top Up Next
+        const topUpNextContainer = document.getElementById('topUpNextContainer');
+        const topUpNextTitle = document.getElementById('topUpNextTitle');
+        if (topUpNextContainer && topUpNextTitle) {
+            if (nextLesson) {
+                nextLessonId = nextLesson.id;
+                topUpNextTitle.textContent = `${nextLesson.subject}: ${nextLesson.title}`;
+                topUpNextContainer.style.display = 'flex';
+            } else {
+                nextLessonId = null;
+                topUpNextContainer.style.display = 'none';
+            }
+        }
+
+        // Modal Up Next (if exists)
         const upNextContainer = document.getElementById('playerUpNextContainer');
         const upNextTitle = document.getElementById('playerUpNextTitle');
         if (upNextContainer && upNextTitle) {
             if (nextLesson) {
-                nextLessonId = nextLesson.id;
                 upNextTitle.textContent = `${nextLesson.subject}: ${nextLesson.title}`;
                 upNextContainer.style.display = 'flex';
             } else {
-                nextLessonId = null;
                 upNextContainer.style.display = 'none';
             }
         }
 
         let rawUrl = (lesson.video_url || '').trim();
-
-        // Clean raw iframe pasted code
         const srcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
         let cleanUrl = srcMatch && srcMatch[1] ? srcMatch[1].trim() : rawUrl;
 
@@ -1217,51 +1305,51 @@ window.studyEngine = (function () {
         const isDirectVideo = /\.(mp4|webm|ogg|mov)($|\?)/i.test(cleanUrl);
         const isMeeting = /meet\.google\.com|zoom\.us|teams\.microsoft\.com/i.test(cleanUrl);
 
-        if (container) {
-            if (isMeeting) {
-                container.innerHTML = `
-                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:#0f172a; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; color:#fff;">
-                        <i class="fas fa-video" style="font-size:3.5rem; color:#dc2626; margin-bottom:16px;"></i>
-                        <h3 style="margin:0 0 10px; color:#fff; font-size:1.3rem;">Live Class Session Ready</h3>
-                        <p style="color:#94a3b8; max-width:480px; margin-bottom:20px; font-size:0.95rem;">Join your teacher and classmates in the live meeting room.</p>
-                        <a href="${escapeHtml(cleanUrl)}" target="_blank" rel="noopener" style="background:#dc2626; color:#fff; padding:12px 24px; border-radius:8px; font-weight:700; text-decoration:none; font-size:1rem; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(220,38,38,0.4);">
-                            <i class="fas fa-external-link-alt"></i> Enter Live Class Room Now
-                        </a>
-                    </div>
-                `;
-            } else if (isDirectVideo) {
-                container.innerHTML = `<video id="activePlayerVideo" src="${escapeHtml(cleanUrl)}" controls autoplay playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;"></video>`;
-            } else if (ytId) {
-                const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1`;
-                container.innerHTML = `
-                    <iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none; z-index:1;"></iframe>
-                    <!-- Top Brand Header Bar -->
-                    <div style="position:absolute; top:0; left:0; width:100%; height:44px; background:linear-gradient(to bottom, rgba(15,23,42,0.92), transparent); z-index:10; pointer-events:none; display:flex; align-items:center; justify-content:space-between; padding:0 16px;">
-                        <span style="color:#ffffff; font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;"><i class="fas fa-graduation-cap" style="color:#3b82f6;"></i> OAV Mantra Classes</span>
-                        <span style="background:rgba(37,99,235,0.85); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; text-transform:uppercase;">Class ${escapeHtml(currentGrade)}</span>
-                    </div>
-                    <!-- Bottom-Right Watermark Shield: Completely masks YouTube watermark -->
-                    <div style="position:absolute; bottom:0; right:0; width:120px; height:48px; background:#000000; z-index:10; pointer-events:none; display:flex; align-items:center; justify-content:center; border-top-left-radius:8px;">
-                        <span style="color:#60a5fa; font-size:11px; font-weight:800; letter-spacing:0.5px;"><i class="fas fa-play" style="font-size:9px; margin-right:4px;"></i> OAV CLASS</span>
-                    </div>
-                `;
-            } else if (cleanUrl.includes("drive.google.com/file/d/")) {
-                const embedUrl = cleanUrl.replace(/\/view.*$/, "/preview");
-                container.innerHTML = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
-            } else if (cleanUrl.includes("vimeo.com/")) {
-                const vMatch = cleanUrl.match(/vimeo\.com\/(\d+)/i);
-                const embedUrl = vMatch && vMatch[1] ? `https://player.vimeo.com/video/${vMatch[1]}?autoplay=1` : cleanUrl;
-                container.innerHTML = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
-            } else {
-                container.innerHTML = `<iframe id="videoFrame" src="${escapeHtml(cleanUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
-            }
-            ensureFloatingMinimizeBtn(container);
+        let playerHtml = '';
+        if (isMeeting) {
+            playerHtml = `
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:#0f172a; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; color:#fff;">
+                    <i class="fas fa-video" style="font-size:3.5rem; color:#dc2626; margin-bottom:16px;"></i>
+                    <h3 style="margin:0 0 10px; color:#fff; font-size:1.3rem;">Live Class Session Ready</h3>
+                    <p style="color:#94a3b8; max-width:480px; margin-bottom:20px; font-size:0.95rem;">Join your teacher and classmates in the live meeting room.</p>
+                    <a href="${escapeHtml(cleanUrl)}" target="_blank" rel="noopener" style="background:#dc2626; color:#fff; padding:12px 24px; border-radius:8px; font-weight:700; text-decoration:none; font-size:1rem; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(220,38,38,0.4);">
+                        <i class="fas fa-external-link-alt"></i> Enter Live Class Room Now
+                    </a>
+                </div>
+            `;
+        } else if (isDirectVideo) {
+            playerHtml = `<video id="activePlayerVideo" src="${escapeHtml(cleanUrl)}" controls autoplay playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;"></video>`;
+        } else if (ytId) {
+            // Unobstructed YouTube embed with native fs=1 enabled and NO bottom-right shield
+            const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1&fs=1&enablejsapi=1`;
+            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
+        } else if (cleanUrl.includes("drive.google.com/file/d/")) {
+            const embedUrl = cleanUrl.replace(/\/view.*$/, "/preview");
+            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
+        } else if (cleanUrl.includes("vimeo.com/")) {
+            const vMatch = cleanUrl.match(/vimeo\.com\/(\d+)/i);
+            const embedUrl = vMatch && vMatch[1] ? `https://player.vimeo.com/video/${vMatch[1]}?autoplay=1` : cleanUrl;
+            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
+        } else {
+            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(cleanUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
         }
 
-        if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        if (topViewport) {
+            topViewport.innerHTML = playerHtml;
         }
+
+        // Show top player and smoothly scroll to it
+        if (stage) {
+            stage.style.display = 'block';
+            stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Ensure popup modal is closed & body scroll is free
+        const modal = document.getElementById('videoModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+        document.body.style.overflow = 'auto';
     }
 
     let streamAltIndex = 0;
@@ -1275,11 +1363,11 @@ window.studyEngine = (function () {
 
         streamAltIndex = (streamAltIndex + 1) % 3;
         if (streamAltIndex === 0) {
-            frame.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1&enablejsapi=1`;
+            frame.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1&fs=1&enablejsapi=1`;
         } else if (streamAltIndex === 1) {
-            frame.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1`;
+            frame.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1&fs=1`;
         } else {
-            frame.src = `https://www.youtube.com/embed/${ytId}?feature=oembed&autoplay=1`;
+            frame.src = `https://www.youtube.com/embed/${ytId}?feature=oembed&autoplay=1&fs=1`;
         }
     }
 
@@ -1292,48 +1380,23 @@ window.studyEngine = (function () {
         );
     }
 
-    function ensureFloatingMinimizeBtn(container) {
-        if (!container) return;
-        let btn = container.querySelector('.video-floating-minimize-btn');
-        if (!btn) {
-            btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'video-floating-minimize-btn';
-            btn.id = 'floatingMinimizeBtn';
-            btn.setAttribute('aria-label', 'Minimize / Exit Fullscreen');
-            btn.setAttribute('title', 'Minimize / Exit Fullscreen');
-            btn.onclick = function(e) {
-                if (e) e.stopPropagation();
-                togglePlayerFullscreen();
-            };
-            btn.innerHTML = '<i class="fas fa-compress"></i> Minimize';
-            container.appendChild(btn);
-        }
-    }
+    // Auto-rotate mobile screen to landscape on YouTube native fullscreen
+    function handleFullscreenMobileRotation() {
+        const isFs = isElementFullscreen();
+        const isMobile = /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-    function requestElemFullscreen(elem) {
-        if (!elem) return;
-        const container = document.getElementById('videoContainerBox') || elem;
-        ensureFloatingMinimizeBtn(container);
-
-        try {
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen().catch(function(err) {
-                    console.warn('Native requestFullscreen denied, using CSS fallback:', err);
-                    fallbackFullscreen(container, true);
+        if (isFs) {
+            if (isMobile && screen.orientation && typeof screen.orientation.lock === 'function') {
+                screen.orientation.lock('landscape').catch(function(err) {
+                    console.log('Mobile landscape orientation lock notice:', err);
                 });
-            } else if (elem.webkitRequestFullscreen) {
-                elem.webkitRequestFullscreen();
-            } else if (elem.mozRequestFullScreen) {
-                elem.mozRequestFullScreen();
-            } else if (elem.msRequestFullscreen) {
-                elem.msRequestFullscreen();
-            } else {
-                fallbackFullscreen(container, true);
             }
-        } catch (e) {
-            console.warn('Fullscreen invocation error:', e);
-            fallbackFullscreen(container, true);
+        } else {
+            if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+                try {
+                    screen.orientation.unlock();
+                } catch(e) {}
+            }
         }
     }
 
@@ -1351,59 +1414,22 @@ window.studyEngine = (function () {
         } catch (e) {
             console.warn('Exit fullscreen error:', e);
         }
-        const container = document.getElementById('videoContainerBox');
-        if (container) fallbackFullscreen(container, false);
-        updateFullscreenButtons(false);
-    }
-
-    function fallbackFullscreen(elem, enable) {
-        if (!elem) return;
-        if (enable === undefined) {
-            elem.classList.toggle('is-fullscreen-video');
-        } else if (enable) {
-            elem.classList.add('is-fullscreen-video');
-        } else {
-            elem.classList.remove('is-fullscreen-video');
-        }
-        updateFullscreenButtons(elem.classList.contains('is-fullscreen-video'));
     }
 
     function togglePlayerFullscreen() {
-        const target = document.getElementById('videoContainerBox') || document.getElementById('videoFrame') || document.getElementById('activePlayerVideo');
+        const target = document.getElementById('videoFrame') || document.getElementById('activePlayerVideo') || document.getElementById('topVideoViewport');
         if (!target) return;
-
-        const container = document.getElementById('videoContainerBox') || target;
-        ensureFloatingMinimizeBtn(container);
-
-        if (isElementFullscreen() || container.classList.contains('is-fullscreen-video')) {
+        if (isElementFullscreen()) {
             exitElemFullscreen();
         } else {
-            requestElemFullscreen(target);
+            try {
+                if (target.requestFullscreen) {
+                    target.requestFullscreen().catch(function() {});
+                } else if (target.webkitRequestFullscreen) {
+                    target.webkitRequestFullscreen();
+                }
+            } catch (e) {}
         }
-    }
-
-    function updateFullscreenButtons(isFs) {
-        const container = document.getElementById('videoContainerBox');
-        if (container) {
-            if (isFs) {
-                container.classList.add('is-fullscreen-video');
-                ensureFloatingMinimizeBtn(container);
-            } else {
-                container.classList.remove('is-fullscreen-video');
-            }
-        }
-        const btns = document.querySelectorAll('.btn-player-fullscreen, #playerFullscreenBtn');
-        btns.forEach(function(btn) {
-            if (isFs) {
-                btn.innerHTML = '<i class="fas fa-compress"></i> Minimize';
-                btn.style.background = '#dc2626';
-                btn.setAttribute('title', 'Minimize video');
-            } else {
-                btn.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
-                btn.style.background = '#2563eb';
-                btn.setAttribute('title', 'Fullscreen video');
-            }
-        });
     }
 
     function reloadPlayer() {
@@ -1413,16 +1439,15 @@ window.studyEngine = (function () {
     }
 
     function closeVideoModal() {
+        closeTopPlayer();
         exitElemFullscreen();
         const modal = document.getElementById('videoModal');
         const container = document.getElementById('videoContainerBox');
         if (container) {
-            container.classList.remove('is-fullscreen-video');
             container.innerHTML = '';
         }
         if (modal) modal.classList.remove('active');
         document.body.style.overflow = 'auto';
-        updateFullscreenButtons(false);
     }
 
     async function toggleComplete(id) {
@@ -1466,14 +1491,13 @@ window.studyEngine = (function () {
             if (modal && modal.classList.contains('active')) {
                 if (e.key === 'Escape') {
                     closeVideoModal();
-                } else if ((e.key === 'f' || e.key === 'F') && !['input', 'textarea'].includes((document.activeElement || {}).tagName?.toLowerCase())) {
-                    e.preventDefault();
-                    togglePlayerFullscreen();
                 }
             } else if (noteModal && noteModal.classList.contains('active')) {
                 if (e.key === 'Escape') {
                     closeNoteModal();
                 }
+            } else if (e.key === 'Escape') {
+                closeTopPlayer();
             } else if (e.key === '/' && !['input', 'textarea'].includes((document.activeElement || {}).tagName?.toLowerCase())) {
                 const searchInput = document.getElementById('studySearchInput');
                 if (searchInput) {
@@ -1484,12 +1508,9 @@ window.studyEngine = (function () {
             }
         });
 
-        // Synchronize fullscreen UI state across all vendor implementations
+        // Listen for YouTube native fullscreen and auto-rotate mobile to landscape
         ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(function(evt) {
-            document.addEventListener(evt, function() {
-                var isFs = isElementFullscreen();
-                updateFullscreenButtons(isFs);
-            });
+            document.addEventListener(evt, handleFullscreenMobileRotation);
         });
     }
 
@@ -1680,6 +1701,7 @@ window.studyEngine = (function () {
         exitPlayerFullscreen: exitElemFullscreen,
         reloadPlayer,
         switchPlayerStream,
+        closeTopPlayer,
         closeVideoModal,
         closeModal: closeVideoModal
     };

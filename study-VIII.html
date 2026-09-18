@@ -55,7 +55,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="study-VIII.css">
-    <link rel="stylesheet" href="study-shared.css?v=8.3">
+    <link rel="stylesheet" href="study-shared.css?v=8.4">
 </head>
 <body>
     <!-- Header -->
@@ -214,9 +214,6 @@
             <!-- Modal Video Viewport -->
             <div class="modal-body" style="padding:0; position:relative;">
                 <div class="video-container cinema-video-box" id="videoContainerBox">
-                    <button type="button" class="video-floating-minimize-btn" id="floatingMinimizeBtn" onclick="studyEngine.togglePlayerFullscreen()" title="Minimize / Exit Fullscreen" aria-label="Minimize video">
-                        <i class="fas fa-compress"></i> Minimize
-                    </button>
                     <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
 
@@ -237,9 +234,6 @@
                         <button id="playerMasteredBtn" class="dock-btn dock-btn-mastered" onclick="studyEngine.togglePlayerMastered()" title="Mark this lesson as mastered">
                             <i class="far fa-circle"></i> <span id="playerMasteredLabel">Mark Mastered</span>
                         </button>
-                        <button id="playerFullscreenBtn" class="dock-btn dock-btn-fullscreen btn-player-fullscreen" onclick="studyEngine.togglePlayerFullscreen()" title="Fullscreen mode (Press F)">
-                            <i class="fas fa-expand"></i> <span>Fullscreen</span> <kbd class="kbd-hint">F</kbd>
-                        </button>
                         <button class="dock-btn dock-btn-secondary" onclick="studyEngine.reloadPlayer()" title="Restart video from beginning">
                             <i class="fas fa-redo"></i> <span>Replay</span>
                         </button>
@@ -256,7 +250,7 @@
     </div>
 
     <script src="supabase-client.js?v=4.2"></script>
-    <script src="study-engine.js?v=8.5"></script>
+    <script src="study-engine.js?v=8.6"></script>
     <script src="study-VIII.js"></script>
 </body>
 </html>
