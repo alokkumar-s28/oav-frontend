@@ -931,8 +931,14 @@ window.studyEngine = (function () {
             return;
         }
 
+        // Auto-initialize top video player on page load if none active
+        if (!currentActiveLesson && recordedLessons.length > 0) {
+            playLesson(recordedLessons[0].id, false);
+        }
+
         grid.innerHTML = recordedLessons.map(lesson => {
             const isDone = completedLessonIds.has(lesson.id);
+            const isPlaying = currentActiveLesson && currentActiveLesson.id === lesson.id;
             const ytId = extractYouTubeId(lesson.video_url || '');
             const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
 
@@ -941,8 +947,8 @@ window.studyEngine = (function () {
             const badgeColor = subObj ? subObj.color : 'var(--class-color, #2563eb)';
 
             return `
-                <div class="video-card ${isDone ? 'lesson-completed' : ''}" id="lesson-card-${lesson.id}" style="--card-accent:${badgeColor};">
-                    <div class="video-thumbnail" onclick="studyEngine.playLesson(${lesson.id})">
+                <div class="video-card ${isDone ? 'lesson-completed' : ''} ${isPlaying ? 'is-active-playing' : ''}" id="lesson-card-${lesson.id}" style="--card-accent:${badgeColor};">
+                    <div class="video-thumbnail" onclick="studyEngine.playLesson(${lesson.id}, true)">
                         ${thumbUrl ? `
                             <img src="${thumbUrl}" alt="${escapeHtml(lesson.title)}" class="video-thumb-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="video-thumb-fallback" style="display:none;">
@@ -959,6 +965,7 @@ window.studyEngine = (function () {
                             <i class="fas fa-play"></i>
                         </div>
                         <span class="thumb-badge-duration"><i class="far fa-clock"></i> 15 Mins</span>
+                        ${isPlaying ? '<span class="thumb-badge-active-now"><i class="fas fa-play"></i> Playing</span>' : ''}
                         ${isDone ? '<span class="thumb-badge-done"><i class="fas fa-check-circle"></i> Mastered</span>' : ''}
                     </div>
                     <div class="video-info">
@@ -966,8 +973,8 @@ window.studyEngine = (function () {
                         <h3 class="video-title" title="${escapeHtml(lesson.title)}">${escapeHtml(lesson.title)}</h3>
                         <p class="video-description">${escapeHtml(lesson.description || 'Comprehensive conceptual video class.')}</p>
                         <div class="video-card-actions">
-                            <button class="watch-btn" onclick="studyEngine.playLesson(${lesson.id})">
-                                <i class="fas fa-play"></i> Watch Lesson
+                            <button class="watch-btn" onclick="studyEngine.playLesson(${lesson.id}, true)">
+                                <i class="fas fa-play"></i> ${isPlaying ? 'Watching Now' : 'Watch Lesson'}
                             </button>
                             <button class="btn-complete-toggle ${isDone ? 'is-completed' : ''}" id="btn-complete-${lesson.id}" onclick="studyEngine.toggleComplete(${lesson.id})">
                                 <i class="fas fa-${isDone ? 'check-circle' : 'check'}"></i> ${isDone ? 'Done' : 'Mark Done'}
@@ -1236,7 +1243,7 @@ window.studyEngine = (function () {
         currentActiveLesson = null;
     }
 
-    function playLesson(id) {
+    function playLesson(id, shouldAutoplay = true) {
         const lesson = classLessons.find(l => l.id === id);
         if (!lesson) return;
 
@@ -1251,14 +1258,6 @@ window.studyEngine = (function () {
         if (topVideoTitle) topVideoTitle.textContent = lesson.title;
         if (topGradeBadge) topGradeBadge.textContent = `Class ${currentGrade}`;
         if (topSubjectBadge) topSubjectBadge.textContent = lesson.subject || 'Lesson';
-
-        // Also update modal elements if modal is present for backward compatibility
-        const modalTitle = document.getElementById('modalTitle');
-        const modalGradeBadge = document.getElementById('modalGradeBadge');
-        const modalSubjectBadge = document.getElementById('modalSubjectBadge');
-        if (modalTitle) modalTitle.textContent = lesson.title;
-        if (modalGradeBadge) modalGradeBadge.textContent = `Class ${currentGrade}`;
-        if (modalSubjectBadge) modalSubjectBadge.textContent = lesson.subject || 'Lesson';
 
         // Sync Mastered state
         syncPlayerMasteredBtn(completedLessonIds.has(lesson.id));
@@ -1285,18 +1284,6 @@ window.studyEngine = (function () {
             }
         }
 
-        // Modal Up Next (if exists)
-        const upNextContainer = document.getElementById('playerUpNextContainer');
-        const upNextTitle = document.getElementById('playerUpNextTitle');
-        if (upNextContainer && upNextTitle) {
-            if (nextLesson) {
-                upNextTitle.textContent = `${nextLesson.subject}: ${nextLesson.title}`;
-                upNextContainer.style.display = 'flex';
-            } else {
-                upNextContainer.style.display = 'none';
-            }
-        }
-
         let rawUrl = (lesson.video_url || '').trim();
         const srcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
         let cleanUrl = srcMatch && srcMatch[1] ? srcMatch[1].trim() : rawUrl;
@@ -1318,17 +1305,17 @@ window.studyEngine = (function () {
                 </div>
             `;
         } else if (isDirectVideo) {
-            playerHtml = `<video id="activePlayerVideo" src="${escapeHtml(cleanUrl)}" controls autoplay playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;"></video>`;
+            playerHtml = `<video id="activePlayerVideo" src="${escapeHtml(cleanUrl)}" controls ${shouldAutoplay ? 'autoplay' : ''} playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;"></video>`;
         } else if (ytId) {
             // Unobstructed YouTube embed with native fs=1 enabled and NO bottom-right shield
-            const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1&fs=1&enablejsapi=1`;
+            const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=${shouldAutoplay ? 1 : 0}&rel=0&playsinline=1&fs=1&enablejsapi=1`;
             playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
         } else if (cleanUrl.includes("drive.google.com/file/d/")) {
             const embedUrl = cleanUrl.replace(/\/view.*$/, "/preview");
             playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
         } else if (cleanUrl.includes("vimeo.com/")) {
             const vMatch = cleanUrl.match(/vimeo\.com\/(\d+)/i);
-            const embedUrl = vMatch && vMatch[1] ? `https://player.vimeo.com/video/${vMatch[1]}?autoplay=1` : cleanUrl;
+            const embedUrl = vMatch && vMatch[1] ? `https://player.vimeo.com/video/${vMatch[1]}?autoplay=${shouldAutoplay ? 1 : 0}` : cleanUrl;
             playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
         } else {
             playerHtml = `<iframe id="videoFrame" src="${escapeHtml(cleanUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
@@ -1338,10 +1325,19 @@ window.studyEngine = (function () {
             topViewport.innerHTML = playerHtml;
         }
 
-        // Show top player and smoothly scroll to it
+        // Show top player and smoothly scroll to it if explicitly triggered by user
         if (stage) {
             stage.style.display = 'block';
-            stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (shouldAutoplay) {
+                stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Highlight active card in the grid below the player
+        document.querySelectorAll('.video-card').forEach(c => c.classList.remove('is-active-playing'));
+        const activeCard = document.getElementById(`lesson-card-${lesson.id}`);
+        if (activeCard) {
+            activeCard.classList.add('is-active-playing');
         }
 
         // Ensure popup modal is closed & body scroll is free

@@ -55,7 +55,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="study-IX.css">
-    <link rel="stylesheet" href="study-shared.css?v=8.4">
+    <link rel="stylesheet" href="study-shared.css?v=8.5">
 </head>
 <body>
     <!-- Header -->
@@ -100,11 +100,53 @@
         <!-- Video Lessons -->
         <section class="video-section" id="videos">
             <div class="section-header">
-                <h2 class="section-title">Video Lessons</h2>
+                <h2 class="section-title"><i class="fas fa-play-circle" style="color:var(--class-color, #2563eb);"></i> Video Lessons</h2>
                 <span class="video-count">Syllabus Video Classes</span>
             </div>
+
+            <!-- Active Video Player Stage (Top of Page) -->
+            <div class="top-video-stage" id="topVideoPlayerStage">
+                <div class="top-video-stage-inner">
+                    <div class="top-video-header">
+                        <div class="top-video-header-left">
+                            <div class="top-video-badges">
+                                <span class="top-video-grade-pill" id="topGradeBadge">Class IX</span>
+                                <span class="top-video-subject-pill" id="topSubjectBadge">Syllabus Video</span>
+                                <span class="top-video-status-pill"><i class="fas fa-play"></i> Now Playing</span>
+                            </div>
+                            <h3 class="top-video-title" id="topVideoTitle">Class IX Video Class</h3>
+                        </div>
+                    </div>
+                    <div class="top-video-viewport" id="topVideoViewport">
+                        <div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000000; color:#94a3b8;">
+                            <i class="fas fa-spinner fa-spin" style="font-size:2.2rem; color:#3b82f6; margin-bottom:12px;"></i>
+                            <span style="font-size:0.95rem; font-weight:600; color:#f8fafc;">Preparing Active Lesson...</span>
+                        </div>
+                    </div>
+                    <div class="top-video-toolbar">
+                        <div class="top-video-actions-left">
+                            <button type="button" id="topMasteredBtn" class="top-dock-btn top-btn-mastered" onclick="studyEngine.togglePlayerMastered()" title="Mark this lesson as mastered">
+                                <i class="far fa-circle"></i> <span id="topMasteredLabel">Mark Mastered</span>
+                            </button>
+                            <button type="button" class="top-dock-btn top-btn-secondary" onclick="studyEngine.reloadPlayer()" title="Restart video from beginning">
+                                <i class="fas fa-redo"></i> <span>Replay</span>
+                            </button>
+                            <button type="button" class="top-dock-btn top-btn-secondary" onclick="studyEngine.switchPlayerStream()" title="Switch CDN stream mode">
+                                <i class="fas fa-satellite-dish"></i> <span>Stream Mode</span>
+                            </button>
+                        </div>
+                        <div class="top-video-actions-right" id="topUpNextContainer" style="display:none;">
+                            <span class="top-up-next-label"><i class="fas fa-step-forward"></i> Next:</span>
+                            <span class="top-up-next-title" id="topUpNextTitle">Next Topic</span>
+                            <button type="button" class="top-up-next-btn" onclick="studyEngine.playNextLesson()">
+                                <span>Play</span> <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-                        <div class="video-grid">
+            <div class="video-grid">
                 <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-body"><div class="skeleton-line pill"></div><div class="skeleton-line title"></div><div class="skeleton-line" style="width:90%;"></div><div class="skeleton-line btn"></div></div></div>
                 <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-body"><div class="skeleton-line pill"></div><div class="skeleton-line title"></div><div class="skeleton-line" style="width:90%;"></div><div class="skeleton-line btn"></div></div></div>
                 <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-body"><div class="skeleton-line pill"></div><div class="skeleton-line title"></div><div class="skeleton-line" style="width:90%;"></div><div class="skeleton-line btn"></div></div></div>
@@ -190,67 +232,10 @@
         </div>
     </footer>
 
-    <!-- Video Cinema Theater Modal -->
-    <div class="modal cinema-modal" id="videoModal">
-        <div class="modal-content cinema-modal-content">
-            <!-- Dynamic Ambient Glow Layer -->
-            <div class="cinema-ambient-glow" id="playerAmbientGlow"></div>
-
-            <!-- Cinema Header -->
-            <div class="cinema-header">
-                <div class="cinema-title-group">
-                    <div class="cinema-badges">
-                        <span class="cinema-grade-pill" id="modalGradeBadge">Class IX</span>
-                        <span class="cinema-subject-pill" id="modalSubjectBadge">Mathematics</span>
-                        <span class="cinema-status-pill"><i class="fas fa-play"></i> Now Playing</span>
-                    </div>
-                    <h3 class="cinema-title" id="modalTitle">Video Class</h3>
-                </div>
-                <button class="close-modal cinema-close-btn" id="closeModalBtn" onclick="studyEngine.closeVideoModal()" aria-label="Close Video Player">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <!-- Modal Video Viewport -->
-            <div class="modal-body" style="padding:0; position:relative;">
-                <div class="video-container cinema-video-box" id="videoContainerBox">
-                    <iframe id="videoFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                </div>
-
-                <!-- Up Next Quick Strip (In-Player Continuous Learning) -->
-                <div class="cinema-up-next-strip" id="playerUpNextContainer" style="display:none;">
-                    <div class="up-next-info">
-                        <span class="up-next-tag"><i class="fas fa-step-forward"></i> Up Next in Syllabus</span>
-                        <h4 class="up-next-title" id="playerUpNextTitle">Next Topic</h4>
-                    </div>
-                    <button class="up-next-btn" id="playerUpNextBtn" onclick="studyEngine.playNextLesson()">
-                        <span>Play Next</span> <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-
-                <!-- Cinema Control Dock -->
-                <div class="cinema-dock">
-                    <div class="cinema-actions-left">
-                        <button id="playerMasteredBtn" class="dock-btn dock-btn-mastered" onclick="studyEngine.togglePlayerMastered()" title="Mark this lesson as mastered">
-                            <i class="far fa-circle"></i> <span id="playerMasteredLabel">Mark Mastered</span>
-                        </button>
-                        <button class="dock-btn dock-btn-secondary" onclick="studyEngine.reloadPlayer()" title="Restart video from beginning">
-                            <i class="fas fa-redo"></i> <span>Replay</span>
-                        </button>
-                        <button class="dock-btn dock-btn-secondary" onclick="studyEngine.switchPlayerStream()" title="Switch CDN stream mode">
-                            <i class="fas fa-satellite-dish"></i> <span>Stream Mode</span>
-                        </button>
-                    </div>
-                    <div class="cinema-actions-right">
-                        <span class="cinema-help-text"><i class="fas fa-graduation-cap"></i> OAV Mantra Cinema • Press <kbd class="kbd-hint">ESC</kbd> to exit</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <script src="supabase-client.js?v=4.2"></script>
-    <script src="study-engine.js?v=8.6"></script>
+    <script src="study-engine.js?v=8.7"></script>
     <script src="study-IX.js"></script>
 </body>
 </html>
