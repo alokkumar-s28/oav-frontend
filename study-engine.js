@@ -931,10 +931,6 @@ window.studyEngine = (function () {
             return;
         }
 
-        // Auto-initialize top video player on page load if none active
-        if (!currentActiveLesson && recordedLessons.length > 0) {
-            playLesson(recordedLessons[0].id, false);
-        }
 
         grid.innerHTML = recordedLessons.map(lesson => {
             const isDone = completedLessonIds.has(lesson.id);
@@ -1243,109 +1239,9 @@ window.studyEngine = (function () {
         currentActiveLesson = null;
     }
 
-    function playLesson(id, shouldAutoplay = true) {
-        const lesson = classLessons.find(l => l.id === id);
-        if (!lesson) return;
-
-        currentActiveLesson = lesson;
-
-        const stage = ensureTopPlayerStage();
-        const topVideoTitle = document.getElementById('topVideoTitle');
-        const topGradeBadge = document.getElementById('topGradeBadge');
-        const topSubjectBadge = document.getElementById('topSubjectBadge');
-        const topViewport = document.getElementById('topVideoViewport');
-
-        if (topVideoTitle) topVideoTitle.textContent = lesson.title;
-        if (topGradeBadge) topGradeBadge.textContent = `Class ${currentGrade}`;
-        if (topSubjectBadge) topSubjectBadge.textContent = lesson.subject || 'Lesson';
-
-        // Sync Mastered state
-        syncPlayerMasteredBtn(completedLessonIds.has(lesson.id));
-
-        // Calculate Up Next Lesson in Syllabus
-        const recorded = classLessons.filter(l => l.lesson_type !== 'live');
-        const currentIndex = recorded.findIndex(l => l.id === lesson.id);
-        let nextLesson = null;
-        if (currentIndex >= 0 && currentIndex < recorded.length - 1) {
-            nextLesson = recorded[currentIndex + 1];
-        }
-
-        // Top Up Next
-        const topUpNextContainer = document.getElementById('topUpNextContainer');
-        const topUpNextTitle = document.getElementById('topUpNextTitle');
-        if (topUpNextContainer && topUpNextTitle) {
-            if (nextLesson) {
-                nextLessonId = nextLesson.id;
-                topUpNextTitle.textContent = `${nextLesson.subject}: ${nextLesson.title}`;
-                topUpNextContainer.style.display = 'flex';
-            } else {
-                nextLessonId = null;
-                topUpNextContainer.style.display = 'none';
-            }
-        }
-
-        let rawUrl = (lesson.video_url || '').trim();
-        const srcMatch = rawUrl.match(/src=["']([^"']+)["']/i);
-        let cleanUrl = srcMatch && srcMatch[1] ? srcMatch[1].trim() : rawUrl;
-
-        const ytId = extractYouTubeId(cleanUrl);
-        const isDirectVideo = /\.(mp4|webm|ogg|mov)($|\?)/i.test(cleanUrl);
-        const isMeeting = /meet\.google\.com|zoom\.us|teams\.microsoft\.com/i.test(cleanUrl);
-
-        let playerHtml = '';
-        if (isMeeting) {
-            playerHtml = `
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:#0f172a; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; color:#fff;">
-                    <i class="fas fa-video" style="font-size:3.5rem; color:#dc2626; margin-bottom:16px;"></i>
-                    <h3 style="margin:0 0 10px; color:#fff; font-size:1.3rem;">Live Class Session Ready</h3>
-                    <p style="color:#94a3b8; max-width:480px; margin-bottom:20px; font-size:0.95rem;">Join your teacher and classmates in the live meeting room.</p>
-                    <a href="${escapeHtml(cleanUrl)}" target="_blank" rel="noopener" style="background:#dc2626; color:#fff; padding:12px 24px; border-radius:8px; font-weight:700; text-decoration:none; font-size:1rem; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(220,38,38,0.4);">
-                        <i class="fas fa-external-link-alt"></i> Enter Live Class Room Now
-                    </a>
-                </div>
-            `;
-        } else if (isDirectVideo) {
-            playerHtml = `<video id="activePlayerVideo" src="${escapeHtml(cleanUrl)}" controls ${shouldAutoplay ? 'autoplay' : ''} playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;"></video>`;
-        } else if (ytId) {
-            // Unobstructed YouTube embed with native fs=1 enabled and NO bottom-right shield
-            const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=${shouldAutoplay ? 1 : 0}&rel=0&playsinline=1&fs=1&enablejsapi=1`;
-            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
-        } else if (cleanUrl.includes("drive.google.com/file/d/")) {
-            const embedUrl = cleanUrl.replace(/\/view.*$/, "/preview");
-            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
-        } else if (cleanUrl.includes("vimeo.com/")) {
-            const vMatch = cleanUrl.match(/vimeo\.com\/(\d+)/i);
-            const embedUrl = vMatch && vMatch[1] ? `https://player.vimeo.com/video/${vMatch[1]}?autoplay=${shouldAutoplay ? 1 : 0}` : cleanUrl;
-            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(embedUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
-        } else {
-            playerHtml = `<iframe id="videoFrame" src="${escapeHtml(cleanUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
-        }
-
-        if (topViewport) {
-            topViewport.innerHTML = playerHtml;
-        }
-
-        // Show top player and smoothly scroll to it if explicitly triggered by user
-        if (stage) {
-            stage.style.display = 'block';
-            if (shouldAutoplay) {
-                stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
-        // Highlight active card in the grid below the player
-        document.querySelectorAll('.video-card').forEach(c => c.classList.remove('is-active-playing'));
-        const activeCard = document.getElementById(`lesson-card-${lesson.id}`);
-        if (activeCard) {
-            activeCard.classList.add('is-active-playing');
-        }
-
-        // Ensure popup modal is closed & body scroll is free
-        const modal = document.getElementById('videoModal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-        document.body.style.overflow = 'auto';
+    function playLesson(id) {
+        // Open dedicated YouTube-style watch page for this lesson
+        window.location.href = `watch.html?id=${encodeURIComponent(id)}&class=${encodeURIComponent(currentGrade)}`;
     }
 
     let streamAltIndex = 0;
