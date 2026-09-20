@@ -36,6 +36,7 @@
 html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
 }
 
 body.watch-body {
@@ -45,7 +46,7 @@ body.watch-body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    overflow-x: clip;
     line-height: 1.5;
 }
 
@@ -240,9 +241,22 @@ body.watch-body {
 
 /* Theater Player Wrapper with Ambient Glow */
 .watch-player-wrapper {
-    position: relative;
+    position: sticky;
+    top: calc(var(--header-height) + 12px);
+    z-index: 900;
     width: 100%;
     border-radius: var(--radius-lg);
+    background: var(--bg-base);
+    transition: top 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+}
+
+.watch-player-wrapper.is-stuck {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+}
+
+.watch-player-wrapper.is-stuck .watch-ambient-glow {
+    opacity: 0.3;
+    filter: blur(28px);
 }
 
 .watch-ambient-glow {
@@ -1213,8 +1227,9 @@ body.watch-body {
     color: var(--text-dim);
 }
 
+
 /* --------------------------------------------------------------------------
-   RESPONSIVE DESIGN & MOBILE OPTIMIZATIONS
+   RESPONSIVE DESIGN & FIXED VIDEO ON SCROLL
    -------------------------------------------------------------------------- */
 
 /* Large Tablets & Small Laptops (<= 1100px) */
@@ -1230,15 +1245,76 @@ body.watch-body {
     }
 }
 
-/* Tablets (<= 960px): Shift to Vertical Flow */
+/* Tablets & Mobile (<= 960px): FIXED VIDEO ON SCROLL */
 @media (max-width: 960px) {
+    .watch-navbar {
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.mobile-nav-hidden .watch-navbar {
+        transform: translateY(-100%);
+    }
+
     .watch-container {
-        padding: 14px 12px 32px;
+        padding: 0 0 36px;
     }
 
     .watch-layout-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* display: contents promotes primary-col children to direct children of watch-layout-grid */
+    /* This allows the sticky video player boundary to span the entire page including the playlist! */
+    .watch-primary-col {
+        display: contents;
+    }
+
+    /* Video player is FIXED at top on scroll */
+    .watch-player-wrapper {
+        order: 1;
+        position: -webkit-sticky;
+        position: sticky;
+        top: var(--header-height);
+        z-index: 950;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        background: #000000;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
+        border-bottom: 1.5px solid rgba(37, 99, 235, 0.4);
+    }
+
+    body.mobile-nav-hidden .watch-player-wrapper {
+        top: 0 !important;
+    }
+
+    .watch-player-wrapper .watch-theater-stage {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+
+    .watch-player-wrapper .watch-ambient-glow {
+        display: none; /* Tone down glow on mobile for clean sharp contrast */
+    }
+
+    .watch-meta-card {
+        order: 2;
+        margin: 0 12px;
+    }
+
+    .watch-tabs-card {
+        order: 3;
+        margin: 0 12px;
+    }
+
+    .watch-sidebar-col {
+        order: 4;
+        margin: 0 12px;
+        width: auto;
     }
 
     .playlist-sticky-card {
@@ -1254,7 +1330,7 @@ body.watch-body {
 /* Mobile Devices (<= 768px): Touch Ergonomics & Clean Stack */
 @media (max-width: 768px) {
     :root {
-        --header-height: 56px;
+        --header-height: 52px;
     }
 
     .watch-navbar {
@@ -1262,7 +1338,7 @@ body.watch-body {
     }
 
     .watch-nav-inner {
-        gap: 10px;
+        gap: 8px;
     }
 
     .back-text,
@@ -1288,17 +1364,9 @@ body.watch-body {
         font-size: 0.82rem;
     }
 
-    .watch-container {
-        padding: 10px 8px 30px;
-    }
-
-    .watch-theater-stage {
-        border-radius: var(--radius-md);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
     .watch-meta-card {
         padding: 16px 14px;
+        margin: 0 8px;
         border-radius: var(--radius-md);
     }
 
@@ -1326,11 +1394,16 @@ body.watch-body {
     }
 
     .watch-tabs-card {
+        margin: 0 8px;
         border-radius: var(--radius-md);
     }
 
     .watch-tabs-content {
         padding: 16px 14px;
+    }
+
+    .watch-sidebar-col {
+        margin: 0 8px;
     }
 
     .playlist-sticky-card {
@@ -1349,25 +1422,18 @@ body.watch-body {
 
 /* Small Screens (<= 480px) */
 @media (max-width: 480px) {
-    .watch-container {
-        padding: 6px 4px 24px;
-    }
-
-    .watch-player-wrapper {
-        border-radius: 0;
-        margin-left: -4px;
-        margin-right: -4px;
-        width: calc(100% + 8px);
-    }
-
-    .watch-theater-stage {
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-    }
-
     .watch-meta-card {
+        margin: 0 4px;
         border-radius: var(--radius-sm);
+    }
+
+    .watch-tabs-card {
+        margin: 0 4px;
+        border-radius: var(--radius-sm);
+    }
+
+    .watch-sidebar-col {
+        margin: 0 4px;
     }
 
     .quiz-options-list {

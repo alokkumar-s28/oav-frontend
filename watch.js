@@ -174,6 +174,46 @@
         document.addEventListener(evt, handleFullscreenRotation);
     });
 
+    
+    // Sticky Video Player on Scroll handler
+    function setupStickyScroll() {
+        const playerWrapper = document.getElementById("watchPlayerStickyWrapper") || document.querySelector(".watch-player-wrapper");
+        if (!playerWrapper) return;
+
+        let lastY = window.scrollY;
+        let ticking = false;
+
+        window.addEventListener("scroll", () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const currentY = window.scrollY;
+
+                    // Add visual stuck styling class
+                    if (currentY > 30) {
+                        playerWrapper.classList.add("is-stuck");
+                    } else {
+                        playerWrapper.classList.remove("is-stuck");
+                    }
+
+                    // On tablet & mobile (<= 960px), tuck navbar away when scrolling down to give maximal video view
+                    if (window.innerWidth <= 960) {
+                        if (currentY > 60 && currentY > lastY) {
+                            document.body.classList.add("mobile-nav-hidden");
+                        } else if (currentY < lastY - 6 || currentY <= 20) {
+                            document.body.classList.remove("mobile-nav-hidden");
+                        }
+                    } else {
+                        document.body.classList.remove("mobile-nav-hidden");
+                    }
+
+                    lastY = currentY;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+    }
+
     async function init() {
         const backBtn = document.getElementById("navBackBtn");
         const studyRoomLink = document.getElementById("watchStudyRoomLink");
@@ -187,6 +227,7 @@
         setupActionButtons();
         setupAutoplayToggle();
         setupScratchpad();
+        setupStickyScroll();
 
         await Promise.all([loadLessons(), loadProgress(), loadNotes()]);
 
