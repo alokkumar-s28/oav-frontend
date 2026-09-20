@@ -2,131 +2,268 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>Watch Video Class - OAV Mantra</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a8a'/><text x='50' y='65' font-size='50' font-weight='bold' fill='white' text-anchor='middle'>OAV</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="watch.css?v=1.0">
+    <link rel="stylesheet" href="watch.css?v=2.0">
 </head>
-<body>
-    <!-- Top Navigation Bar -->
+<body class="watch-body">
+    <!-- Top YouTube Style Navigation Bar -->
     <header class="watch-navbar">
-        <div class="watch-nav-container">
-            <div class="watch-nav-left">
-                <a href="javascript:history.back()" class="watch-back-link" id="navBackBtn" title="Go back">
+        <div class="watch-nav-inner">
+            <div class="watch-nav-brand-group">
+                <a href="javascript:history.back()" class="watch-nav-back" id="navBackBtn" title="Back to Class Study Room">
                     <i class="fas fa-arrow-left"></i>
-                    <span>Back to Study Room</span>
+                    <span class="back-text">Study Room</span>
                 </a>
-                <a href="index.html" class="watch-brand">
-                    <div class="watch-brand-icon"><i class="fas fa-graduation-cap"></i></div>
-                    <span class="watch-brand-name">OAV MANTRA</span>
+                <a href="index.html" class="watch-logo">
+                    <div class="watch-logo-badge"><i class="fas fa-graduation-cap"></i></div>
+                    <span class="watch-logo-text">OAV<span>MANTRA</span></span>
                 </a>
             </div>
-            <div class="watch-nav-center">
-                <div class="watch-search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="watchSearchInput" placeholder="Search other lessons..." autocomplete="off">
-                    <button type="button" id="watchSearchClear" style="display:none;"><i class="fas fa-times"></i></button>
+
+            <div class="watch-nav-search-wrap">
+                <div class="watch-search-input-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="watchSearchInput" placeholder="Search other lessons or topics..." autocomplete="off">
+                    <button type="button" id="watchSearchClear" class="search-clear-btn" style="display:none;" aria-label="Clear Search">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             </div>
-            <div class="watch-nav-right">
-                <a href="dashboard.html" class="watch-dashboard-btn">
+
+            <div class="watch-nav-user-group">
+                <a href="dashboard.html" class="watch-nav-dashboard-link">
                     <i class="fas fa-user-graduate"></i>
-                    <span>Dashboard</span>
+                    <span class="dashboard-text">Dashboard</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- Main Watch Page Container: Purely like YouTube -->
-    <main class="watch-main-layout">
-        <div class="watch-content-wrapper">
-            <!-- TOP OF THE PAGE: Theater Video Player -->
-            <section class="watch-player-stage" id="watchPlayerStage">
-                <div class="watch-player-viewport" id="watchViewport">
-                    <div class="watch-loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span>Loading Video Class...</span>
+    <!-- Main Container: Responsive 2-Column Desktop / Fluid Stack Mobile -->
+    <main class="watch-container">
+        <div class="watch-layout-grid">
+            
+            <!-- LEFT / PRIMARY COLUMN (Player, Details, Tabs) -->
+            <div class="watch-primary-col">
+                
+                <!-- TOP OF PAGE: Theater Video Player Stage -->
+                <div class="watch-player-wrapper">
+                    <!-- Dynamic Ambient Glow behind the video -->
+                    <div class="watch-ambient-glow" id="ambientGlow"></div>
+                    
+                    <div class="watch-theater-stage" id="watchPlayerStage">
+                        <div class="watch-viewport" id="watchViewport">
+                            <div class="watch-loading-spinner">
+                                <div class="spinner-disc"></div>
+                                <span id="watchLoadingLabel">Loading Video Lecture...</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Video Info & Action Bar (Directly below video) -->
-            <section class="watch-details-section">
-                <div class="watch-meta-badges">
-                    <span class="watch-grade-badge" id="watchGradeBadge">Class VI</span>
-                    <span class="watch-subject-badge" id="watchSubjectBadge">Mathematics</span>
-                    <span class="watch-status-badge"><i class="fas fa-play"></i> Now Playing</span>
+                <!-- Video Title & Primary Metadata -->
+                <div class="watch-meta-card">
+                    <div class="watch-meta-tags">
+                        <span class="watch-tag-class" id="watchGradeBadge">Class VI</span>
+                        <span class="watch-tag-subject" id="watchSubjectBadge">Mathematics</span>
+                        <span class="watch-tag-status"><i class="fas fa-play"></i> Now Playing</span>
+                    </div>
+
+                    <h1 class="watch-title-heading" id="watchTitle">Loading Lesson Title...</h1>
+
+                    <!-- Action Bar: Fully Mobile Responsive with Prev/Next, Mastered, Share -->
+                    <div class="watch-action-bar">
+                        <div class="watch-action-group-left">
+                            <button type="button" id="watchPrevBtn" class="watch-btn watch-btn-nav" title="Previous Lesson">
+                                <i class="fas fa-backward-step"></i>
+                                <span>Prev</span>
+                            </button>
+
+                            <button type="button" id="watchMasteredBtn" class="watch-btn watch-btn-master" title="Toggle Lesson Mastered">
+                                <i class="far fa-circle"></i>
+                                <span id="watchMasteredText">Mark Mastered</span>
+                            </button>
+
+                            <button type="button" id="watchNextBtn" class="watch-btn watch-btn-nav" title="Next Lesson">
+                                <span>Next</span>
+                                <i class="fas fa-forward-step"></i>
+                            </button>
+
+                            <button type="button" id="watchReplayBtn" class="watch-btn watch-btn-subtle" title="Restart from beginning">
+                                <i class="fas fa-redo"></i>
+                                <span class="btn-label-desktop">Replay</span>
+                            </button>
+
+                            <button type="button" id="watchStreamBtn" class="watch-btn watch-btn-subtle" title="Alternate CDN Stream">
+                                <i class="fas fa-satellite-dish"></i>
+                                <span class="btn-label-desktop">Stream</span>
+                            </button>
+
+                            <button type="button" id="watchShareBtn" class="watch-btn watch-btn-subtle" title="Share lesson link">
+                                <i class="fas fa-share-nodes"></i>
+                                <span class="btn-label-desktop">Share</span>
+                            </button>
+                        </div>
+
+                        <div class="watch-action-group-right">
+                            <a href="#" id="watchStudyRoomLink" class="watch-btn watch-btn-room">
+                                <i class="fas fa-book-open-reader"></i>
+                                <span>Class Study Room</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <h1 class="watch-video-title" id="watchTitle">Loading Lesson Title...</h1>
 
-                <!-- Action Bar (Mastered, Replay, Share, Study Room) -->
-                <div class="watch-actions-bar">
-                    <div class="watch-actions-left">
-                        <button type="button" id="watchMasteredBtn" class="watch-action-btn watch-btn-mastered">
-                            <i class="far fa-circle"></i>
-                            <span id="watchMasteredText">Mark Mastered</span>
+                <!-- Integrated Learning Hub Tabs (Directly under video) -->
+                <div class="watch-tabs-card">
+                    <div class="watch-tabs-nav" role="tablist">
+                        <button type="button" class="watch-tab-btn active" data-tab="overview" role="tab" aria-selected="true">
+                            <i class="fas fa-circle-info"></i>
+                            <span>Overview</span>
                         </button>
-                        <button type="button" id="watchReplayBtn" class="watch-action-btn watch-btn-secondary" title="Restart video from beginning">
-                            <i class="fas fa-redo"></i>
-                            <span>Replay</span>
+                        <button type="button" class="watch-tab-btn" data-tab="notes" role="tab" aria-selected="false">
+                            <i class="fas fa-file-lines"></i>
+                            <span>Study Notes</span>
                         </button>
-                        <button type="button" id="watchStreamBtn" class="watch-action-btn watch-btn-secondary" title="Switch CDN Stream Mode">
-                            <i class="fas fa-satellite-dish"></i>
-                            <span>Stream Mode</span>
+                        <button type="button" class="watch-tab-btn" data-tab="quiz" role="tab" aria-selected="false">
+                            <i class="fas fa-award"></i>
+                            <span>Practice Quiz</span>
                         </button>
-                        <button type="button" id="watchShareBtn" class="watch-action-btn watch-btn-secondary" title="Share this video class">
-                            <i class="fas fa-share-alt"></i>
-                            <span>Share</span>
+                        <button type="button" class="watch-tab-btn" data-tab="mynotes" role="tab" aria-selected="false">
+                            <i class="fas fa-pen-to-square"></i>
+                            <span>My Notes</span>
                         </button>
                     </div>
-                    <div class="watch-actions-right">
-                        <a href="#" id="watchStudyRoomLink" class="watch-action-btn watch-btn-study-room">
-                            <i class="fas fa-book-reader"></i>
-                            <span>Open Full Study Room</span>
-                        </a>
+
+                    <div class="watch-tabs-content">
+                        <!-- TAB 1: Overview -->
+                        <div class="watch-tab-pane active" id="tab-overview">
+                            <div class="overview-box">
+                                <h4 class="overview-heading"><i class="fas fa-graduation-cap"></i> Lesson Objective & Board Exam Insights</h4>
+                                <p class="overview-text" id="watchDescText">Loading comprehensive lesson overview and curriculum notes...</p>
+                                <div class="overview-features">
+                                    <div class="feat-badge"><i class="fas fa-check"></i> Odisha Board & CBSE Aligned</div>
+                                    <div class="feat-badge"><i class="fas fa-mobile-screen"></i> Mobile Auto Landscape Fullscreen</div>
+                                    <div class="feat-badge"><i class="fas fa-bolt"></i> High-Yield Revision Focus</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: Notes & PDFs -->
+                        <div class="watch-tab-pane" id="tab-notes">
+                            <div class="notes-hub" id="watchNotesHub">
+                                <div class="notes-hub-loading">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading Revision Notes for Class...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: Quiz -->
+                        <div class="watch-tab-pane" id="tab-quiz">
+                            <div class="quiz-hub" id="watchQuizHub">
+                                <!-- Rendered dynamically by watch.js -->
+                            </div>
+                        </div>
+
+                        <!-- TAB 4: Student Personal Notes Scratchpad -->
+                        <div class="watch-tab-pane" id="tab-mynotes">
+                            <div class="scratchpad-box">
+                                <div class="scratchpad-header">
+                                    <span><i class="fas fa-pencil"></i> Personal Lecture Notes (Auto-saved on this device)</span>
+                                    <button type="button" id="clearMyNotesBtn" class="scratchpad-clear-btn">Clear Notes</button>
+                                </div>
+                                <textarea id="studentNotesArea" class="scratchpad-textarea" placeholder="Jot down formulas, doubts, key timestamps, or chapter summaries while watching this video..."></textarea>
+                                <div class="scratchpad-footer">
+                                    <span id="scratchpadSaveStatus"><i class="fas fa-cloud-arrow-up"></i> Saved automatically</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Description Card -->
-                <div class="watch-description-box" id="watchDescBox">
-                    <div class="watch-desc-header">
-                        <strong><i class="fas fa-info-circle"></i> Lesson Overview & Syllabus Notes</strong>
-                    </div>
-                    <p class="watch-desc-text" id="watchDescText">Loading overview...</p>
-                </div>
-            </section>
+            </div>
 
-            <!-- DOWN OF THE VIDEO: The Another Videos (Up Next & Syllabus Playlist) -->
-            <section class="watch-playlist-section" id="watchAnotherVideos">
-                <div class="watch-section-header">
-                    <div class="watch-section-title-wrap">
-                        <h2 class="watch-section-title"><i class="fas fa-layer-group" style="color:#2563eb;"></i> More Lessons in This Class</h2>
-                        <span class="watch-section-count" id="watchLessonsCount">0 Videos</span>
-                    </div>
-                    <div class="watch-filter-chips" id="watchFilterChips">
-                        <!-- Rendered by JS -->
-                    </div>
-                </div>
+            <!-- RIGHT / SIDEBAR COLUMN (Up Next Playlist & Subject Chips) -->
+            <div class="watch-sidebar-col" id="watchPlaylistSidebar">
+                <div class="playlist-sticky-card">
+                    
+                    <!-- Syllabus Progress Header -->
+                    <div class="playlist-header">
+                        <div class="playlist-header-top">
+                            <div class="playlist-title-wrap">
+                                <h3 class="playlist-title"><i class="fas fa-layer-group"></i> Class Playlist</h3>
+                                <span class="playlist-count-pill" id="watchLessonsCount">0 Videos</span>
+                            </div>
+                            
+                            <!-- Autoplay Toggle Switch -->
+                            <div class="autoplay-toggle-wrap" title="Automatically play next video when finished">
+                                <span class="autoplay-label">Autoplay</span>
+                                <label class="switch-control">
+                                    <input type="checkbox" id="autoplayToggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
 
-                <!-- Video Cards Grid -->
-                <div class="watch-videos-grid" id="watchVideosGrid">
-                    <!-- Cards rendered by JS -->
+                        <!-- Mini Syllabus Progress Bar -->
+                        <div class="playlist-progress-box">
+                            <div class="playlist-progress-info">
+                                <span>Mastery Progress</span>
+                                <span id="playlistProgressText">0%</span>
+                            </div>
+                            <div class="playlist-progress-bar">
+                                <div class="playlist-progress-fill" id="playlistProgressFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Horizontally Scrollable Subject Filter Chips -->
+                        <div class="playlist-subject-chips" id="watchFilterChips">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Video Playlist Scroll Track -->
+                    <div class="playlist-items-scroll" id="watchVideosGrid">
+                        <!-- Video list cards injected by JS -->
+                    </div>
+
                 </div>
-            </section>
+            </div>
+
         </div>
     </main>
 
+    <!-- Notes Viewer Modal for PDF / Detailed Notes -->
+    <div class="watch-note-modal" id="watchNoteModal" style="display:none;">
+        <div class="watch-note-modal-card">
+            <div class="watch-note-modal-header">
+                <div>
+                    <span class="watch-note-modal-subject" id="modalNoteSubject">Subject</span>
+                    <h3 class="watch-note-modal-title" id="modalNoteTitle">Note Title</h3>
+                </div>
+                <button type="button" class="watch-note-modal-close" id="modalNoteCloseBtn">&times;</button>
+            </div>
+            <div class="watch-note-modal-body" id="modalNoteBody"></div>
+            <div class="watch-note-modal-footer">
+                <button type="button" onclick="window.print()" class="watch-btn watch-btn-subtle"><i class="fas fa-print"></i> Print</button>
+                <button type="button" id="modalNoteDoneBtn" class="watch-btn watch-btn-room">Done Reading</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="watch-footer">
         <div class="watch-footer-inner">
-            <p>&copy; 2026 OAV Mantra Classes · Quality Education for Academic Excellence in Odisha</p>
+            <p>&copy; 2026 OAV Mantra Classes · Odisha Board & CBSE Premier Digital Classroom</p>
         </div>
     </footer>
 
     <script src="supabase-client.js?v=4.2"></script>
-    <script src="watch.js?v=1.0"></script>
+    <script src="watch.js?v=2.0"></script>
 </body>
 </html>
