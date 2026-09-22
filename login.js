@@ -9,6 +9,21 @@ const API_BASE = (function () {
 
 document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
+
+    // If student is already logged in with active account, auto-forward to dashboard
+    if (!params.has("status") && !params.has("logout") && !params.has("error")) {
+        const saved = localStorage.getItem("oav_current_student") || localStorage.getItem("oav_student_session");
+        if (saved) {
+            try {
+                const st = JSON.parse(saved);
+                if (st && (st.status === "active" || st.status === "verified")) {
+                    window.location.replace("dashboard.html");
+                    return;
+                }
+            } catch(e) {}
+        }
+    }
+
     const enrollmentField = document.getElementById("enrollmentId");
     const mobileField = document.getElementById("mobile");
     const errorBanner = document.getElementById("errorBanner");

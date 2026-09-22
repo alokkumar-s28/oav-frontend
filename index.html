@@ -17,9 +17,25 @@
     <meta name="apple-mobile-web-app-title" content="OAV Mantra">
     <meta name="theme-color" content="#1e3a8a">
     <meta name="description" content="OAV Mantra (oav mantra, oavmantra classes) is Odisha’s leading online learning portal for OAV & CBSE students (Classes 6-10). Access video classes, free study notes, chapter quizzes, and live classes.">
-    <meta name="keywords" content="oav mantra, oavmantra, oav mantra classes, oavmantraclasses, oav, oav online classes, cbse online classes, odisha adarsha vidyalaya, oav entrance exam, oav preparation, oav classes, oav study materials, oav notes, oav question papers, cbse class 10 online classes, cbse class 9 online classes, cbse class 8 online classes, cbse class 7 online classes, cbse class 6 online classes, free pdf study notes, chapter quizzes, formula sheets, oav syllabus, odisha board online classes, ncert solutions odisha">
     <meta name="google-site-verification" content="google59d93a00c9fd6b8a">
     
+    <!-- Instant Auto-Launch: If student is logged in, automatically launch Dashboard on site open -->
+    <script>
+        (function() {
+            try {
+                var q = window.location.search;
+                if (q.indexOf('home=') === -1 && q.indexOf('stay=') === -1 && q.indexOf('noredirect=') === -1 && q.indexOf('preview=') === -1) {
+                    var saved = localStorage.getItem('oav_current_student') || localStorage.getItem('oav_student_session');
+                    if (saved) {
+                        var st = JSON.parse(saved);
+                        if (st && (st.status === 'active' || st.status === 'verified')) {
+                            window.location.replace('dashboard.html');
+                        }
+                    }
+                }
+            } catch(e) {}
+        })();
+    </script>
         <script type="application/ld+json">
     {
       "@context": "https://schema.org",

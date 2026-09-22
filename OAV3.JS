@@ -1327,3 +1327,34 @@ function resetEnrollmentForm() {
 
 // Initialize Platform Stats on Page Load
 document.addEventListener("DOMContentLoaded", initPlatformStats);
+
+// Auto-Launch Dashboard for Authenticated Students on site visit
+(async function checkStudentAutoLaunch() {
+    try {
+        const q = window.location.search;
+        if (q.includes('home=') || q.includes('stay=') || q.includes('noredirect=') || q.includes('preview=')) {
+            return;
+        }
+
+        // 1. Instant check from LocalStorage
+        const saved = localStorage.getItem('oav_current_student') || localStorage.getItem('oav_student_session');
+        if (saved) {
+            const st = JSON.parse(saved);
+            if (st && (st.status === 'active' || st.status === 'verified')) {
+                window.location.replace('dashboard.html');
+                return;
+            }
+        }
+
+        // 2. Server session verification fallback
+        const apiBase = (window.location.protocol === 'file:' || window.location.hostname === 'localhost') ? 'http://localhost:3000' : '';
+        const res = await fetch(`${apiBase}/api/student/me`, { credentials: 'include' });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.authenticated && data.student && (data.student.status === 'active' || data.student.status === 'verified')) {
+                localStorage.setItem('oav_current_student', JSON.stringify(data.student));
+                window.location.replace('dashboard.html');
+            }
+        }
+    } catch (e) {}
+})();

@@ -298,7 +298,9 @@ function setupEventListeners() {
                 await fetch(`${API_BASE}/api/student/logout`, { method: "POST", credentials: "include" });
             } catch (e) {}
             localStorage.removeItem('oav_current_student');
-            window.location.replace("login.html");
+            localStorage.removeItem('oav_student_session');
+            localStorage.removeItem('oav_current_enrollment');
+            window.location.replace("login.html?logout=true");
         });
     }
 
