@@ -270,25 +270,359 @@
             font-size: 0.92rem;
         }
 
-        /* Digital ID Modal */
+        /* Official Digital Admit & ID Card with Konark Chakra & Shree Mandira Nila Chakra */
         .id-card-view {
-            background: linear-gradient(135deg, #091a38, #1e3a8a);
+            background: linear-gradient(135deg, #060e20 0%, #0d1e44 48%, #142a5c 100%);
             color: #ffffff;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 24px 26px 20px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(245, 158, 11, 0.35);
             position: relative;
             overflow: hidden;
+            border: 2px solid rgba(245, 158, 11, 0.4);
         }
+
+        /* Top & Bottom Golden Filigree Accent Bars */
         .id-card-view::before {
             content: '';
             position: absolute;
-            top: -40px;
-            right: -40px;
-            width: 140px;
-            height: 140px;
-            background: rgba(255,255,255,0.06);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #38bdf8, #facc15, #38bdf8, #f59e0b);
+            z-index: 4;
+        }
+        .id-card-view::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #38bdf8, #f59e0b, #38bdf8);
+            z-index: 4;
+        }
+
+        /* Background Motif 1: Konark Chakra (Right / Center Watermark) */
+        .admit-bg-konark {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 290px;
+            height: 290px;
+            color: #f59e0b;
+            opacity: 0.17;
+            pointer-events: none;
+            z-index: 1;
+            filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.45));
+            animation: konarkGentleGlow 6s ease-in-out infinite alternate;
+        }
+
+        /* Background Motif 2: Shree Mandira Nila Chakra & Holy Spire (Left Watermark) */
+        .admit-bg-nilachakra {
+            position: absolute;
+            left: -15px;
+            bottom: -20px;
+            width: 210px;
+            height: 280px;
+            color: #38bdf8;
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 1;
+            filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.4));
+        }
+
+        @keyframes konarkGentleGlow {
+            0% { opacity: 0.15; transform: translateY(-50%) rotate(0deg); }
+            100% { opacity: 0.22; transform: translateY(-50%) rotate(4deg); }
+        }
+
+        .id-card-content-wrap {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Admit Card Official Header */
+        .admit-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+            gap: 12px;
+        }
+
+        .admit-header-titles {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .admit-gov-title {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #93c5fd;
+        }
+
+        .admit-main-title {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 900;
+            font-size: 1.18rem;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admit-main-title span {
+            color: #facc15;
+        }
+
+        .admit-sub-title {
+            font-size: 0.74rem;
+            color: #cbd5e1;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+        }
+
+        .admit-badge-verified {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1.5px solid #10b981;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+        }
+
+        /* Student Profile Section */
+        .admit-student-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .admit-photo-ring {
+            width: 76px;
+            height: 76px;
+            min-width: 76px;
+            background: rgba(15, 23, 42, 0.65);
+            border: 2.5px solid #f59e0b;
             border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            color: #93c5fd;
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+            position: relative;
+        }
+
+        .admit-student-names {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .admit-student-name {
+            color: #ffffff;
+            margin-bottom: 4px;
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.25;
+            font-family: 'Outfit', sans-serif;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .admit-student-class {
+            color: #38bdf8;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admit-student-class-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #e0f2fe;
+            font-size: 0.74rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-left: 4px;
+        }
+
+        /* Admit Card Info Grid */
+        .admit-info-card {
+            background: rgba(8, 17, 39, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.88rem;
+            line-height: 1.85;
+            margin-bottom: 14px;
+        }
+
+        .admit-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 16px;
+        }
+
+        @media (max-width: 480px) {
+            .admit-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .admit-info-item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .admit-info-item strong {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+
+        .admit-info-item span {
+            color: #f1f5f9;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .admit-enrollment-id {
+            font-family: monospace;
+            color: #facc15 !important;
+            font-weight: 800 !important;
+            font-size: 0.98rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Security Barcode & Seal Footer */
+        .admit-security-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admit-barcode-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .admit-barcode-lines {
+            display: flex;
+            align-items: flex-end;
+            height: 22px;
+            gap: 2px;
+        }
+
+        .admit-barcode-bar {
+            width: 2px;
+            background: #cbd5e1;
+            height: 100%;
+        }
+
+        .admit-barcode-bar.w-1 { width: 1.5px; }
+        .admit-barcode-bar.w-2 { width: 3px; }
+        .admit-barcode-bar.w-3 { width: 4.5px; }
+
+        .admit-barcode-text {
+            font-family: monospace;
+            font-size: 0.65rem;
+            color: #94a3b8;
+            letter-spacing: 1px;
+        }
+
+        .admit-seal-badge {
+            text-align: right;
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .admit-seal-badge strong {
+            color: #38bdf8;
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+        }
+
+        /* PRINT STYLES: 300DPI CRISP ADMIT CARD PRINTING */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+
+            #idCardModal, #idCardModal * {
+                visibility: visible !important;
+            }
+
+            #idCardModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: #ffffff !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .modal-card {
+                box-shadow: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                max-width: 580px !important;
+                width: 100% !important;
+            }
+
+            .close-btn, .btn-dash-action, .submit-btn, input[type="file"] {
+                display: none !important;
+            }
+
+            .id-card-view {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                box-shadow: none !important;
+                border: 2px solid #b45309 !important;
+                page-break-inside: avoid !important;
+                margin: 0 auto !important;
+            }
+
+            .admit-bg-konark, .admit-bg-nilachakra {
+                opacity: 0.28 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
 
         @media (max-width: 840px) {
@@ -371,7 +705,7 @@
             </div>
 
             <div class="dash-actions">
-                <button class="btn-dash-action" id="viewIdCardBtn"><i class="fas fa-id-badge"></i> Digital ID Card</button>
+                <button class="btn-dash-action" id="viewIdCardBtn"><i class="fas fa-id-card"></i> Digital Admit Card</button>
                 <a href="#" class="btn-dash-action btn-dash-primary" id="openStudyRoomBtn"><i class="fas fa-play-circle"></i> Open Study Portal</a>
             </div>
         </section>
@@ -450,46 +784,362 @@
         </div>
     </main>
 
-    <!-- Digital ID Card Modal -->
+    <!-- Official Digital Admit & Student Identity Card Modal -->
     <div class="modal-overlay" id="idCardModal">
-        <div class="modal-card" style="max-width: 480px;">
-            <button class="close-btn" id="closeIdModalBtn">&times;</button>
+        <div class="modal-card" style="max-width: 520px;">
+            <button class="close-btn" id="closeIdModalBtn" aria-label="Close Admit Card">&times;</button>
+            
             <div class="id-card-view">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:12px;">
-                    <div style="font-weight:800; font-size:1.1rem; color:#ffffff;">OAV MANTRA CLASSES</div>
-                    <span class="status-pill status-verified" style="font-size:0.75rem;">VERIFIED STUDENT</span>
+                <!-- Background Watermark 1: Konark Chakra (The Sun Temple Wheel) -->
+                <div class="admit-bg-konark" aria-hidden="true">
+                    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="admit-chakra-svg konark-chakra-art">
+        <defs>
+            <radialGradient id="konarkGoldGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#b45309" stop-opacity="0.3"/>
+            </radialGradient>
+        </defs>
+        <!-- Concentric Outer Rim -->
+        <circle cx="150" cy="150" r="142" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <circle cx="150" cy="150" r="135" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3,3"/>
+        <circle cx="150" cy="150" r="122" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="150" cy="150" r="114" fill="none" stroke="currentColor" stroke-width="1"/>
+        
+        <!-- 30 Outer Beads -->
+        <g class="konark-rim-beads">
+            <circle cx="278.00" cy="150.00" r="3" fill="currentColor"/>
+            <circle cx="275.20" cy="176.61" r="3" fill="currentColor"/>
+            <circle cx="266.93" cy="202.06" r="3" fill="currentColor"/>
+            <circle cx="253.55" cy="225.24" r="3" fill="currentColor"/>
+            <circle cx="235.65" cy="245.12" r="3" fill="currentColor"/>
+            <circle cx="214.00" cy="260.85" r="3" fill="currentColor"/>
+            <circle cx="189.55" cy="271.74" r="3" fill="currentColor"/>
+            <circle cx="163.38" cy="277.30" r="3" fill="currentColor"/>
+            <circle cx="136.62" cy="277.30" r="3" fill="currentColor"/>
+            <circle cx="110.45" cy="271.74" r="3" fill="currentColor"/>
+            <circle cx="86.00" cy="260.85" r="3" fill="currentColor"/>
+            <circle cx="64.35" cy="245.12" r="3" fill="currentColor"/>
+            <circle cx="46.45" cy="225.24" r="3" fill="currentColor"/>
+            <circle cx="33.07" cy="202.06" r="3" fill="currentColor"/>
+            <circle cx="24.80" cy="176.61" r="3" fill="currentColor"/>
+            <circle cx="22.00" cy="150.00" r="3" fill="currentColor"/>
+            <circle cx="24.80" cy="123.39" r="3" fill="currentColor"/>
+            <circle cx="33.07" cy="97.94" r="3" fill="currentColor"/>
+            <circle cx="46.45" cy="74.76" r="3" fill="currentColor"/>
+            <circle cx="64.35" cy="54.88" r="3" fill="currentColor"/>
+            <circle cx="86.00" cy="39.15" r="3" fill="currentColor"/>
+            <circle cx="110.45" cy="28.26" r="3" fill="currentColor"/>
+            <circle cx="136.62" cy="22.70" r="3" fill="currentColor"/>
+            <circle cx="163.38" cy="22.70" r="3" fill="currentColor"/>
+            <circle cx="189.55" cy="28.26" r="3" fill="currentColor"/>
+            <circle cx="214.00" cy="39.15" r="3" fill="currentColor"/>
+            <circle cx="235.65" cy="54.88" r="3" fill="currentColor"/>
+            <circle cx="253.55" cy="74.76" r="3" fill="currentColor"/>
+            <circle cx="266.93" cy="97.94" r="3" fill="currentColor"/>
+            <circle cx="275.20" cy="123.39" r="3" fill="currentColor"/>
+        </g>
+        <g transform="rotate(0 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(45 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(90 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(135 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(180 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(225 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(270 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(315 150 150)">
+            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
+            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <!-- Medallion -->
+            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
+            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </g>
+        <g transform="rotate(22.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <g transform="rotate(67.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <g transform="rotate(112.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <g transform="rotate(157.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <g transform="rotate(202.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <g transform="rotate(247.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <g transform="rotate(292.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <g transform="rotate(337.5 150 150)">
+            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="150" cy="78" r="2" fill="currentColor"/>
+        </g>
+        <circle cx="150" cy="150" r="40" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <circle cx="150" cy="150" r="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
+        <circle cx="150" cy="150" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="150" cy="150" r="14" fill="currentColor" opacity="0.8"/>
+        <circle cx="150" cy="150" r="6" fill="#091a38"/>
+    </svg>
                 </div>
 
-                <div style="display:flex; gap:16px; align-items:center; margin-bottom:20px;">
-                    <div id="idCardPhotoContainer" style="width:70px; height:70px; min-width:70px; background:rgba(255,255,255,0.2); border:2px solid rgba(255,255,255,0.4); border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:1.8rem;">
-                        <img id="idCardPhotoImg" src="" alt="Student Photo" style="width:100%; height:100%; object-fit:cover; display:none;">
-                        <i id="idCardPhotoIcon" class="fas fa-user-graduate"></i>
-                    </div>
-                    <div>
-                        <h3 id="idCardName" style="color:#fff; margin-bottom:4px; font-size:1.25rem;">Student Name</h3>
-                        <div id="idCardClass" style="color:#93c5fd; font-weight:600;">Class ---</div>
-                    </div>
+                <!-- Background Watermark 2: Shree Mandira Nila Chakra & Holy Spire with Patitapabana Bana -->
+                <div class="admit-bg-nilachakra" aria-hidden="true">
+                    <svg viewBox="0 0 240 320" xmlns="http://www.w3.org/2000/svg" class="admit-chakra-svg nilachakra-art">
+        <defs>
+            <linearGradient id="patitaBanaAdmit" x1="0%" y1="0%" x2="100%" y2="50%">
+                <stop offset="0%" stop-color="#ef4444" stop-opacity="0.95"/>
+                <stop offset="50%" stop-color="#f97316" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#facc15" stop-opacity="0.85"/>
+            </linearGradient>
+        </defs>
+
+        <!-- Shree Jagannath Temple Spire Silhouette -->
+        <path d="M 60,320 
+                 C 60,260 70,220 85,180
+                 C 95,150 105,120 110,95
+                 L 130,95
+                 C 135,120 145,150 155,180
+                 C 170,220 180,260 180,320
+                 Z" 
+              fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+
+        <!-- Temple Spire Horizontal Terraces (Bada Deula Ridges) -->
+        <line x1="68" y1="280" x2="172" y2="280" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+        <line x1="75" y1="245" x2="165" y2="245" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+        <line x1="86" y1="210" x2="154" y2="210" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+        <line x1="96" y1="175" x2="144" y2="175" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+        <line x1="104" y1="140" x2="136" y2="140" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+        <line x1="108" y1="110" x2="132" y2="110" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+
+        <!-- The Sacred Kalasha & Amalaka -->
+        <ellipse cx="120" cy="85" rx="14" ry="7" fill="none" stroke="currentColor" stroke-width="2"/>
+        <ellipse cx="120" cy="74" rx="9" ry="5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M 115,70 L 115,42 L 125,42 L 125,70 Z" fill="currentColor" opacity="0.4"/>
+
+        <!-- THE SACRED NILA CHAKRA (8-Spoke Holy Disc) -->
+        <g transform="translate(120, 36)">
+            <circle cx="0" cy="0" r="28" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+            <circle cx="0" cy="0" r="23" fill="none" stroke="#93c5fd" stroke-width="1.2" stroke-dasharray="2,2"/>
+            <circle cx="0" cy="0" r="10" fill="none" stroke="#38bdf8" stroke-width="2"/>
+            <circle cx="0" cy="0" r="4" fill="#38bdf8"/>
+
+            <!-- 8 Sacred Spokes -->
+            <line x1="0" y1="-23" x2="0" y2="23" stroke="#38bdf8" stroke-width="2.2"/>
+            <line x1="-23" y1="0" x2="23" y2="0" stroke="#38bdf8" stroke-width="2.2"/>
+            <line x1="-16" y1="-16" x2="16" y2="16" stroke="#38bdf8" stroke-width="2.2"/>
+            <line x1="-16" y1="16" x2="16" y2="-16" stroke="#38bdf8" stroke-width="2.2"/>
+
+            <!-- 8 Chakra Teeth / Holy Flames -->
+            <polygon points="0,-28 -3,-33 3,-33" fill="#38bdf8"/>
+            <polygon points="0,28 -3,33 3,33" fill="#38bdf8"/>
+            <polygon points="-28,0 -33,-3 -33,3" fill="#38bdf8"/>
+            <polygon points="28,0 33,-3 33,3" fill="#38bdf8"/>
+            <polygon points="20,20 25,24 24,25" fill="#38bdf8"/>
+            <polygon points="-20,-20 -25,-24 -24,-25" fill="#38bdf8"/>
+            <polygon points="20,-20 25,-24 24,-25" fill="#38bdf8"/>
+            <polygon points="-20,20 -25,24 -24,25" fill="#38bdf8"/>
+        </g>
+
+        <!-- THE SACRED PATITAPABANA BANA (Fluttering Holy Flag) -->
+        <g transform="translate(120, 10)">
+            <line x1="0" y1="28" x2="0" y2="-6" stroke="#facc15" stroke-width="2.5"/>
+            <circle cx="0" cy="-6" r="3" fill="#facc15"/>
+            <path d="M 0,-4 
+                     C 25,-14 55,-2 85,-12
+                     C 105,-18 118,-15 125,-16
+                     L 80,6
+                     C 55,2 25,12 0,4
+                     Z" 
+                  fill="url(#patitaBanaAdmit)" 
+                  stroke="#ef4444" 
+                  stroke-width="1.2"/>
+            <path d="M 125,-16 C 135,-12 142,-18 152,-15 L 140,-10 C 130,-12 120,-11 115,-12 Z" fill="#facc15" opacity="0.9"/>
+        </g>
+    </svg>
                 </div>
 
-                <div style="background:rgba(0,0,0,0.2); border-radius:8px; padding:14px; font-size:0.9rem; line-height:1.8;">
-                    <div><strong>Enrollment ID:</strong> <span id="idCardId" style="font-family:monospace; color:#facc15;">---</span></div>
-                    <div><strong>Mobile:</strong> <span id="idCardMobile">---</span></div>
-                    <div><strong>District:</strong> <span id="idCardDistrict">---</span></div>
-                    <div><strong>School:</strong> <span id="idCardSchool">---</span></div>
-                    <div><strong>Academic Session:</strong> 2026-2027</div>
+                <div class="id-card-content-wrap">
+                    <!-- Admit Card Official Header -->
+                    <div class="admit-card-header">
+                        <div class="admit-header-titles">
+                            <span class="admit-gov-title">ODISHA ADARSHA VIDYALAYA · STATE CURRICULUM</span>
+                            <div class="admit-main-title">
+                                <i class="fas fa-graduation-cap" style="color:#facc15;"></i>
+                                <span>OAV MANTRA</span> ACADEMY
+                            </div>
+                            <span class="admit-sub-title">Digital Student Admit & Identity Card</span>
+                        </div>
+                        <div class="admit-badge-verified">
+                            <i class="fas fa-certificate"></i> VERIFIED ADMIT
+                        </div>
+                    </div>
+
+                    <!-- Student Profile Section -->
+                    <div class="admit-student-row">
+                        <div id="idCardPhotoContainer" class="admit-photo-ring">
+                            <img id="idCardPhotoImg" src="" alt="Student Photo" style="width:100%; height:100%; object-fit:cover; display:none;">
+                            <i id="idCardPhotoIcon" class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="admit-student-names">
+                            <h3 id="idCardName" class="admit-student-name">Student Name</h3>
+                            <div class="admit-student-class">
+                                <i class="fas fa-book-reader" style="font-size:0.85rem;"></i>
+                                <span id="idCardClass">Class ---</span>
+                                <span class="admit-student-class-badge">ODISHA BOARD / CBSE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admit Card Examination & Registration Details Grid -->
+                    <div class="admit-info-card">
+                        <div class="admit-info-grid">
+                            <div class="admit-info-item">
+                                <strong>Enrollment ID:</strong>
+                                <span id="idCardId" class="admit-enrollment-id">---</span>
+                            </div>
+                            <div class="admit-info-item">
+                                <strong>Mobile:</strong>
+                                <span id="idCardMobile">---</span>
+                            </div>
+                            <div class="admit-info-item">
+                                <strong>District:</strong>
+                                <span id="idCardDistrict">---</span>
+                            </div>
+                            <div class="admit-info-item">
+                                <strong>Academic Year:</strong>
+                                <span>2026–2027</span>
+                            </div>
+                            <div class="admit-info-item" style="grid-column: 1 / -1;">
+                                <strong>Registered School:</strong>
+                                <span id="idCardSchool">---</span>
+                            </div>
+                            <div class="admit-info-item" style="grid-column: 1 / -1;">
+                                <strong>Authorization:</strong>
+                                <span style="color:#38bdf8;">Valid for Online Video Classes, Tests, Quizzes & Examinations</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Barcode & Digital Council Seal -->
+                    <div class="admit-security-footer">
+                        <div class="admit-barcode-wrap">
+                            <div class="admit-barcode-lines">
+                                <span class="admit-barcode-bar w-2"></span>
+                                <span class="admit-barcode-bar w-1"></span>
+                                <span class="admit-barcode-bar w-3"></span>
+                                <span class="admit-barcode-bar w-1"></span>
+                                <span class="admit-barcode-bar w-2"></span>
+                                <span class="admit-barcode-bar w-1"></span>
+                                <span class="admit-barcode-bar w-3"></span>
+                                <span class="admit-barcode-bar w-2"></span>
+                                <span class="admit-barcode-bar w-1"></span>
+                                <span class="admit-barcode-bar w-2"></span>
+                                <span class="admit-barcode-bar w-3"></span>
+                                <span class="admit-barcode-bar w-1"></span>
+                                <span class="admit-barcode-bar w-2"></span>
+                                <span class="admit-barcode-bar w-3"></span>
+                                <span class="admit-barcode-bar w-1"></span>
+                                <span class="admit-barcode-bar w-2"></span>
+                                <span class="admit-barcode-bar w-1"></span>
+                                <span class="admit-barcode-bar w-3"></span>
+                            </div>
+                            <span class="admit-barcode-text">OAV-ADMIT-AUTHENTIC-2026</span>
+                        </div>
+                        <div class="admit-seal-badge">
+                            <strong><i class="fas fa-stamp"></i> Digitally Attested</strong>
+                            <span>OAV Mantra Academic Council, Odisha</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Upload Photo Action with ultra-compact compression -->
             <div style="margin-top:16px; display:flex; gap:10px;">
-                <label for="studentPhotoInput" class="btn-dash-action" style="flex:1; justify-content:center; cursor:pointer; background:#2563eb; color:#fff; border:none; padding:10px 14px; border-radius:8px; font-size:0.9rem;">
+                <label for="studentPhotoInput" class="btn-dash-action" style="flex:1; justify-content:center; cursor:pointer; background:#2563eb; color:#fff; border:none; padding:11px 14px; border-radius:8px; font-size:0.9rem; font-weight:700;">
                     <i class="fas fa-camera"></i> Upload / Change Photo
                 </label>
                 <input type="file" id="studentPhotoInput" accept="image/*" style="display:none;">
             </div>
 
-            <button class="submit-btn" onclick="window.print()" style="margin-top:10px;">
-                <i class="fas fa-print"></i> Print ID Card / Save as PDF
+            <button class="submit-btn" onclick="window.print()" style="margin-top:10px; font-weight:800; letter-spacing:0.4px;">
+                <i class="fas fa-print"></i> Print Admit Card / Save as PDF
             </button>
         </div>
     </div>
