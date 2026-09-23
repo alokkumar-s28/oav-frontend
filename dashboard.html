@@ -272,14 +272,18 @@
 
         /* Official Digital Admit & ID Card with Konark Chakra & Shree Mandira Nila Chakra */
         .id-card-view {
-            background: linear-gradient(135deg, #060e20 0%, #0d1e44 48%, #142a5c 100%);
+            background: radial-gradient(circle at 85% 20%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
+                        radial-gradient(circle at 15% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+                        linear-gradient(135deg, #050c1e 0%, #0a1738 50%, #0e204c 100%);
             color: #ffffff;
             border-radius: 20px;
             padding: 24px 26px 20px;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(245, 158, 11, 0.35);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(245, 158, 11, 0.35);
             position: relative;
             overflow: hidden;
-            border: 2px solid rgba(245, 158, 11, 0.4);
+            border: 2px solid rgba(245, 158, 11, 0.45);
+            box-sizing: border-box;
+            width: 100%;
         }
 
         /* Top & Bottom Golden Filigree Accent Bars */
@@ -304,39 +308,41 @@
             z-index: 4;
         }
 
-        /* Background Motif 1: Konark Chakra (Right / Center Watermark) */
+        /* Background Motif 1: Konark Chakra (Right / Center Watermark - 16-Spoke Chariot Wheel) */
         .admit-bg-konark {
             position: absolute;
-            right: -30px;
+            right: -25px;
             top: 50%;
             transform: translateY(-50%);
-            width: 290px;
-            height: 290px;
+            width: clamp(160px, 46%, 280px);
+            height: auto;
+            aspect-ratio: 1 / 1;
             color: #f59e0b;
-            opacity: 0.17;
+            opacity: 0.16;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.45));
-            animation: konarkGentleGlow 6s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.45));
+            animation: konarkGentleGlow 7s ease-in-out infinite alternate;
         }
 
-        /* Background Motif 2: Shree Mandira Nila Chakra & Holy Spire (Left Watermark) */
+        /* Background Motif 2: Shree Mandira Nila Chakra & Holy Spire with Patitapabana Bana (Left Watermark) */
         .admit-bg-nilachakra {
             position: absolute;
-            left: -15px;
-            bottom: -20px;
-            width: 210px;
-            height: 280px;
+            left: -12px;
+            bottom: -15px;
+            width: clamp(130px, 38%, 215px);
+            height: auto;
+            aspect-ratio: 240 / 330;
             color: #38bdf8;
             opacity: 0.18;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.4));
+            filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.45));
         }
 
         @keyframes konarkGentleGlow {
-            0% { opacity: 0.15; transform: translateY(-50%) rotate(0deg); }
-            100% { opacity: 0.22; transform: translateY(-50%) rotate(4deg); }
+            0% { opacity: 0.14; transform: translateY(-50%) rotate(0deg); }
+            100% { opacity: 0.20; transform: translateY(-50%) rotate(5deg); }
         }
 
         .id-card-content-wrap {
@@ -468,15 +474,16 @@
 
         /* Admit Card Info Grid */
         .admit-info-card {
-            background: rgba(8, 17, 39, 0.65);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(5, 12, 28, 0.78);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(245, 158, 11, 0.25);
             border-radius: 12px;
             padding: 14px 16px;
             font-size: 0.88rem;
             line-height: 1.85;
             margin-bottom: 14px;
+            box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.25);
         }
 
         .admit-info-grid {
@@ -662,8 +669,102 @@
             .btn-dash-action {
                 width: 100%;
             }
-            .stats-row {
+        }
+
+        @media (max-width: 520px) {
+            .modal-card {
+                padding: 16px 10px !important;
+                margin: 10px !important;
+                max-width: 100% !important;
+                border-radius: 18px !important;
+            }
+            .id-card-view {
+                padding: 16px 12px 14px;
+                border-radius: 16px;
+            }
+            .admit-bg-konark {
+                width: clamp(120px, 38vw, 175px);
+                right: -14px;
+                opacity: 0.12;
+            }
+            .admit-bg-nilachakra {
+                width: clamp(100px, 32vw, 145px);
+                left: -8px;
+                bottom: -10px;
+                opacity: 0.14;
+            }
+            .admit-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding-bottom: 10px;
+                margin-bottom: 12px;
+            }
+            .admit-main-title {
+                font-size: 1.05rem;
+            }
+            .admit-badge-verified {
+                align-self: flex-start;
+                font-size: 0.68rem;
+                padding: 3px 8px;
+            }
+            .admit-student-row {
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+            .admit-photo-ring {
+                width: 62px;
+                height: 62px;
+                min-width: 62px;
+                font-size: 1.5rem;
+            }
+            .admit-student-name {
+                font-size: 1.15rem;
+            }
+            .admit-student-class {
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+            }
+            .admit-info-card {
+                padding: 10px 12px;
+                font-size: 0.82rem;
+                line-height: 1.7;
+                margin-bottom: 12px;
+            }
+            .admit-info-grid {
                 grid-template-columns: 1fr;
+                gap: 5px 8px;
+            }
+            .admit-security-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding-top: 8px;
+            }
+            .admit-seal-badge {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .id-card-view {
+                padding: 14px 10px 12px;
+            }
+            .admit-gov-title {
+                font-size: 0.62rem;
+                letter-spacing: 0.8px;
+            }
+            .admit-main-title {
+                font-size: 0.95rem;
+            }
+            .admit-student-name {
+                font-size: 1.05rem;
+            }
+            .admit-photo-ring {
+                width: 54px;
+                height: 54px;
+                min-width: 54px;
+                font-size: 1.35rem;
             }
         }
     </style>
@@ -951,86 +1052,117 @@
             <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
             <circle cx="150" cy="78" r="2" fill="currentColor"/>
         </g>
-        <circle cx="150" cy="150" r="40" fill="none" stroke="currentColor" stroke-width="2.5"/>
-        <circle cx="150" cy="150" r="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
-        <circle cx="150" cy="150" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="150" cy="150" r="41" fill="none" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="150" cy="150" r="34" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5,2.5" opacity="0.8"/>
+        <!-- 8-Petal Carved Sacred Lotus Hub Ring -->
+        <g class="konark-hub-lotus" opacity="0.85">
+            <path d="M 150,118 Q 155,130 150,136 Q 145,130 150,118 Z" fill="currentColor"/>
+            <path d="M 150,182 Q 155,170 150,164 Q 145,170 150,182 Z" fill="currentColor"/>
+            <path d="M 118,150 Q 130,155 136,150 Q 130,145 118,150 Z" fill="currentColor"/>
+            <path d="M 182,150 Q 170,155 164,150 Q 170,145 182,150 Z" fill="currentColor"/>
+            <path d="M 127.4,127.4 Q 138,135 140,140 Q 135,138 127.4,127.4 Z" fill="currentColor"/>
+            <path d="M 172.6,172.6 Q 162,165 160,160 Q 165,162 172.6,172.6 Z" fill="currentColor"/>
+            <path d="M 172.6,127.4 Q 165,138 160,140 Q 162,135 172.6,127.4 Z" fill="currentColor"/>
+            <path d="M 127.4,172.6 Q 138,165 140,160 Q 135,162 127.4,172.6 Z" fill="currentColor"/>
+        </g>
+        <circle cx="150" cy="150" r="23" fill="none" stroke="currentColor" stroke-width="2"/>
         <circle cx="150" cy="150" r="14" fill="currentColor" opacity="0.8"/>
-        <circle cx="150" cy="150" r="6" fill="#091a38"/>
+        <circle cx="150" cy="150" r="6" fill="#060e20" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="150" cy="150" r="2" fill="currentColor"/>
     </svg>
                 </div>
 
                 <!-- Background Watermark 2: Shree Mandira Nila Chakra & Holy Spire with Patitapabana Bana -->
                 <div class="admit-bg-nilachakra" aria-hidden="true">
-                    <svg viewBox="0 0 240 320" xmlns="http://www.w3.org/2000/svg" class="admit-chakra-svg nilachakra-art">
+                    <svg viewBox="0 0 240 330" xmlns="http://www.w3.org/2000/svg" class="admit-chakra-svg nilachakra-art">
         <defs>
             <linearGradient id="patitaBanaAdmit" x1="0%" y1="0%" x2="100%" y2="50%">
-                <stop offset="0%" stop-color="#ef4444" stop-opacity="0.95"/>
-                <stop offset="50%" stop-color="#f97316" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#facc15" stop-opacity="0.85"/>
+                <stop offset="0%" stop-color="#dc2626" stop-opacity="0.95"/>
+                <stop offset="45%" stop-color="#ea580c" stop-opacity="0.92"/>
+                <stop offset="100%" stop-color="#facc15" stop-opacity="0.9"/>
             </linearGradient>
+            <radialGradient id="nilaAura" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+            </radialGradient>
         </defs>
 
-        <!-- Shree Jagannath Temple Spire Silhouette -->
-        <path d="M 60,320 
-                 C 60,260 70,220 85,180
-                 C 95,150 105,120 110,95
-                 L 130,95
-                 C 135,120 145,150 155,180
-                 C 170,220 180,260 180,320
+        <!-- Shree Jagannath Temple Spire Silhouette (Rekha Deula Gandi with Pagas) -->
+        <path d="M 52,330 
+                 C 56,260 68,220 84,180
+                 C 94,150 104,120 108,96
+                 L 132,96
+                 C 136,120 146,150 156,180
+                 C 172,220 184,260 188,330
                  Z" 
-              fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+              fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.55"/>
 
-        <!-- Temple Spire Horizontal Terraces (Bada Deula Ridges) -->
-        <line x1="68" y1="280" x2="172" y2="280" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
-        <line x1="75" y1="245" x2="165" y2="245" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
-        <line x1="86" y1="210" x2="154" y2="210" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
-        <line x1="96" y1="175" x2="144" y2="175" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
-        <line x1="104" y1="140" x2="136" y2="140" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
-        <line x1="108" y1="110" x2="132" y2="110" stroke="currentColor" stroke-width="1.2" opacity="0.4"/>
+        <!-- Temple Central Rahapaga & Corner Kanika Ribs -->
+        <path d="M 88,330 C 92,260 98,210 110,180 C 114,150 116,120 117,96" fill="none" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+        <path d="M 152,330 C 148,260 142,210 130,180 C 126,150 124,120 123,96" fill="none" stroke="currentColor" stroke-width="1" opacity="0.35"/>
 
-        <!-- The Sacred Kalasha & Amalaka -->
-        <ellipse cx="120" cy="85" rx="14" ry="7" fill="none" stroke="currentColor" stroke-width="2"/>
-        <ellipse cx="120" cy="74" rx="9" ry="5" fill="none" stroke="currentColor" stroke-width="1.6"/>
-        <path d="M 115,70 L 115,42 L 125,42 L 125,70 Z" fill="currentColor" opacity="0.4"/>
+        <!-- Temple Spire Horizontal Terraces (Bada Deula Bhumi Ridges) -->
+        <line x1="58" y1="285" x2="182" y2="285" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
+        <line x1="68" y1="250" x2="172" y2="250" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
+        <line x1="78" y1="215" x2="162" y2="215" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
+        <line x1="88" y1="180" x2="152" y2="180" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
+        <line x1="98" y1="145" x2="142" y2="145" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
+        <line x1="106" y1="112" x2="134" y2="112" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
 
-        <!-- THE SACRED NILA CHAKRA (8-Spoke Holy Disc) -->
+        <!-- The Sacred Beki (Neck), Amalaka & Kalasha -->
+        <line x1="108" y1="96" x2="132" y2="96" stroke="currentColor" stroke-width="2.5" opacity="0.7"/>
+        <!-- Amalaka (Fluted Cogged Stone Disc) -->
+        <ellipse cx="120" cy="86" rx="16" ry="8" fill="none" stroke="currentColor" stroke-width="2.2"/>
+        <path d="M 106,86 L 109,92 M 113,88 L 115,94 M 120,88 L 120,94 M 127,88 L 125,94 M 134,86 L 131,92" stroke="currentColor" stroke-width="1.2" opacity="0.6"/>
+        <!-- Khapuri & Kalasha (Sacred Urn Pot) -->
+        <ellipse cx="120" cy="74" rx="10" ry="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M 114,70 Q 112,54 120,44 Q 128,54 126,70 Z" fill="currentColor" opacity="0.35"/>
+        <ellipse cx="120" cy="44" rx="4" ry="2" fill="currentColor"/>
+
+        <!-- THE SACRED NILA CHAKRA (8-Spoke Holy Disc with 8 Sudarshana Flame Teeth) -->
         <g transform="translate(120, 36)">
-            <circle cx="0" cy="0" r="28" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
-            <circle cx="0" cy="0" r="23" fill="none" stroke="#93c5fd" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <circle cx="0" cy="0" r="10" fill="none" stroke="#38bdf8" stroke-width="2"/>
-            <circle cx="0" cy="0" r="4" fill="#38bdf8"/>
+            <!-- Aura Circle -->
+            <circle cx="0" cy="0" r="32" fill="url(#nilaAura)"/>
+            <circle cx="0" cy="0" r="26" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+            <circle cx="0" cy="0" r="21" fill="none" stroke="#93c5fd" stroke-width="1.2" stroke-dasharray="2,2"/>
+            <circle cx="0" cy="0" r="9" fill="none" stroke="#38bdf8" stroke-width="2"/>
+            <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
 
-            <!-- 8 Sacred Spokes -->
-            <line x1="0" y1="-23" x2="0" y2="23" stroke="#38bdf8" stroke-width="2.2"/>
-            <line x1="-23" y1="0" x2="23" y2="0" stroke="#38bdf8" stroke-width="2.2"/>
-            <line x1="-16" y1="-16" x2="16" y2="16" stroke="#38bdf8" stroke-width="2.2"/>
-            <line x1="-16" y1="16" x2="16" y2="-16" stroke="#38bdf8" stroke-width="2.2"/>
+            <!-- 8 Sacred Spokes (Astara Sudarshana) -->
+            <line x1="0" y1="-21" x2="0" y2="21" stroke="#38bdf8" stroke-width="2.4"/>
+            <line x1="-21" y1="0" x2="21" y2="0" stroke="#38bdf8" stroke-width="2.4"/>
+            <line x1="-15" y1="-15" x2="15" y2="15" stroke="#38bdf8" stroke-width="2.2"/>
+            <line x1="-15" y1="15" x2="15" y2="-15" stroke="#38bdf8" stroke-width="2.2"/>
 
-            <!-- 8 Chakra Teeth / Holy Flames -->
-            <polygon points="0,-28 -3,-33 3,-33" fill="#38bdf8"/>
-            <polygon points="0,28 -3,33 3,33" fill="#38bdf8"/>
-            <polygon points="-28,0 -33,-3 -33,3" fill="#38bdf8"/>
-            <polygon points="28,0 33,-3 33,3" fill="#38bdf8"/>
-            <polygon points="20,20 25,24 24,25" fill="#38bdf8"/>
-            <polygon points="-20,-20 -25,-24 -24,-25" fill="#38bdf8"/>
-            <polygon points="20,-20 25,-24 24,-25" fill="#38bdf8"/>
-            <polygon points="-20,20 -25,24 -24,25" fill="#38bdf8"/>
+            <!-- 8 Chakra Teeth / Holy Sudarshana Flames -->
+            <polygon points="0,-26 -3.5,-32 3.5,-32" fill="#38bdf8"/>
+            <polygon points="0,26 -3.5,32 3.5,32" fill="#38bdf8"/>
+            <polygon points="-26,0 -32,-3.5 -32,3.5" fill="#38bdf8"/>
+            <polygon points="26,0 32,-3.5 32,3.5" fill="#38bdf8"/>
+            <polygon points="18.4,18.4 24,21 21,24" fill="#38bdf8"/>
+            <polygon points="-18.4,-18.4 -24,-21 -21,-24" fill="#38bdf8"/>
+            <polygon points="18.4,-18.4 24,-21 21,-24" fill="#38bdf8"/>
+            <polygon points="-18.4,18.4 -24,21 -21,24" fill="#38bdf8"/>
         </g>
 
-        <!-- THE SACRED PATITAPABANA BANA (Fluttering Holy Flag) -->
-        <g transform="translate(120, 10)">
-            <line x1="0" y1="28" x2="0" y2="-6" stroke="#facc15" stroke-width="2.5"/>
-            <circle cx="0" cy="-6" r="3" fill="#facc15"/>
-            <path d="M 0,-4 
-                     C 25,-14 55,-2 85,-12
-                     C 105,-18 118,-15 125,-16
-                     L 80,6
-                     C 55,2 25,12 0,4
+        <!-- THE SACRED PATITAPABANA BANA (Fluttering Holy Flag with Trailing Streamers) -->
+        <g transform="translate(120, 8)">
+            <!-- Holy Dhwaja Mast & Golden Kalasha Top -->
+            <line x1="0" y1="36" x2="0" y2="-8" stroke="#facc15" stroke-width="2.6"/>
+            <circle cx="0" cy="-8" r="3.5" fill="#facc15"/>
+            <!-- Waving Sacred Flag -->
+            <path d="M 0,-6 
+                     C 30,-16 65,-2 100,-14
+                     C 120,-19 135,-15 142,-16
+                     L 95,8
+                     C 65,3 30,14 0,6
                      Z" 
                   fill="url(#patitaBanaAdmit)" 
                   stroke="#ef4444" 
-                  stroke-width="1.2"/>
-            <path d="M 125,-16 C 135,-12 142,-18 152,-15 L 140,-10 C 130,-12 120,-11 115,-12 Z" fill="#facc15" opacity="0.9"/>
+                  stroke-width="1.3"/>
+            <!-- Twin Trailing Streamers (Dhwaja Pichha) -->
+            <path d="M 142,-16 C 154,-12 165,-20 178,-16 L 160,-9 C 148,-11 138,-10 132,-11 Z" fill="#facc15" opacity="0.95"/>
+            <path d="M 95,8 C 115,14 135,10 152,16 L 140,19 C 122,15 106,16 95,11 Z" fill="#ea580c" opacity="0.9"/>
         </g>
     </svg>
                 </div>
