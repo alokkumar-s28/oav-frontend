@@ -308,34 +308,34 @@
             z-index: 4;
         }
 
-        /* Background Motif 1: Authentic Konark Chakra (Right / Center Watermark) */
+        /* Background Motif 1: Authentic Konark Chakra (Large & Clearly Visible) */
         .admit-bg-konark {
             position: absolute;
-            right: -20px;
+            right: -25px;
             top: 50%;
             transform: translateY(-50%);
-            width: clamp(170px, 46%, 280px);
+            width: clamp(230px, 56%, 340px);
             height: auto;
             aspect-ratio: 1 / 1;
-            opacity: 0.30;
+            opacity: 0.52;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 22px rgba(245, 158, 11, 0.5));
-            animation: konarkGentleGlow 8s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 24px rgba(245, 158, 11, 0.65)) brightness(1.22) contrast(1.18) saturate(1.25);
+            animation: konarkGentleGlow 7s ease-in-out infinite alternate;
         }
 
-        /* Background Motif 2: Authentic Shree Mandira Nila Chakra with Patitapabana Bana (Left Watermark) */
+        /* Background Motif 2: Authentic Shree Mandira Nila Chakra with Patitapabana Bana (Large & Clearly Visible) */
         .admit-bg-nilachakra {
             position: absolute;
-            left: -12px;
-            bottom: -15px;
-            width: clamp(140px, 39%, 230px);
+            left: -15px;
+            bottom: -20px;
+            width: clamp(190px, 47%, 290px);
             height: auto;
             aspect-ratio: 1 / 1;
-            opacity: 0.34;
+            opacity: 0.56;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.5));
+            filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.65)) brightness(1.25) contrast(1.2) saturate(1.3);
         }
 
         .chakra-watermark-img {
@@ -345,11 +345,13 @@
             display: block;
             user-select: none;
             -webkit-user-drag: none;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
 
         @keyframes konarkGentleGlow {
-            0% { opacity: 0.28; transform: translateY(-50%) rotate(0deg); }
-            100% { opacity: 0.36; transform: translateY(-50%) rotate(4deg); }
+            0% { opacity: 0.48; transform: translateY(-50%) rotate(0deg) scale(1); }
+            100% { opacity: 0.58; transform: translateY(-50%) rotate(4deg) scale(1.03); }
         }
 
         .id-card-content-wrap {
@@ -479,18 +481,18 @@
             margin-left: 4px;
         }
 
-        /* Admit Card Info Grid (Translucent glass so background chakras show through while text stays razor-sharp) */
+        /* Admit Card Info Grid (Ultra-translucent glass so background chakras are clearly visible) */
         .admit-info-card {
-            background: rgba(4, 10, 26, 0.45);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(245, 158, 11, 0.32);
+            background: rgba(3, 8, 22, 0.28);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            border: 1.5px solid rgba(245, 158, 11, 0.38);
             border-radius: 12px;
             padding: 14px 16px;
             font-size: 0.88rem;
             line-height: 1.85;
             margin-bottom: 14px;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.35);
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.4);
         }
 
         .admit-info-grid {
@@ -512,28 +514,28 @@
         }
 
         .admit-info-item strong {
-            color: #cbd5e1;
+            color: #e2e8f0;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.4px;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 1px 3px #000, 0 2px 6px #000, 0 0 10px #000;
             flex-shrink: 0;
         }
 
         .admit-info-item span {
             color: #ffffff;
-            font-weight: 600;
+            font-weight: 700;
             word-break: break-word;
-            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95);
+            text-shadow: 0 1px 3px #000, 0 2px 8px #000, 0 0 12px #000;
         }
 
         .admit-enrollment-id {
             font-family: monospace;
-            color: #facc15 !important;
-            font-weight: 800 !important;
-            font-size: 1rem;
-            letter-spacing: 0.6px;
-            text-shadow: 0 0 12px rgba(250, 204, 21, 0.5), 0 2px 6px rgba(0, 0, 0, 0.95) !important;
+            color: #fde047 !important;
+            font-weight: 900 !important;
+            font-size: 1.05rem;
+            letter-spacing: 0.7px;
+            text-shadow: 0 0 14px rgba(250, 204, 21, 0.7), 0 2px 8px #000, 0 0 4px #000 !important;
         }
 
         /* Security Barcode & Seal Footer */
@@ -636,7 +638,7 @@
             }
 
             .admit-bg-konark, .admit-bg-nilachakra {
-                opacity: 0.36 !important;
+                opacity: 0.60 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -693,15 +695,15 @@
                 border-radius: 16px;
             }
             .admit-bg-konark {
-                width: clamp(130px, 40vw, 190px);
-                right: -10px;
-                opacity: 0.25;
+                width: clamp(170px, 48vw, 240px);
+                right: -15px;
+                opacity: 0.46;
             }
             .admit-bg-nilachakra {
-                width: clamp(110px, 34vw, 160px);
-                left: -8px;
-                bottom: -8px;
-                opacity: 0.28;
+                width: clamp(140px, 42vw, 210px);
+                left: -12px;
+                bottom: -12px;
+                opacity: 0.50;
             }
             .admit-card-header {
                 flex-direction: column;
@@ -759,6 +761,14 @@
         @media (max-width: 380px) {
             .id-card-view {
                 padding: 14px 10px 12px;
+            }
+            .admit-bg-konark {
+                width: clamp(140px, 45vw, 190px);
+                opacity: 0.44;
+            }
+            .admit-bg-nilachakra {
+                width: clamp(120px, 40vw, 170px);
+                opacity: 0.46;
             }
             .admit-gov-title {
                 font-size: 0.62rem;
