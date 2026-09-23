@@ -308,41 +308,48 @@
             z-index: 4;
         }
 
-        /* Background Motif 1: Konark Chakra (Right / Center Watermark - 16-Spoke Chariot Wheel) */
+        /* Background Motif 1: Authentic Konark Chakra (Right / Center Watermark) */
         .admit-bg-konark {
             position: absolute;
-            right: -25px;
+            right: -20px;
             top: 50%;
             transform: translateY(-50%);
-            width: clamp(160px, 46%, 280px);
+            width: clamp(170px, 46%, 280px);
             height: auto;
             aspect-ratio: 1 / 1;
-            color: #f59e0b;
-            opacity: 0.16;
+            opacity: 0.30;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.45));
-            animation: konarkGentleGlow 7s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 22px rgba(245, 158, 11, 0.5));
+            animation: konarkGentleGlow 8s ease-in-out infinite alternate;
         }
 
-        /* Background Motif 2: Shree Mandira Nila Chakra & Holy Spire with Patitapabana Bana (Left Watermark) */
+        /* Background Motif 2: Authentic Shree Mandira Nila Chakra with Patitapabana Bana (Left Watermark) */
         .admit-bg-nilachakra {
             position: absolute;
             left: -12px;
             bottom: -15px;
-            width: clamp(130px, 38%, 215px);
+            width: clamp(140px, 39%, 230px);
             height: auto;
-            aspect-ratio: 240 / 330;
-            color: #38bdf8;
-            opacity: 0.18;
+            aspect-ratio: 1 / 1;
+            opacity: 0.34;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.45));
+            filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.5));
+        }
+
+        .chakra-watermark-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            user-select: none;
+            -webkit-user-drag: none;
         }
 
         @keyframes konarkGentleGlow {
-            0% { opacity: 0.14; transform: translateY(-50%) rotate(0deg); }
-            100% { opacity: 0.20; transform: translateY(-50%) rotate(5deg); }
+            0% { opacity: 0.28; transform: translateY(-50%) rotate(0deg); }
+            100% { opacity: 0.36; transform: translateY(-50%) rotate(4deg); }
         }
 
         .id-card-content-wrap {
@@ -472,18 +479,18 @@
             margin-left: 4px;
         }
 
-        /* Admit Card Info Grid */
+        /* Admit Card Info Grid (Translucent glass so background chakras show through while text stays razor-sharp) */
         .admit-info-card {
-            background: rgba(5, 12, 28, 0.78);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(245, 158, 11, 0.25);
+            background: rgba(4, 10, 26, 0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(245, 158, 11, 0.32);
             border-radius: 12px;
             padding: 14px 16px;
             font-size: 0.88rem;
             line-height: 1.85;
             margin-bottom: 14px;
-            box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.25);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.35);
         }
 
         .admit-info-grid {
@@ -505,25 +512,28 @@
         }
 
         .admit-info-item strong {
-            color: #94a3b8;
+            color: #cbd5e1;
             font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
             flex-shrink: 0;
         }
 
         .admit-info-item span {
-            color: #f1f5f9;
+            color: #ffffff;
             font-weight: 600;
             word-break: break-word;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95);
         }
 
         .admit-enrollment-id {
             font-family: monospace;
             color: #facc15 !important;
             font-weight: 800 !important;
-            font-size: 0.98rem;
-            letter-spacing: 0.5px;
+            font-size: 1rem;
+            letter-spacing: 0.6px;
+            text-shadow: 0 0 12px rgba(250, 204, 21, 0.5), 0 2px 6px rgba(0, 0, 0, 0.95) !important;
         }
 
         /* Security Barcode & Seal Footer */
@@ -626,7 +636,7 @@
             }
 
             .admit-bg-konark, .admit-bg-nilachakra {
-                opacity: 0.28 !important;
+                opacity: 0.36 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -683,15 +693,15 @@
                 border-radius: 16px;
             }
             .admit-bg-konark {
-                width: clamp(120px, 38vw, 175px);
-                right: -14px;
-                opacity: 0.12;
+                width: clamp(130px, 40vw, 190px);
+                right: -10px;
+                opacity: 0.25;
             }
             .admit-bg-nilachakra {
-                width: clamp(100px, 32vw, 145px);
+                width: clamp(110px, 34vw, 160px);
                 left: -8px;
-                bottom: -10px;
-                opacity: 0.14;
+                bottom: -8px;
+                opacity: 0.28;
             }
             .admit-card-header {
                 flex-direction: column;
@@ -891,280 +901,14 @@
             <button class="close-btn" id="closeIdModalBtn" aria-label="Close Admit Card">&times;</button>
             
             <div class="id-card-view">
-                <!-- Background Watermark 1: Konark Chakra (The Sun Temple Wheel) -->
+                <!-- Background Watermark 1: Authentic Konark Chakra (From Reference Image) -->
                 <div class="admit-bg-konark" aria-hidden="true">
-                    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="admit-chakra-svg konark-chakra-art">
-        <defs>
-            <radialGradient id="konarkGoldGrad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
-                <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.6"/>
-                <stop offset="100%" stop-color="#b45309" stop-opacity="0.3"/>
-            </radialGradient>
-        </defs>
-        <!-- Concentric Outer Rim -->
-        <circle cx="150" cy="150" r="142" fill="none" stroke="currentColor" stroke-width="2.5"/>
-        <circle cx="150" cy="150" r="135" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3,3"/>
-        <circle cx="150" cy="150" r="122" fill="none" stroke="currentColor" stroke-width="2"/>
-        <circle cx="150" cy="150" r="114" fill="none" stroke="currentColor" stroke-width="1"/>
-        
-        <!-- 30 Outer Beads -->
-        <g class="konark-rim-beads">
-            <circle cx="278.00" cy="150.00" r="3" fill="currentColor"/>
-            <circle cx="275.20" cy="176.61" r="3" fill="currentColor"/>
-            <circle cx="266.93" cy="202.06" r="3" fill="currentColor"/>
-            <circle cx="253.55" cy="225.24" r="3" fill="currentColor"/>
-            <circle cx="235.65" cy="245.12" r="3" fill="currentColor"/>
-            <circle cx="214.00" cy="260.85" r="3" fill="currentColor"/>
-            <circle cx="189.55" cy="271.74" r="3" fill="currentColor"/>
-            <circle cx="163.38" cy="277.30" r="3" fill="currentColor"/>
-            <circle cx="136.62" cy="277.30" r="3" fill="currentColor"/>
-            <circle cx="110.45" cy="271.74" r="3" fill="currentColor"/>
-            <circle cx="86.00" cy="260.85" r="3" fill="currentColor"/>
-            <circle cx="64.35" cy="245.12" r="3" fill="currentColor"/>
-            <circle cx="46.45" cy="225.24" r="3" fill="currentColor"/>
-            <circle cx="33.07" cy="202.06" r="3" fill="currentColor"/>
-            <circle cx="24.80" cy="176.61" r="3" fill="currentColor"/>
-            <circle cx="22.00" cy="150.00" r="3" fill="currentColor"/>
-            <circle cx="24.80" cy="123.39" r="3" fill="currentColor"/>
-            <circle cx="33.07" cy="97.94" r="3" fill="currentColor"/>
-            <circle cx="46.45" cy="74.76" r="3" fill="currentColor"/>
-            <circle cx="64.35" cy="54.88" r="3" fill="currentColor"/>
-            <circle cx="86.00" cy="39.15" r="3" fill="currentColor"/>
-            <circle cx="110.45" cy="28.26" r="3" fill="currentColor"/>
-            <circle cx="136.62" cy="22.70" r="3" fill="currentColor"/>
-            <circle cx="163.38" cy="22.70" r="3" fill="currentColor"/>
-            <circle cx="189.55" cy="28.26" r="3" fill="currentColor"/>
-            <circle cx="214.00" cy="39.15" r="3" fill="currentColor"/>
-            <circle cx="235.65" cy="54.88" r="3" fill="currentColor"/>
-            <circle cx="253.55" cy="74.76" r="3" fill="currentColor"/>
-            <circle cx="266.93" cy="97.94" r="3" fill="currentColor"/>
-            <circle cx="275.20" cy="123.39" r="3" fill="currentColor"/>
-        </g>
-        <g transform="rotate(0 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(45 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(90 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(135 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(180 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(225 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(270 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(315 150 150)">
-            <line x1="150" y1="114" x2="150" y2="40" stroke="currentColor" stroke-width="3"/>
-            <line x1="147" y1="114" x2="147" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <line x1="153" y1="114" x2="153" y2="40" stroke="currentColor" stroke-width="1" opacity="0.6"/>
-            <!-- Medallion -->
-            <circle cx="150" cy="76" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="150" cy="76" r="4" fill="currentColor" opacity="0.7"/>
-            <polygon points="150,62 155,76 150,90 145,76" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        </g>
-        <g transform="rotate(22.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <g transform="rotate(67.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <g transform="rotate(112.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <g transform="rotate(157.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <g transform="rotate(202.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <g transform="rotate(247.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <g transform="rotate(292.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <g transform="rotate(337.5 150 150)">
-            <line x1="150" y1="114" x2="150" y2="44" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="150" cy="78" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="150" cy="78" r="2" fill="currentColor"/>
-        </g>
-        <circle cx="150" cy="150" r="41" fill="none" stroke="currentColor" stroke-width="2.4"/>
-        <circle cx="150" cy="150" r="34" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5,2.5" opacity="0.8"/>
-        <!-- 8-Petal Carved Sacred Lotus Hub Ring -->
-        <g class="konark-hub-lotus" opacity="0.85">
-            <path d="M 150,118 Q 155,130 150,136 Q 145,130 150,118 Z" fill="currentColor"/>
-            <path d="M 150,182 Q 155,170 150,164 Q 145,170 150,182 Z" fill="currentColor"/>
-            <path d="M 118,150 Q 130,155 136,150 Q 130,145 118,150 Z" fill="currentColor"/>
-            <path d="M 182,150 Q 170,155 164,150 Q 170,145 182,150 Z" fill="currentColor"/>
-            <path d="M 127.4,127.4 Q 138,135 140,140 Q 135,138 127.4,127.4 Z" fill="currentColor"/>
-            <path d="M 172.6,172.6 Q 162,165 160,160 Q 165,162 172.6,172.6 Z" fill="currentColor"/>
-            <path d="M 172.6,127.4 Q 165,138 160,140 Q 162,135 172.6,127.4 Z" fill="currentColor"/>
-            <path d="M 127.4,172.6 Q 138,165 140,160 Q 135,162 127.4,172.6 Z" fill="currentColor"/>
-        </g>
-        <circle cx="150" cy="150" r="23" fill="none" stroke="currentColor" stroke-width="2"/>
-        <circle cx="150" cy="150" r="14" fill="currentColor" opacity="0.8"/>
-        <circle cx="150" cy="150" r="6" fill="#060e20" stroke="currentColor" stroke-width="1.5"/>
-        <circle cx="150" cy="150" r="2" fill="currentColor"/>
-    </svg>
+                    <img src="konark_chakra_clean.png" alt="Konark Chakra" class="chakra-watermark-img konark-chakra-img">
                 </div>
 
-                <!-- Background Watermark 2: Shree Mandira Nila Chakra & Holy Spire with Patitapabana Bana -->
+                <!-- Background Watermark 2: Authentic Shree Mandira Nila Chakra with Patitapabana Bana (From Reference Image) -->
                 <div class="admit-bg-nilachakra" aria-hidden="true">
-                    <svg viewBox="0 0 240 330" xmlns="http://www.w3.org/2000/svg" class="admit-chakra-svg nilachakra-art">
-        <defs>
-            <linearGradient id="patitaBanaAdmit" x1="0%" y1="0%" x2="100%" y2="50%">
-                <stop offset="0%" stop-color="#dc2626" stop-opacity="0.95"/>
-                <stop offset="45%" stop-color="#ea580c" stop-opacity="0.92"/>
-                <stop offset="100%" stop-color="#facc15" stop-opacity="0.9"/>
-            </linearGradient>
-            <radialGradient id="nilaAura" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
-            </radialGradient>
-        </defs>
-
-        <!-- Shree Jagannath Temple Spire Silhouette (Rekha Deula Gandi with Pagas) -->
-        <path d="M 52,330 
-                 C 56,260 68,220 84,180
-                 C 94,150 104,120 108,96
-                 L 132,96
-                 C 136,120 146,150 156,180
-                 C 172,220 184,260 188,330
-                 Z" 
-              fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.55"/>
-
-        <!-- Temple Central Rahapaga & Corner Kanika Ribs -->
-        <path d="M 88,330 C 92,260 98,210 110,180 C 114,150 116,120 117,96" fill="none" stroke="currentColor" stroke-width="1" opacity="0.35"/>
-        <path d="M 152,330 C 148,260 142,210 130,180 C 126,150 124,120 123,96" fill="none" stroke="currentColor" stroke-width="1" opacity="0.35"/>
-
-        <!-- Temple Spire Horizontal Terraces (Bada Deula Bhumi Ridges) -->
-        <line x1="58" y1="285" x2="182" y2="285" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
-        <line x1="68" y1="250" x2="172" y2="250" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
-        <line x1="78" y1="215" x2="162" y2="215" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
-        <line x1="88" y1="180" x2="152" y2="180" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
-        <line x1="98" y1="145" x2="142" y2="145" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
-        <line x1="106" y1="112" x2="134" y2="112" stroke="currentColor" stroke-width="1.3" opacity="0.45"/>
-
-        <!-- The Sacred Beki (Neck), Amalaka & Kalasha -->
-        <line x1="108" y1="96" x2="132" y2="96" stroke="currentColor" stroke-width="2.5" opacity="0.7"/>
-        <!-- Amalaka (Fluted Cogged Stone Disc) -->
-        <ellipse cx="120" cy="86" rx="16" ry="8" fill="none" stroke="currentColor" stroke-width="2.2"/>
-        <path d="M 106,86 L 109,92 M 113,88 L 115,94 M 120,88 L 120,94 M 127,88 L 125,94 M 134,86 L 131,92" stroke="currentColor" stroke-width="1.2" opacity="0.6"/>
-        <!-- Khapuri & Kalasha (Sacred Urn Pot) -->
-        <ellipse cx="120" cy="74" rx="10" ry="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M 114,70 Q 112,54 120,44 Q 128,54 126,70 Z" fill="currentColor" opacity="0.35"/>
-        <ellipse cx="120" cy="44" rx="4" ry="2" fill="currentColor"/>
-
-        <!-- THE SACRED NILA CHAKRA (8-Spoke Holy Disc with 8 Sudarshana Flame Teeth) -->
-        <g transform="translate(120, 36)">
-            <!-- Aura Circle -->
-            <circle cx="0" cy="0" r="32" fill="url(#nilaAura)"/>
-            <circle cx="0" cy="0" r="26" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
-            <circle cx="0" cy="0" r="21" fill="none" stroke="#93c5fd" stroke-width="1.2" stroke-dasharray="2,2"/>
-            <circle cx="0" cy="0" r="9" fill="none" stroke="#38bdf8" stroke-width="2"/>
-            <circle cx="0" cy="0" r="3.5" fill="#38bdf8"/>
-
-            <!-- 8 Sacred Spokes (Astara Sudarshana) -->
-            <line x1="0" y1="-21" x2="0" y2="21" stroke="#38bdf8" stroke-width="2.4"/>
-            <line x1="-21" y1="0" x2="21" y2="0" stroke="#38bdf8" stroke-width="2.4"/>
-            <line x1="-15" y1="-15" x2="15" y2="15" stroke="#38bdf8" stroke-width="2.2"/>
-            <line x1="-15" y1="15" x2="15" y2="-15" stroke="#38bdf8" stroke-width="2.2"/>
-
-            <!-- 8 Chakra Teeth / Holy Sudarshana Flames -->
-            <polygon points="0,-26 -3.5,-32 3.5,-32" fill="#38bdf8"/>
-            <polygon points="0,26 -3.5,32 3.5,32" fill="#38bdf8"/>
-            <polygon points="-26,0 -32,-3.5 -32,3.5" fill="#38bdf8"/>
-            <polygon points="26,0 32,-3.5 32,3.5" fill="#38bdf8"/>
-            <polygon points="18.4,18.4 24,21 21,24" fill="#38bdf8"/>
-            <polygon points="-18.4,-18.4 -24,-21 -21,-24" fill="#38bdf8"/>
-            <polygon points="18.4,-18.4 24,-21 21,-24" fill="#38bdf8"/>
-            <polygon points="-18.4,18.4 -24,21 -21,24" fill="#38bdf8"/>
-        </g>
-
-        <!-- THE SACRED PATITAPABANA BANA (Fluttering Holy Flag with Trailing Streamers) -->
-        <g transform="translate(120, 8)">
-            <!-- Holy Dhwaja Mast & Golden Kalasha Top -->
-            <line x1="0" y1="36" x2="0" y2="-8" stroke="#facc15" stroke-width="2.6"/>
-            <circle cx="0" cy="-8" r="3.5" fill="#facc15"/>
-            <!-- Waving Sacred Flag -->
-            <path d="M 0,-6 
-                     C 30,-16 65,-2 100,-14
-                     C 120,-19 135,-15 142,-16
-                     L 95,8
-                     C 65,3 30,14 0,6
-                     Z" 
-                  fill="url(#patitaBanaAdmit)" 
-                  stroke="#ef4444" 
-                  stroke-width="1.3"/>
-            <!-- Twin Trailing Streamers (Dhwaja Pichha) -->
-            <path d="M 142,-16 C 154,-12 165,-20 178,-16 L 160,-9 C 148,-11 138,-10 132,-11 Z" fill="#facc15" opacity="0.95"/>
-            <path d="M 95,8 C 115,14 135,10 152,16 L 140,19 C 122,15 106,16 95,11 Z" fill="#ea580c" opacity="0.9"/>
-        </g>
-    </svg>
+                    <img src="nila_chakra_clean.png" alt="Shree Mandira Nila Chakra" class="chakra-watermark-img nilachakra-img">
                 </div>
 
                 <div class="id-card-content-wrap">
