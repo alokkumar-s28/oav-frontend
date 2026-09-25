@@ -308,34 +308,38 @@
             z-index: 4;
         }
 
-        /* Background Motif 1: Authentic Konark Chakra (Large & Clearly Visible) */
+        /* Background Motif 1: Authentic Konark Chakra (Extra Large & Ultra Clearly Visible) */
         .admit-bg-konark {
             position: absolute;
-            right: -25px;
+            right: -10px;
             top: 50%;
             transform: translateY(-50%);
-            width: clamp(230px, 56%, 340px);
+            width: clamp(250px, 60%, 360px);
             height: auto;
             aspect-ratio: 1 / 1;
-            opacity: 0.52;
+            opacity: 0.76;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 24px rgba(245, 158, 11, 0.65)) brightness(1.22) contrast(1.18) saturate(1.25);
+            background: radial-gradient(circle at center, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.08) 55%, transparent 75%);
+            border-radius: 50%;
+            filter: drop-shadow(0 0 28px rgba(245, 158, 11, 0.8)) brightness(1.25) contrast(1.15) saturate(1.25);
             animation: konarkGentleGlow 7s ease-in-out infinite alternate;
         }
 
-        /* Background Motif 2: Authentic Shree Mandira Nila Chakra with Patitapabana Bana (Large & Clearly Visible) */
+        /* Background Motif 2: Authentic Shree Mandira Nila Chakra with Patitapabana Bana (Large & Ultra Clearly Visible) */
         .admit-bg-nilachakra {
             position: absolute;
             left: -15px;
             bottom: -20px;
-            width: clamp(190px, 47%, 290px);
+            width: clamp(200px, 48%, 300px);
             height: auto;
             aspect-ratio: 1 / 1;
-            opacity: 0.56;
+            opacity: 0.68;
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.65)) brightness(1.25) contrast(1.2) saturate(1.3);
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.20) 0%, rgba(30, 58, 138, 0.08) 55%, transparent 75%);
+            border-radius: 50%;
+            filter: drop-shadow(0 0 28px rgba(56, 189, 248, 0.75)) brightness(1.25) contrast(1.2) saturate(1.3);
         }
 
         .chakra-watermark-img {
@@ -350,8 +354,8 @@
         }
 
         @keyframes konarkGentleGlow {
-            0% { opacity: 0.48; transform: translateY(-50%) rotate(0deg) scale(1); }
-            100% { opacity: 0.58; transform: translateY(-50%) rotate(4deg) scale(1.03); }
+            0% { opacity: 0.72; transform: translateY(-50%) rotate(0deg) scale(1); }
+            100% { opacity: 0.84; transform: translateY(-50%) rotate(4deg) scale(1.03); }
         }
 
         .id-card-content-wrap {
@@ -638,7 +642,7 @@
             }
 
             .admit-bg-konark, .admit-bg-nilachakra {
-                opacity: 0.60 !important;
+                opacity: 0.78 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -696,14 +700,14 @@
             }
             .admit-bg-konark {
                 width: clamp(170px, 48vw, 240px);
-                right: -15px;
-                opacity: 0.46;
+                right: -10px;
+                opacity: 0.70;
             }
             .admit-bg-nilachakra {
                 width: clamp(140px, 42vw, 210px);
                 left: -12px;
                 bottom: -12px;
-                opacity: 0.50;
+                opacity: 0.64;
             }
             .admit-card-header {
                 flex-direction: column;
@@ -764,11 +768,11 @@
             }
             .admit-bg-konark {
                 width: clamp(140px, 45vw, 190px);
-                opacity: 0.44;
+                opacity: 0.68;
             }
             .admit-bg-nilachakra {
                 width: clamp(120px, 40vw, 170px);
-                opacity: 0.46;
+                opacity: 0.62;
             }
             .admit-gov-title {
                 font-size: 0.62rem;
