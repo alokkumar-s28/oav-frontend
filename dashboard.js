@@ -259,28 +259,38 @@ function setupEventListeners() {
             }
 
             try {
-                // Ultra-lightweight compression (~10KB-15KB)
-                const compressedPhoto = await compressImage(file, 160, 0.6);
+                // 1. Lightweight avatar for instant ID Card display (~10KB)
+                const avatarPhoto = await compressImage(file, 160, 0.6);
+
+                // 2. High-resolution photo for Google Drive cloud storage (800px crisp)
+                const highResPhoto = await compressImage(file, 800, 0.85);
 
                 // Update UI preview immediately
-                renderStudentPhoto(compressedPhoto);
+                renderStudentPhoto(avatarPhoto);
 
-                // Save to server
+                // Save to server and backup to Google Drive
                 const res = await fetch(`${API_BASE}/api/student/photo`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",
-                    body: JSON.stringify({ photo: compressedPhoto })
+                    body: JSON.stringify({ 
+                        photo: avatarPhoto,
+                        highResPhoto: highResPhoto 
+                    })
                 });
 
-                if (res.ok) {
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data.success) {
                     if (currentStudent) {
-                        currentStudent.photo = compressedPhoto;
+                        currentStudent.photo = avatarPhoto;
                         localStorage.setItem("oav_current_student", JSON.stringify(currentStudent));
                     }
-                    alert("✅ Photo uploaded and saved to ID Card successfully!");
+                    if (data.driveUploaded) {
+                        alert("✅ Photo uploaded to your ID Card and backed up to Google Drive successfully!");
+                    } else {
+                        alert("✅ Photo uploaded and saved to ID Card successfully!");
+                    }
                 } else {
-                    const data = await res.json().catch(() => ({}));
                     alert(`Upload note: ${data.error || "Saved locally for this session."}`);
                 }
             } catch (err) {
