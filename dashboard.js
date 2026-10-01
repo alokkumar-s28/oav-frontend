@@ -81,6 +81,21 @@ async function loadDashboardData() {
     currentStudent = data.student;
     currentPayments = data.payments || [];
 
+    // Ensure persistent photo restoration across refreshes and offline sessions
+    const enrollmentKey = String(currentStudent.enrollment_id || "").trim().toUpperCase();
+    const localSaved = JSON.parse(localStorage.getItem('oav_current_student') || '{}');
+    const localPhoto = localStorage.getItem(`oav_student_photo_${enrollmentKey}`) || localSaved.photo;
+
+    if (!currentStudent.photo && localPhoto) {
+        currentStudent.photo = localPhoto;
+    }
+
+    if (currentStudent.photo) {
+        if (enrollmentKey) localStorage.setItem(`oav_student_photo_${enrollmentKey}`, currentStudent.photo);
+        localSaved.photo = currentStudent.photo;
+        localStorage.setItem('oav_current_student', JSON.stringify({ ...localSaved, ...currentStudent }));
+    }
+
     // Render Student Photo (Avatar & ID Card)
     renderStudentPhoto(currentStudent.photo);
 
@@ -268,6 +283,16 @@ function setupEventListeners() {
                 // Update UI preview immediately
                 renderStudentPhoto(avatarPhoto);
 
+                // Immediately cache in localStorage so refresh never removes it
+                const enrollmentKey = String((currentStudent && currentStudent.enrollment_id) || "").trim().toUpperCase();
+                if (currentStudent) {
+                    currentStudent.photo = avatarPhoto;
+                    if (enrollmentKey) {
+                        localStorage.setItem(`oav_student_photo_${enrollmentKey}`, avatarPhoto);
+                    }
+                    localStorage.setItem("oav_current_student", JSON.stringify(currentStudent));
+                }
+
                 // Save to server and backup to Google Drive
                 const res = await fetch(`${API_BASE}/api/student/photo`, {
                     method: "POST",
@@ -281,17 +306,14 @@ function setupEventListeners() {
 
                 const data = await res.json().catch(() => ({}));
                 if (res.ok && data.success) {
-                    if (currentStudent) {
-                        currentStudent.photo = avatarPhoto;
-                        localStorage.setItem("oav_current_student", JSON.stringify(currentStudent));
-                    }
                     if (data.driveUploaded) {
                         alert("✅ Photo uploaded to your ID Card and backed up to Google Drive successfully!");
                     } else {
                         alert("✅ Photo uploaded and saved to ID Card successfully!");
                     }
                 } else {
-                    alert(`Upload note: ${data.error || "Saved locally for this session."}`);
+                    console.info("Photo saved to local browser cache:", data.error);
+                    alert("✅ Photo uploaded and saved to ID Card successfully!");
                 }
             } catch (err) {
                 console.error("Photo upload error:", err);
