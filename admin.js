@@ -274,7 +274,8 @@ function renderView() {
                                 </div>
                             </td>
                         </tr>
-                    `).join("")}
+                        `;
+                    }).join("")}
                 </tbody>
             </table>
         `;
@@ -338,7 +339,8 @@ function renderView() {
                                 </div>
                             </td>
                         </tr>
-                    `).join("")}
+                        `;
+                    }).join("")}
                 </tbody>
             </table>
         `;
