@@ -207,9 +207,9 @@ function renderStudentPhoto(photoData) {
     const photoImg = document.getElementById("idCardPhotoImg");
     const photoIcon = document.getElementById("idCardPhotoIcon");
 
-    if (photoData && photoData.startsWith("data:image/")) {
+    if (photoData && (photoData.startsWith("data:image/") || photoData.startsWith("http") || photoData.startsWith("/"))) {
         if (avatarEl) {
-            avatarEl.innerHTML = `<img src="${photoData}" alt="Profile" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+            avatarEl.innerHTML = `<img src="${photoData}" alt="Profile" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;">`;
         }
         if (photoImg) {
             photoImg.src = photoData;
@@ -232,25 +232,31 @@ function renderStudentPhoto(photoData) {
     }
 }
 
-// Client-side image compressor (Center-crops to 160x160 square, 60% JPEG quality, ~10KB)
-function compressImage(file, maxSize = 160, quality = 0.6) {
+// Client-side high-definition image processor (Center-crops to 720x720, 92% high quality JPEG, bicubic smoothing)
+function compressImage(file, maxSize = 720, quality = 0.92) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement("canvas");
-                canvas.width = maxSize;
-                canvas.height = maxSize;
+                const minSide = Math.min(img.width, img.height);
+                const targetSize = Math.min(maxSize, minSide > 0 ? minSide : maxSize);
+                
+                canvas.width = targetSize;
+                canvas.height = targetSize;
                 const ctx = canvas.getContext("2d");
 
-                const minSide = Math.min(img.width, img.height);
+                // Enable high-fidelity bicubic image interpolation
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = "high";
+
                 const startX = (img.width - minSide) / 2;
                 const startY = (img.height - minSide) / 2;
 
-                ctx.drawImage(img, startX, startY, minSide, minSide, 0, 0, maxSize, maxSize);
-                const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
-                resolve(compressedBase64);
+                ctx.drawImage(img, startX, startY, minSide, minSide, 0, 0, targetSize, targetSize);
+                const highClarityBase64 = canvas.toDataURL("image/jpeg", quality);
+                resolve(highClarityBase64);
             };
             img.onerror = () => reject(new Error("Failed to load image file."));
             img.src = e.target.result;
@@ -274,21 +280,18 @@ function setupEventListeners() {
             }
 
             try {
-                // 1. Lightweight avatar for instant ID Card display (~10KB)
-                const avatarPhoto = await compressImage(file, 160, 0.6);
+                // High-definition, crystal-clear student photo (720px @ 92% quality)
+                const highQualityPhoto = await compressImage(file, 720, 0.92);
 
-                // 2. High-resolution photo for Google Drive cloud storage (800px crisp)
-                const highResPhoto = await compressImage(file, 800, 0.85);
-
-                // Update UI preview immediately
-                renderStudentPhoto(avatarPhoto);
+                // Update UI preview immediately with ultra-crisp photo
+                renderStudentPhoto(highQualityPhoto);
 
                 // Immediately cache in localStorage so refresh never removes it
                 const enrollmentKey = String((currentStudent && currentStudent.enrollment_id) || "").trim().toUpperCase();
                 if (currentStudent) {
-                    currentStudent.photo = avatarPhoto;
+                    currentStudent.photo = highQualityPhoto;
                     if (enrollmentKey) {
-                        localStorage.setItem(`oav_student_photo_${enrollmentKey}`, avatarPhoto);
+                        localStorage.setItem(`oav_student_photo_${enrollmentKey}`, highQualityPhoto);
                     }
                     localStorage.setItem("oav_current_student", JSON.stringify(currentStudent));
                 }
@@ -299,8 +302,8 @@ function setupEventListeners() {
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",
                     body: JSON.stringify({ 
-                        photo: avatarPhoto,
-                        highResPhoto: highResPhoto 
+                        photo: highQualityPhoto,
+                        highResPhoto: highQualityPhoto 
                     })
                 });
 
