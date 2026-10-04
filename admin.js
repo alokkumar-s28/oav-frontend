@@ -134,6 +134,10 @@ async function loadAdminData() {
         document.getElementById("metricPending").textContent = overview.pendingPayments ?? 0;
         document.getElementById("metricReview").textContent = overview.paymentReview ?? 0;
 
+        const totalWithPhotos = studentsList.filter(s => Boolean(getRecordPhoto(s))).length;
+        const metricPhotosEl = document.getElementById("metricPhotos");
+        if (metricPhotosEl) metricPhotosEl.textContent = totalWithPhotos;
+
         statusMessage.textContent = "";
         renderView();
 
@@ -144,11 +148,23 @@ async function loadAdminData() {
     }
 }
 
+// --- Helper: Retrieve Student Photo ---
+function getRecordPhoto(r) {
+    if (!r) return null;
+    const enrollmentKey = String(r.enrollment_id || "").trim().toUpperCase();
+    const studentObj = studentsList.find(s => String(s.enrollment_id || "").trim().toUpperCase() === enrollmentKey) || {};
+    const localPhoto = localStorage.getItem(`oav_student_photo_${enrollmentKey}`);
+    const photo = r.photo || studentObj.photo || localPhoto;
+    return (photo && (photo.startsWith('data:image/') || photo.startsWith('http') || photo.startsWith('/'))) ? photo : null;
+}
+
 // --- Filter and Search ---
 function filterRecords(records) {
     const query = searchInput.value.trim().toLowerCase();
     const selectedClass = classFilter.value;
     const selectedStatus = statusFilter.value;
+    const photoFilterEl = document.getElementById("photoFilter");
+    const selectedPhoto = (photoFilterEl && (currentTab === "photos" || currentTab === "students")) ? photoFilterEl.value : "";
 
     return records.filter(r => {
         const matchesQuery = !query || [
@@ -166,12 +182,24 @@ function filterRecords(records) {
         const matchesClass = !selectedClass || (r.student_class === selectedClass);
         const matchesStatus = !selectedStatus || (r.status === selectedStatus);
 
-        return matchesQuery && matchesClass && matchesStatus;
+        let matchesPhoto = true;
+        if (selectedPhoto) {
+            const hasPhoto = Boolean(getRecordPhoto(r));
+            if (selectedPhoto === "with_photo") matchesPhoto = hasPhoto;
+            if (selectedPhoto === "without_photo") matchesPhoto = !hasPhoto;
+        }
+
+        return matchesQuery && matchesClass && matchesStatus && matchesPhoto;
     });
 }
 
 // --- Render Table Views ---
 function renderView() {
+    const photoFilterEl = document.getElementById("photoFilter");
+    if (photoFilterEl) {
+        photoFilterEl.style.display = (currentTab === "photos" || currentTab === "students") ? "block" : "none";
+    }
+
     // 1. Broadcast Tab
     if (currentTab === "broadcast") {
         filterToolbar.style.display = "none";
@@ -206,7 +234,7 @@ function renderView() {
         return;
     }
 
-    // 4. Payments & Students Tabs
+    // 4. Payments, Students & Photos Tabs
     statusFilter.style.display = "block";
     filterToolbar.style.display = "flex";
     tableContent.style.display = "block";
@@ -236,10 +264,8 @@ function renderView() {
                 </thead>
                 <tbody>
                     ${filtered.map(p => {
-                        const pEnrollmentKey = String(p.enrollment_id || "").trim().toUpperCase();
-                        const studentObj = studentsList.find(s => String(s.enrollment_id || '').trim().toUpperCase() === pEnrollmentKey) || {};
-                        const pPhoto = p.photo || studentObj.photo || localStorage.getItem(`oav_student_photo_${pEnrollmentKey}`);
-                        const hasPPhoto = Boolean(pPhoto && (pPhoto.startsWith('data:image/') || pPhoto.startsWith('http') || pPhoto.startsWith('/')));
+                        const pPhoto = getRecordPhoto(p);
+                        const hasPPhoto = Boolean(pPhoto);
 
                         return `
                         <tr>
@@ -287,10 +313,16 @@ function renderView() {
         }
 
         tableContent.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                <span style="color:#64748b; font-size:0.88rem;">Showing <strong>${filtered.length}</strong> enrolled students</span>
+                <button class="btn-admin btn-admin-secondary" style="font-size:0.82rem; padding:6px 14px;" onclick="document.querySelector('.tab-btn[data-tab=photos]').click();">
+                    <i class="fas fa-id-badge"></i> Switch to Photo ID Gallery View
+                </button>
+            </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Student Name & ID</th>
+                        <th>Student Photo, Name & ID</th>
                         <th>Contact Details</th>
                         <th>Grade / Class</th>
                         <th>District & School</th>
@@ -300,16 +332,14 @@ function renderView() {
                 </thead>
                 <tbody>
                     ${filtered.map(s => {
-                        const enrollmentKey = String(s.enrollment_id || "").trim().toUpperCase();
-                        const localPhoto = localStorage.getItem(`oav_student_photo_${enrollmentKey}`);
-                        const studentPhoto = s.photo || localPhoto;
-                        const hasPhoto = Boolean(studentPhoto && (studentPhoto.startsWith('data:image/') || studentPhoto.startsWith('http') || studentPhoto.startsWith('/')));
+                        const studentPhoto = getRecordPhoto(s);
+                        const hasPhoto = Boolean(studentPhoto);
 
                         return `
                         <tr>
                             <td>
                                 <div style="display:flex; align-items:center; gap:12px;">
-                                    <div style="width:42px; height:42px; min-width:42px; border-radius:50%; overflow:hidden; background:#e2e8f0; display:flex; align-items:center; justify-content:center; border:2px solid #3b82f6; box-shadow:0 1px 4px rgba(0,0,0,0.1); cursor:pointer;" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${studentPhoto}')` : ''}" title="${hasPhoto ? 'Click to enlarge photo' : 'No photo uploaded'}">
+                                    <div style="width:44px; height:44px; min-width:44px; border-radius:50%; overflow:hidden; background:#e2e8f0; display:flex; align-items:center; justify-content:center; border:2px solid ${hasPhoto ? '#2563eb' : '#cbd5e1'}; box-shadow:0 1px 4px rgba(0,0,0,0.1); cursor:pointer;" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${studentPhoto}')` : ''}" title="${hasPhoto ? 'Click to enlarge HD photo' : 'No photo uploaded'}">
                                         ${hasPhoto ? `<img src="${studentPhoto}" alt="Photo" style="width:100%; height:100%; object-fit:cover; display:block;">` : `<i class="fas fa-user-graduate" style="color:#64748b; font-size:1.15rem;"></i>`}
                                     </div>
                                     <div>
@@ -344,6 +374,91 @@ function renderView() {
                 </tbody>
             </table>
         `;
+    } else if (currentTab === "photos") {
+        const filtered = filterRecords(studentsList);
+        const totalWithPhotos = studentsList.filter(s => Boolean(getRecordPhoto(s))).length;
+
+        if (!filtered.length) {
+            tableContent.innerHTML = `
+                <div style="text-align:center; padding:40px 20px; color:#64748b;">
+                    <i class="fas fa-portrait" style="font-size:3.2rem; color:#cbd5e1; margin-bottom:14px; display:block;"></i>
+                    <h3 style="margin:0 0 8px; color:#1e293b;">No student records match your filters</h3>
+                    <p style="margin:0; font-size:0.9rem;">Change your class, status, or search query to view photos.</p>
+                </div>
+            `;
+            return;
+        }
+
+        tableContent.innerHTML = `
+            <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:12px; padding:14px 20px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:38px; height:38px; border-radius:10px; background:#2563eb; color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:1.15rem; flex-shrink:0;">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div>
+                        <strong style="color:#1e3a8a; font-size:0.98rem; display:block;">Student Photo & ID Gallery</strong>
+                        <span style="color:#64748b; font-size:0.84rem;">
+                            Showing <strong>${filtered.length}</strong> students &bull; <strong>${totalWithPhotos}</strong> uploaded identity photos. Click any photo to inspect in full HD.
+                        </span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-admin btn-admin-secondary" style="font-size:0.82rem; padding:6px 12px;" onclick="document.querySelector('.tab-btn[data-tab=students]').click();">
+                        <i class="fas fa-table"></i> Switch to Table View
+                    </button>
+                </div>
+            </div>
+
+            <div class="photo-gallery-grid">
+                ${filtered.map(s => {
+                    const photoUrl = getRecordPhoto(s);
+                    const hasPhoto = Boolean(photoUrl);
+
+                    return `
+                    <div class="photo-card">
+                        <div class="photo-card-img-wrap" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${photoUrl}')` : ''}" title="${hasPhoto ? 'Click to inspect HD photo' : 'No photo uploaded'}">
+                            ${hasPhoto ? `
+                                <img src="${photoUrl}" alt="${escapeHtml(s.full_name)}" loading="lazy">
+                                <span class="photo-card-badge" style="background:#dcfce7; color:#166534;"><i class="fas fa-check-circle"></i> HD Photo</span>
+                            ` : `
+                                <div class="photo-card-placeholder">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <span class="photo-card-badge" style="background:#fee2e2; color:#991b1b;"><i class="fas fa-times-circle"></i> No Photo</span>
+                            `}
+                        </div>
+                        <div class="photo-card-body">
+                            <strong style="font-size:0.96rem; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(s.full_name)}">${escapeHtml(s.full_name)}</strong>
+                            <span style="font-family:monospace; color:#2563eb; font-weight:700; font-size:0.82rem;">${escapeHtml(s.enrollment_id)}</span>
+                            
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                                <span style="font-weight:700; color:#1e3a8a; font-size:0.85rem;">Class ${escapeHtml(s.student_class)}</span>
+                                <span class="status-badge ${escapeHtml(s.status)}" style="font-size:0.7rem; padding:2px 7px;">${escapeHtml(String(s.status).replace(/_/g, ' '))}</span>
+                            </div>
+
+                            <div style="font-size:0.8rem; color:#64748b; text-align:left; margin-top:6px; border-top:1px solid #f1f5f9; padding-top:6px; line-height:1.5;">
+                                <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-phone" style="color:#10b981; width:14px;"></i> ${escapeHtml(s.mobile || '—')}</div>
+                                <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fas fa-map-marker-alt" style="color:#ef4444; width:14px;"></i> ${escapeHtml(s.city || 'Odisha')}</div>
+                            </div>
+
+                            <div style="margin-top:auto; padding-top:10px;">
+                                ${hasPhoto ? `
+                                    <button class="btn-admin btn-admin-primary" style="width:100%; justify-content:center; padding:7px 10px; font-size:0.8rem;" onclick="viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${photoUrl}')">
+                                        <i class="fas fa-search-plus"></i> View Full Photo
+                                    </button>
+                                ` : `
+                                    <button class="btn-admin" style="width:100%; justify-content:center; padding:7px 10px; font-size:0.8rem; background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0; cursor:default;" disabled>
+                                        <i class="fas fa-camera"></i> No Photo
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join("")}
+            </div>
+        `;
+        return;
     }
 }
 
@@ -831,6 +946,8 @@ document.getElementById("refreshBtn").addEventListener("click", loadAdminData);
 searchInput.addEventListener("input", renderView);
 classFilter.addEventListener("change", renderView);
 statusFilter.addEventListener("change", renderView);
+const photoFilterSelect = document.getElementById("photoFilter");
+if (photoFilterSelect) photoFilterSelect.addEventListener("change", renderView);
 
 if (adminTokenInput) {
     adminTokenInput.addEventListener("keydown", (e) => {
@@ -899,19 +1016,29 @@ window.viewAdminStudentPhoto = function(studentName, photoUrl) {
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "adminPhotoModal";
-        modal.style.cssText = "position:fixed; inset:0; background:rgba(15,23,42,0.75); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:99999; padding:20px;";
+        modal.style.cssText = "position:fixed; inset:0; background:rgba(15,23,42,0.8); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:99999; padding:20px;";
         modal.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
         document.body.appendChild(modal);
     }
 
     modal.innerHTML = `
-        <div style="background:#ffffff; border-radius:16px; padding:24px; max-width:380px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); text-align:center; position:relative; animation: adminModalFadeIn 0.2s ease;">
-            <button onclick="document.getElementById('adminPhotoModal').style.display='none'" style="position:absolute; top:12px; right:12px; background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:1.1rem; color:#64748b; display:flex; align-items:center; justify-content:center;">&times;</button>
-            <h3 style="margin:0 0 16px; color:#0f172a; font-size:1.15rem;"><i class="fas fa-id-badge" style="color:#2563eb; margin-right:8px;"></i>${escapeHtml(studentName)}</h3>
-            <div style="width:200px; height:200px; margin:0 auto 16px; border-radius:12px; overflow:hidden; border:3px solid #2563eb; box-shadow:0 8px 16px rgba(37,99,235,0.15); background:#f8fafc;">
+        <div style="background:#ffffff; border-radius:18px; padding:26px; max-width:440px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35); text-align:center; position:relative; animation: adminModalFadeIn 0.2s ease;">
+            <button onclick="document.getElementById('adminPhotoModal').style.display='none'" style="position:absolute; top:14px; right:14px; background:#f1f5f9; border:none; width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; color:#64748b; display:flex; align-items:center; justify-content:center;">&times;</button>
+            <h3 style="margin:0 0 16px; color:#0f172a; font-size:1.2rem; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-id-badge" style="color:#2563eb;"></i> ${escapeHtml(studentName)}
+            </h3>
+            <div style="width:260px; height:260px; margin:0 auto 18px; border-radius:14px; overflow:hidden; border:3px solid #2563eb; box-shadow:0 10px 25px rgba(37,99,235,0.2); background:#f8fafc; display:flex; align-items:center; justify-content:center;">
                 <img src="${photoUrl}" alt="Student Photo" style="width:100%; height:100%; object-fit:cover; display:block;">
             </div>
-            <p style="margin:0; font-size:0.85rem; color:#64748b;">Official Student Identity Photo</p>
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+                <a href="${photoUrl}" download="${encodeURIComponent(studentName)}_Photo.jpg" class="btn-admin btn-admin-primary" style="padding:8px 16px; font-size:0.85rem; text-decoration:none;">
+                    <i class="fas fa-download"></i> Download HD Photo
+                </a>
+                <button onclick="document.getElementById('adminPhotoModal').style.display='none'" class="btn-admin btn-admin-secondary" style="padding:8px 16px; font-size:0.85rem;">
+                    Close
+                </button>
+            </div>
+            <p style="margin:14px 0 0; font-size:0.82rem; color:#64748b;">Official High-Clarity Student Identity Photo</p>
         </div>
     `;
     modal.style.display = "flex";

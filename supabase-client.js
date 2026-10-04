@@ -190,6 +190,29 @@
             return { success: true };
         },
 
+        // Update Student Photo in Supabase Cloud
+        async updateStudentPhoto(enrollmentId, photo) {
+            if (!enrollmentId) return { success: false, error: "No enrollment ID" };
+            const cleanId = String(enrollmentId).trim().toUpperCase();
+
+            await sbFetch(`students?enrollment_id=eq.${encodeURIComponent(cleanId)}`, {
+                method: "PATCH",
+                body: JSON.stringify({ photo })
+            }).catch(console.warn);
+
+            try {
+                const localStudents = JSON.parse(localStorage.getItem("oav_students") || "[]");
+                const idx = localStudents.findIndex(s => String(s.enrollment_id || s.enrollmentId || "").trim().toUpperCase() === cleanId);
+                if (idx !== -1) {
+                    localStudents[idx].photo = photo;
+                    localStorage.setItem("oav_students", JSON.stringify(localStudents));
+                }
+                localStorage.setItem(`oav_student_photo_${cleanId}`, photo);
+            } catch (e) {}
+
+            return { success: true, photo };
+        },
+
         // 9. Complete Admin Operations
         async getAdminOverview() {
             const [sRes, pRes, lRes, nRes] = await Promise.all([
@@ -223,7 +246,7 @@
         async getAdminPayments() {
             const [pRes, sRes] = await Promise.all([
                 sbFetch("payments?order=id.desc&select=*"),
-                sbFetch("students?select=enrollment_id,full_name,mobile,student_class,school,city")
+                sbFetch("students?select=enrollment_id,full_name,mobile,student_class,school,city,photo")
             ]);
             const payments = (await pRes.json().catch(() => [])) || [];
             const students = (await sRes.json().catch(() => [])) || [];
@@ -232,8 +255,10 @@
 
             const formatted = payments.map(p => {
                 const s = studentMap[p.enrollment_id] || {};
+                const localPhoto = localStorage.getItem(`oav_student_photo_${String(p.enrollment_id || '').trim().toUpperCase()}`);
                 return {
                     ...p,
+                    photo: s.photo || localPhoto || null,
                     full_name: s.full_name || "Enrolled Student",
                     mobile: s.mobile || "-",
                     student_class: s.student_class || "-",
@@ -253,8 +278,10 @@
             const payments = (await pRes.json().catch(() => [])) || [];
             const formatted = students.map(s => {
                 const p = payments.find(pay => pay.enrollment_id === s.enrollment_id);
+                const localPhoto = localStorage.getItem(`oav_student_photo_${String(s.enrollment_id || '').trim().toUpperCase()}`);
                 return {
                     ...s,
+                    photo: s.photo || localPhoto || null,
                     payment_status: p ? p.status : (s.status === "active" ? "verified" : "unpaid"),
                     transaction_id: p ? p.transaction_id : null,
                     amount: p ? p.amount : null,
@@ -532,6 +559,15 @@
                 const student = await SupabaseAPI.getCurrentStudent();
                 if (!student) return jsonResponse({ error: "Unauthorized" }, 401);
                 return jsonResponse({ student, payments: [] }, 200);
+            }
+            if (url.startsWith("/api/student/photo") && reqMethod === "POST") {
+                const saved = JSON.parse(localStorage.getItem("oav_current_student") || "{}");
+                const targetId = body.enrollmentId || body.enrollment_id || saved.enrollment_id;
+                const photo = body.photo || body.highResPhoto;
+                if (targetId && photo) {
+                    await SupabaseAPI.updateStudentPhoto(targetId, photo);
+                }
+                return jsonResponse({ success: true, photo }, 200);
             }
             if (url.startsWith("/api/lessons")) {
                 const params = new URLSearchParams(url.includes("?") ? url.slice(url.indexOf("?")) : "");
