@@ -700,8 +700,8 @@
                         ${thumbUrl ? `
                             <img src="${thumbUrl}" alt="${escapeHtml(lesson.title)}" loading="lazy">
                         ` : `
-                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#0f172a; color:#3b82f6;">
-                                <i class="fas fa-graduation-cap"></i>
+                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#0f172a; padding:6px;">
+                                <img src="OAV LOGO.png" alt="OAV Mantra" style="height:28px; width:auto; opacity:0.9;">
                             </div>
                         `}
                         <span class="playlist-card-duration">15 Mins</span>

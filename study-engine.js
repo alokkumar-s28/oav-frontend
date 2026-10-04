@@ -947,12 +947,12 @@ window.studyEngine = (function () {
                     <div class="video-thumbnail" onclick="studyEngine.playLesson(${lesson.id}, true)">
                         ${thumbUrl ? `
                             <img src="${thumbUrl}" alt="${escapeHtml(lesson.title)}" class="video-thumb-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="video-thumb-fallback" style="display:none;">
-                                <i class="fas fa-graduation-cap"></i>
+                            <div class="video-thumb-fallback" style="display:none; padding:10px;">
+                                <img src="OAV LOGO.png" alt="OAV Mantra" style="height:36px; width:auto; opacity:0.9;">
                             </div>
                         ` : `
-                            <div class="video-thumb-fallback">
-                                <i class="fas fa-graduation-cap"></i>
+                            <div class="video-thumb-fallback" style="padding:10px;">
+                                <img src="OAV LOGO.png" alt="OAV Mantra" style="height:36px; width:auto; opacity:0.9;">
                             </div>
                         `}
                         <div class="thumb-overlay"></div>

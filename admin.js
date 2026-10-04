@@ -724,7 +724,7 @@ document.addEventListener("click", async (e) => {
                     <iframe id="adminVideoFrame" src="${escapeHtml(embedUrl)}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none; z-index:1;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     <!-- Top Brand Header Bar -->
                     <div style="position:absolute; top:0; left:0; width:100%; height:44px; background:linear-gradient(to bottom, rgba(15,23,42,0.92), transparent); z-index:10; pointer-events:none; display:flex; align-items:center; justify-content:space-between; padding:0 16px;">
-                        <span style="color:#ffffff; font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;"><i class="fas fa-graduation-cap" style="color:#3b82f6;"></i> OAV Mantra Classes</span>
+                        <span style="color:#ffffff; font-size:12px; font-weight:700; display:flex; align-items:center; gap:8px;"><img src="OAV LOGO.png" alt="OAV Mantra" style="height:22px; width:auto; border-radius:3px;"> OAV Mantra Classes</span>
                         <span style="background:rgba(37,99,235,0.85); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px;">ADMIN PREVIEW</span>
                     </div>
                     <!-- Bottom-Right Watermark Shield: Completely masks YouTube watermark -->
