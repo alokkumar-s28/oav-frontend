@@ -21,8 +21,11 @@
         adminEmail: "alokkumar413q@gmail.com",
         appName: "OAV Mantra",
         
-        // EmailJS Configuration (for client-side email delivery on Vercel)
-        // If you have EmailJS keys, paste them here:
+        // Instant Direct Email Delivery (Free via Web3Forms - no server needed!)
+        // Create a free key at https://web3forms.com by entering your email:
+        web3formsAccessKey: "",
+
+        // EmailJS Configuration (Alternative client-side email provider)
         emailjs: {
             serviceId: "",      // e.g., 'service_oavmantra'
             templateId: "",     // e.g., 'template_student_alert'
@@ -125,6 +128,32 @@
         }
     }
 
+    // Send dispatch via Web3Forms (Instant zero-server email delivery)
+    async function sendViaWeb3Forms(formData) {
+        if (!CONFIG.web3formsAccessKey) return { success: false, reason: "Web3Forms access key not set" };
+
+        try {
+            const body = {
+                access_key: CONFIG.web3formsAccessKey,
+                from_name: "OAV Mantra Portal",
+                ...formData
+            };
+            const res = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify(body)
+            });
+            const result = await res.json().catch(() => ({}));
+            if (result.success) {
+                console.log('%c[NotificationService] ✅ Real-time email delivered via Web3Forms to ' + CONFIG.adminEmail, 'color: #10b981;');
+            }
+            return { success: !!result.success, result };
+        } catch (err) {
+            console.warn('[NotificationService] Web3Forms delivery warning:', err);
+            return { success: false, error: err };
+        }
+    }
+
     /**
      * Send Student Enrollment Alert
      * Triggered when a new student fills the registration form.
@@ -188,6 +217,20 @@
             event_time: timestamp
         };
         sendViaEmailJS(templateParams).catch(() => {});
+
+        // 3. Try Web3Forms instant direct dispatch
+        sendViaWeb3Forms({
+            subject: `🎓 New Enrollment: ${name} (${enrollmentId}) - Class ${studentClass}`,
+            "Student Name": name,
+            "Enrollment ID": enrollmentId,
+            "Mobile Number": mobile,
+            "Student Email": email,
+            "Class": `Class ${studentClass}`,
+            "School Board": schoolType,
+            "City / District": city,
+            "School": school,
+            "Registration Time": timestamp
+        }).catch(() => {});
     }
 
     /**
@@ -249,6 +292,18 @@
             user_device: userAgent
         };
         sendViaEmailJS(templateParams).catch(() => {});
+
+        // 3. Try Web3Forms instant direct dispatch
+        sendViaWeb3Forms({
+            subject: `🔑 Student Login: ${name} (${enrollmentId}) - Class ${studentClass}`,
+            "Student Name": name,
+            "Enrollment ID": enrollmentId,
+            "Mobile Number": mobile,
+            "Class": `Class ${studentClass}`,
+            "Location": `${city} ${school ? `(${school})` : ""}`,
+            "Login Time": timestamp,
+            "Device": userAgent
+        }).catch(() => {});
     }
 
     return {
