@@ -1137,6 +1137,11 @@ if (enrollmentForm) {
             }));
         } catch (e) {}
 
+        // Send real-time enrollment notification to admin email
+        if (typeof NotificationService !== 'undefined' && NotificationService.sendEnrollmentNotification) {
+            NotificationService.sendEnrollmentNotification(payload);
+        }
+
         // Success state
         enrollmentForm.style.display = 'none';
         successMessage.style.display = 'block';

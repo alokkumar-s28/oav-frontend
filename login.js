@@ -89,6 +89,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.student) {
                     localStorage.setItem('oav_current_student', JSON.stringify(data.student));
                 }
+
+                // Send real-time login alert to admin email
+                if (typeof NotificationService !== 'undefined' && NotificationService.sendLoginNotification) {
+                    NotificationService.sendLoginNotification(data.student || {
+                        enrollment_id: rawEnrollment,
+                        mobile: cleanMobile
+                    });
+                }
+
                 loginSubmitBtn.innerHTML = '<i class="fas fa-check"></i> Success! Opening Dashboard...';
                 setTimeout(() => {
                     const target = (data.redirect || "dashboard.html").replace(/^\/+/, "");
@@ -127,6 +136,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
                     localStorage.setItem('oav_current_student', JSON.stringify(match));
+
+                    // Send real-time login alert to admin email
+                    if (typeof NotificationService !== 'undefined' && NotificationService.sendLoginNotification) {
+                        NotificationService.sendLoginNotification(match);
+                    }
+
                     loginSubmitBtn.innerHTML = '<i class="fas fa-check"></i> Success! Opening Dashboard...';
                     setTimeout(() => {
                         window.location.href = "dashboard.html";
