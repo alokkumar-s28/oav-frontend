@@ -18,7 +18,8 @@
 
     // --- Configuration ---
     const CONFIG = {
-        adminEmail: "alokkumar413q@gmail.com",
+        adminEmail: "alokkumar413q@gmail.com, oavmantra@gmail.com",
+        adminEmails: ["alokkumar413q@gmail.com", "oavmantra@gmail.com"],
         appName: "OAV Mantra",
         
         // Instant Direct Email Delivery (Free via Web3Forms - no server needed!)
