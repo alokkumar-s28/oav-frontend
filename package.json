@@ -1,0 +1,11 @@
+{
+  "name": "oav-frontend",
+  "version": "1.0.0",
+  "description": "OAV Mantra Frontend & Vercel Serverless Notification API",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  }
+}

@@ -1285,6 +1285,17 @@ if (paymentForm) {
             }
         } catch (e) {}
 
+        // Send real-time payment claim notification to admin email
+        if (typeof NotificationService !== 'undefined' && NotificationService.sendPaymentNotification) {
+            NotificationService.sendPaymentNotification({
+                enrollmentId: currentEnrollmentId,
+                studentName: currentStudentName,
+                transactionId: tx,
+                paymentDate: pDate,
+                paymentMethod: method
+            });
+        }
+
         paymentForm.style.display = 'none';
         paymentSuccessMessage.style.display = 'block';
         confirmationDetails.innerHTML = `

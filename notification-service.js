@@ -87,7 +87,7 @@
         }
     }
 
-    // Send dispatch to Backend API (/api/notify-admin)
+    // Send dispatch to Backend / Vercel Serverless API (/api/notify-admin)
     async function sendViaBackend(payload) {
         try {
             const apiBase = getApiBase();
@@ -101,7 +101,18 @@
                 return { success: true, backend: true, data };
             }
         } catch (err) {
-            // Backend offline or running in pure static/Vercel mode
+            // Local fetch unreachable; fallback to live Vercel cloud serverless API
+            try {
+                const cloudRes = await fetch('https://oavmantra.vercel.app/api/notify-admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (cloudRes.ok) {
+                    const cloudData = await cloudRes.json().catch(() => ({}));
+                    return { success: true, cloud: true, data: cloudData };
+                }
+            } catch (cloudErr) {}
         }
         return { success: false };
     }
@@ -307,9 +318,80 @@
         }).catch(() => {});
     }
 
+    /**
+     * Send Student Payment Claim Alert (₹500)
+     * Triggered when a student submits their transaction / UTR ID on the homepage.
+     */
+    async function sendPaymentNotification(payment) {
+        if (!payment) return;
+
+        const timestamp = getFormattedTimestamp();
+        const enrollmentId = payment.enrollmentId || payment.enrollment_id || "N/A";
+        const studentName = payment.studentName || payment.name || "Student";
+        const transactionId = payment.transactionId || payment.tx || "N/A";
+        const paymentDate = payment.paymentDate || "Today";
+        const paymentMethod = payment.paymentMethod || "UPI";
+
+        console.log(`%c[OAV Notification Service] 💰 Sending Payment Claim Alert to ${CONFIG.adminEmail}...`, 'color: #f59e0b; font-weight: bold;');
+        console.table({
+            Event: 'PAYMENT_CLAIM',
+            Student: studentName,
+            EnrollmentID: enrollmentId,
+            UTR: transactionId,
+            Amount: '₹500',
+            Method: paymentMethod,
+            Date: paymentDate,
+            Time: timestamp
+        });
+
+        const payload = {
+            event: 'payment',
+            adminEmail: CONFIG.adminEmail,
+            timestamp,
+            payment: {
+                enrollmentId,
+                studentName,
+                transactionId,
+                paymentDate,
+                paymentMethod,
+                amount: 500
+            }
+        };
+
+        // 1. Try Vercel Serverless / backend dispatch
+        sendViaBackend(payload).catch(() => {});
+
+        // 2. Try EmailJS client-side dispatch
+        const templateParams = {
+            to_email: CONFIG.adminEmail,
+            event_type: "Student Payment Claim (₹500)",
+            student_name: studentName,
+            enrollment_id: enrollmentId,
+            transaction_id: transactionId,
+            payment_amount: "₹500",
+            payment_date: paymentDate,
+            payment_method: paymentMethod,
+            event_time: timestamp
+        };
+        sendViaEmailJS(templateParams).catch(() => {});
+
+        // 3. Try Web3Forms dispatch
+        sendViaWeb3Forms({
+            subject: `💰 Payment Claim (₹500): ${studentName} (${enrollmentId}) - UTR: ${transactionId}`,
+            "Student Name": studentName,
+            "Enrollment ID": enrollmentId,
+            "Transaction ID / UTR": transactionId,
+            "Amount": "₹500.00",
+            "Payment Method": paymentMethod,
+            "Payment Date": paymentDate,
+            "Submission Time": timestamp
+        }).catch(() => {});
+    }
+
     return {
         CONFIG,
         sendEnrollmentNotification,
-        sendLoginNotification
+        sendLoginNotification,
+        sendPaymentNotification
     };
 }));
