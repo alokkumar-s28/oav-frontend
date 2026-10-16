@@ -37,6 +37,50 @@ const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c]
 );
 
+const ENROLLMENT_ROLL_MAP = {
+    "OAV-615491-TO96": "01",
+    "OAV-699191-TSUP": "02",
+    "OAV-512545-LJ7A": "03",
+    "OAV-218090-U740": "04",
+    "OAV-374592-88KA": "05",
+    "OAV-104940-GD46": "06",
+    "OAV-243298-UH9P": "07",
+    "OAV-171129-PS3Q": "08",
+    "OAV-421505-OUVS": "09",
+    "OAV-727490-S3SJ": "10",
+    "OAV-783213-TZTQ": "11",
+    "OAV-726311-2C0R": "12",
+    "OAV-905222-6JKY": "13",
+    "OAV-056313-4OWX": "14",
+    "OAV-212980-GDFK": "15",
+    "OAV-420919-ZQPI": "16",
+    "OAV-234552-HH0C": "17",
+    "OAV-090507-K0AM": "18",
+    "OAV-934626-MYFU": "19",
+    "OAV-702404-ZD73": "20",
+    "OAV-820657-4HAP": "21",
+    "OAV-397651-KLLU": "22",
+    "OAV-404602-4JBQ": "23",
+    "OAV-434496-6TBM": "24",
+    "OAV-301029-DI5B": "25",
+    "OAV-559111-PN6D": "26",
+    "OAV-274684-R8T6": "27",
+    "OAV-835588-XHML": "28",
+    "OAV-416435-FFTX": "29",
+    "OAV-413472-U76T": "30",
+    "OAV-588563-GPKI": "31",
+    "OAV-223455-QT71": "32"
+};
+
+function getStudentRollNo(student) {
+    if (!student) return "—";
+    if (student.roll_no) return String(student.roll_no).padStart(2, "0");
+    const rawId = String(student.enrollment_id || "").trim().toUpperCase();
+    if (ENROLLMENT_ROLL_MAP[rawId]) return ENROLLMENT_ROLL_MAP[rawId];
+    if (student.id && !isNaN(Number(student.id))) return String(student.id).padStart(2, "0");
+    return "—";
+}
+
 function extractYouTubeId(url) {
     if (!url) return null;
     let str = String(url).trim();
@@ -322,6 +366,7 @@ function renderView() {
             <table>
                 <thead>
                     <tr>
+                        <th style="width:60px; text-align:center;">Roll</th>
                         <th>Student Photo, Name & ID</th>
                         <th>Contact Details</th>
                         <th>Grade / Class</th>
@@ -337,6 +382,11 @@ function renderView() {
 
                         return `
                         <tr>
+                            <td style="text-align:center;">
+                                <span style="font-family:monospace; font-weight:800; color:#2563eb; background:#eff6ff; padding:4px 8px; border-radius:6px; border:1px solid #bfdbfe; font-size:0.88rem; display:inline-block;">
+                                    ${escapeHtml(getStudentRollNo(s))}
+                                </span>
+                            </td>
                             <td>
                                 <div style="display:flex; align-items:center; gap:12px;">
                                     <div style="width:44px; height:44px; min-width:44px; border-radius:50%; overflow:hidden; background:#e2e8f0; display:flex; align-items:center; justify-content:center; border:2px solid ${hasPhoto ? '#2563eb' : '#cbd5e1'}; box-shadow:0 1px 4px rgba(0,0,0,0.1); cursor:pointer;" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${studentPhoto}')` : ''}" title="${hasPhoto ? 'Click to enlarge HD photo' : 'No photo uploaded'}">
