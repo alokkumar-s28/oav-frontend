@@ -694,10 +694,105 @@ function escapeHtml(text) {
 }
 
 // --- Page Initialization ---
+let paymentScreenshotData = null; // Stores compressed base64 screenshot
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Set default payment date to today
     const pDateField = document.getElementById('paymentDate');
     if (pDateField) pDateField.valueAsDate = new Date();
+
+    // --- Payment Screenshot Upload Handler ---
+    const screenshotInput = document.getElementById('paymentScreenshot');
+    const screenshotUploadArea = document.getElementById('screenshotUploadArea');
+    const screenshotPreview = document.getElementById('screenshotPreview');
+    const screenshotPreviewImg = document.getElementById('screenshotPreviewImg');
+    const removeScreenshotBtn = document.getElementById('removeScreenshotBtn');
+
+    if (screenshotInput) {
+        screenshotInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('Please upload an image file (JPG, PNG, JPEG).', 'warning');
+                this.value = '';
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Screenshot file is too large. Maximum size is 5 MB.', 'warning');
+                this.value = '';
+                return;
+            }
+
+            // Compress and preview the screenshot
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const maxWidth = 1200;
+                    const maxHeight = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth || height > maxHeight) {
+                        const ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width = Math.round(width * ratio);
+                        height = Math.round(height * ratio);
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    paymentScreenshotData = canvas.toDataURL('image/jpeg', 0.82);
+
+                    if (screenshotPreviewImg) screenshotPreviewImg.src = paymentScreenshotData;
+                    if (screenshotPreview) screenshotPreview.style.display = 'block';
+                    if (screenshotUploadArea) screenshotUploadArea.style.display = 'none';
+
+                    showToast('Payment screenshot attached successfully!', 'success');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Drag and drop support
+        if (screenshotUploadArea) {
+            screenshotUploadArea.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                this.style.borderColor = '#2563eb';
+                this.style.background = '#eff6ff';
+            });
+            screenshotUploadArea.addEventListener('dragleave', function () {
+                this.style.borderColor = '#cbd5e1';
+                this.style.background = '#f8fafc';
+            });
+            screenshotUploadArea.addEventListener('drop', function (e) {
+                e.preventDefault();
+                this.style.borderColor = '#cbd5e1';
+                this.style.background = '#f8fafc';
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    screenshotInput.files = files;
+                    screenshotInput.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+    }
+
+    if (removeScreenshotBtn) {
+        removeScreenshotBtn.addEventListener('click', function () {
+            paymentScreenshotData = null;
+            if (screenshotInput) screenshotInput.value = '';
+            if (screenshotPreview) screenshotPreview.style.display = 'none';
+            if (screenshotUploadArea) screenshotUploadArea.style.display = '';
+            showToast('Screenshot removed.', 'info');
+        });
+    }
 
     // Check active session
     await checkActiveSession();
@@ -1239,26 +1334,50 @@ if (paymentForm) {
         const selectedOpt = document.querySelector('.payment-option.selected');
         const method = selectedOpt ? selectedOpt.getAttribute('data-method') : 'quickupi';
 
-        if (!tx || tx.length < 6) {
-            showToast('Please enter a valid Transaction / UTR reference number (at least 6 characters).', 'warning');
+        const hasTx = tx && tx.length >= 5;
+        const hasScreenshot = Boolean(paymentScreenshotData);
+
+        // ENFORCEMENT: Student CANNOT proceed without Transaction ID OR Payment Screenshot
+        if (!hasTx && !hasScreenshot) {
+            showToast('⚠️ Payment proof required: You must enter your Transaction / UTR ID OR upload a Payment Screenshot. You cannot proceed without providing at least one proof.', 'error');
+            const txInput = document.getElementById('transactionId');
+            if (txInput) {
+                txInput.focus();
+                txInput.style.borderColor = '#ef4444';
+                setTimeout(() => { txInput.style.borderColor = ''; }, 3000);
+            }
+            const uploadArea = document.getElementById('screenshotUploadArea');
+            if (uploadArea) {
+                uploadArea.style.borderColor = '#ef4444';
+                setTimeout(() => { uploadArea.style.borderColor = '#cbd5e1'; }, 3000);
+            }
             return;
         }
 
         const origText = submitPaymentBtn.innerHTML;
-        submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Payment...';
         submitPaymentBtn.disabled = true;
 
         try {
-            await fetch(`${API_BASE}/api/payments`, {
+            const res = await fetch(`${API_BASE}/api/payments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     enrollmentId: currentEnrollmentId,
-                    transactionId: tx,
+                    transactionId: tx || '',
+                    paymentScreenshot: paymentScreenshotData || '',
                     paymentDate: pDate,
                     paymentMethod: method
                 })
             });
+
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                showToast(data.error || 'Failed to submit payment. Please verify your details.', 'error');
+                submitPaymentBtn.innerHTML = origText;
+                submitPaymentBtn.disabled = false;
+                return;
+            }
         } catch (netErr) {
             console.info('Backend unreachable, saving payment claim locally:', netErr.message);
         }
@@ -1268,7 +1387,8 @@ if (paymentForm) {
             const localPayments = JSON.parse(localStorage.getItem('oav_payments') || '[]');
             localPayments.push({
                 enrollment_id: currentEnrollmentId,
-                transaction_id: tx,
+                transaction_id: tx || '',
+                payment_screenshot: paymentScreenshotData || '',
                 amount: 500,
                 payment_date: pDate,
                 payment_method: method,
@@ -1290,7 +1410,7 @@ if (paymentForm) {
             NotificationService.sendPaymentNotification({
                 enrollmentId: currentEnrollmentId,
                 studentName: currentStudentName,
-                transactionId: tx,
+                transactionId: tx || '(Screenshot attached)',
                 paymentDate: pDate,
                 paymentMethod: method
             });
@@ -1303,13 +1423,15 @@ if (paymentForm) {
                 <strong>Enrollment ID:</strong> <span style="color:#2563eb; font-family:monospace; font-weight:800; font-size:1.05rem;">${escapeHtml(currentEnrollmentId)}</span><br>
                 <strong>Student Name:</strong> ${escapeHtml(currentStudentName)}<br>
                 <strong>Amount:</strong> ₹500<br>
-                <strong>Transaction ID:</strong> <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:700;">${escapeHtml(tx)}</code><br>
+                <strong>Transaction ID:</strong> ${tx ? `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:700;">${escapeHtml(tx)}</code>` : '<span style="color:#64748b; font-style:italic;">(Not provided — screenshot attached)</span>'}<br>
+                <strong>Payment Proof:</strong> ${paymentScreenshotData ? '<span style="color:#16a34a; font-weight:700;"><i class="fas fa-check-circle"></i> Screenshot Attached</span>' : '<span style="color:#2563eb; font-weight:700;"><i class="fas fa-check-circle"></i> Transaction ID Provided</span>'}<br>
+                ${paymentScreenshotData ? `<div style="margin-top:10px;"><img src="${paymentScreenshotData}" style="max-height:140px; border-radius:8px; border:1px solid #cbd5e1; display:block;"></div>` : ''}
                 <strong>Status:</strong> <span style="background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:6px; font-weight:800;">⏳ Verification Under Review</span>
             </div>
 
             <div style="background:#eff6ff; border-left:4px solid #2563eb; border-radius:8px; padding:14px 16px; margin:16px 0; text-align:left; color:#1e40af; font-size:0.92rem; line-height:1.6;">
                 <strong><i class="fas fa-clock"></i> What happens next?</strong><br>
-                1. Our admin team will verify your ₹500 UPI payment.<br>
+                1. Our admin team will verify your ₹500 UPI payment proof.<br>
                 2. After we approve your account in the admin panel, your study room access will be unlocked.<br>
                 3. Please try logging in after some time (usually within 15–30 minutes) using your Enrollment ID and registered Mobile Number.
             </div>

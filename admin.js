@@ -294,6 +294,7 @@ function renderView() {
                         <th>Class</th>
                         <th>Amount & Method</th>
                         <th>Transaction ID / UTR</th>
+                        <th>Payment Screenshot</th>
                         <th>Payment Date</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -303,6 +304,7 @@ function renderView() {
                     ${filtered.map(p => {
                         const pPhoto = getRecordPhoto(p);
                         const hasPPhoto = Boolean(pPhoto);
+                        const hasScreenshot = Boolean(p.payment_screenshot);
 
                         return `
                         <tr>
@@ -320,6 +322,15 @@ function renderView() {
                             <td><span style="font-weight:700;">Class ${escapeHtml(p.student_class)}</span></td>
                             <td>₹${escapeHtml(p.amount || 500)} <small>(${escapeHtml(p.payment_method)})</small></td>
                             <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:600;">${escapeHtml(p.transaction_id || '—')}</code></td>
+                            <td>
+                                ${hasScreenshot ? `
+                                    <button class="btn-admin btn-admin-primary" style="padding:4px 10px; font-size:0.8rem; display:inline-flex; align-items:center; gap:6px;" onclick="viewAdminPaymentScreenshot('${escapeHtml(p.full_name)}', '${p.payment_screenshot}', '${escapeHtml(p.transaction_id || '')}', '${escapeHtml(p.enrollment_id)}')">
+                                        <i class="fas fa-image"></i> View Proof
+                                    </button>
+                                ` : `
+                                    <span style="color:#94a3b8; font-size:0.82rem; font-style:italic;">No image</span>
+                                `}
+                            </td>
                             <td>${escapeHtml(p.payment_date || '—')}</td>
                             <td><span class="status-badge ${escapeHtml(p.status)}">${escapeHtml(String(p.status).replace(/_/g, ' '))}</span></td>
                             <td>
@@ -1078,6 +1089,42 @@ window.viewAdminStudentPhoto = function(studentName, photoUrl) {
                 </button>
             </div>
             <p style="margin:14px 0 0; font-size:0.82rem; color:#64748b;">Official High-Clarity Student Identity Photo</p>
+        </div>
+    `;
+    modal.style.display = "flex";
+};
+
+// Modal helper to view payment screenshot in Admin panel
+window.viewAdminPaymentScreenshot = function(studentName, screenshotUrl, txId, enrollmentId) {
+    if (!screenshotUrl) return;
+    let modal = document.getElementById("adminScreenshotModal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "adminScreenshotModal";
+        modal.style.cssText = "position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:99999; padding:20px;";
+        modal.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div style="background:#ffffff; border-radius:18px; padding:24px; max-width:540px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); text-align:center; position:relative; animation: adminModalFadeIn 0.2s ease; max-height:90vh; overflow-y:auto;">
+            <button onclick="document.getElementById('adminScreenshotModal').style.display='none'" style="position:absolute; top:14px; right:14px; background:#f1f5f9; border:none; width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; color:#64748b; display:flex; align-items:center; justify-content:center;">&times;</button>
+            <h3 style="margin:0 0 6px; color:#0f172a; font-size:1.2rem; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-receipt" style="color:#2563eb;"></i> Payment Proof Screenshot
+            </h3>
+            <p style="margin:0 0 10px; color:#64748b; font-size:0.88rem;">Student: <strong>${escapeHtml(studentName)}</strong> (${escapeHtml(enrollmentId || 'N/A')})</p>
+            ${txId ? `<div style="margin:0 0 14px;"><span style="background:#f1f5f9; padding:6px 12px; border-radius:6px; font-size:0.85rem; font-family:monospace; display:inline-block;">UTR / Txn: <strong>${escapeHtml(txId)}</strong></span></div>` : ''}
+            <div style="max-height:460px; overflow:hidden; border-radius:12px; border:2px solid #e2e8f0; background:#0f172a; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+                <img src="${screenshotUrl}" alt="Payment Screenshot" style="max-width:100%; max-height:460px; object-fit:contain; display:block;">
+            </div>
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <a href="${screenshotUrl}" download="${encodeURIComponent(studentName)}_Payment_Proof.jpg" class="btn-admin btn-admin-primary" style="padding:8px 16px; font-size:0.85rem; text-decoration:none;">
+                    <i class="fas fa-download"></i> Download Screenshot
+                </a>
+                <button onclick="document.getElementById('adminScreenshotModal').style.display='none'" class="btn-admin btn-admin-secondary" style="padding:8px 16px; font-size:0.85rem;">
+                    Close
+                </button>
+            </div>
         </div>
     `;
     modal.style.display = "flex";

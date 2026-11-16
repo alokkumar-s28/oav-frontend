@@ -878,8 +878,23 @@
             
             <form id="paymentForm">
                 <div class="form-group">
-                    <label for="transactionId"><i class="fas fa-receipt"></i> Transaction / UTR / Reference ID *</label>
-                    <input type="text" id="transactionId" class="form-control" placeholder="Enter 12-digit UTR or Txn Ref No." required>
+                    <label for="transactionId"><i class="fas fa-receipt"></i> Transaction / UTR / Reference ID</label>
+                    <input type="text" id="transactionId" class="form-control" placeholder="Enter 12-digit UTR or Txn Ref No.">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentScreenshot"><i class="fas fa-camera"></i> Payment Screenshot *</label>
+                    <div id="screenshotUploadArea" style="border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; background: #f8fafc; transition: all 0.2s ease;" onclick="document.getElementById('paymentScreenshot').click()">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #94a3b8; margin-bottom: 8px; display: block;"></i>
+                        <p style="color: #64748b; margin: 0 0 4px; font-size: 0.92rem; font-weight: 600;">Click to upload payment screenshot</p>
+                        <p style="color: #94a3b8; margin: 0; font-size: 0.8rem;">JPG, PNG or JPEG • Max 5 MB</p>
+                    </div>
+                    <input type="file" id="paymentScreenshot" accept="image/*" style="display: none;">
+                    <div id="screenshotPreview" style="display: none; margin-top: 12px; position: relative;">
+                        <img id="screenshotPreviewImg" src="" alt="Payment screenshot preview" style="width: 100%; max-height: 280px; object-fit: contain; border-radius: 10px; border: 2px solid #e2e8f0;">
+                        <button type="button" id="removeScreenshotBtn" style="position: absolute; top: 6px; right: 6px; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);" title="Remove screenshot">&times;</button>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 0.78rem; margin-top: 6px;"><i class="fas fa-info-circle"></i> Upload your UPI payment confirmation screenshot. You must provide a screenshot OR a transaction ID (or both).</p>
                 </div>
                 
                 <div class="form-group">
