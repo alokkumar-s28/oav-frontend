@@ -94,26 +94,28 @@
             const res = await fetch(`${apiBase}/api/notify-admin`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(payload)
             });
             if (res.ok) {
                 const data = await res.json().catch(() => ({}));
                 return { success: true, backend: true, data };
             }
-        } catch (err) {
-            // Local fetch unreachable; fallback to live Vercel cloud serverless API
-            try {
-                const cloudRes = await fetch('https://oavmantra.vercel.app/api/notify-admin', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (cloudRes.ok) {
-                    const cloudData = await cloudRes.json().catch(() => ({}));
-                    return { success: true, cloud: true, data: cloudData };
-                }
-            } catch (cloudErr) {}
-        }
+        } catch (err) {}
+
+        // Fallback to live Vercel cloud serverless API if local or initial endpoint failed
+        try {
+            const cloudRes = await fetch('https://oavmantra.vercel.app/api/notify-admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (cloudRes.ok) {
+                const cloudData = await cloudRes.json().catch(() => ({}));
+                return { success: true, cloud: true, data: cloudData };
+            }
+        } catch (cloudErr) {}
+
         return { success: false };
     }
 

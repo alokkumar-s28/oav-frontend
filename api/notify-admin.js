@@ -1,12 +1,8 @@
 const nodemailer = require("nodemailer");
 
 const ADMIN_NOTIFICATION_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || "alokkumar413q@gmail.com, oavmantra@gmail.com";
-const SMTP_USER = process.env.SMTP_USER || "";
-const SMTP_PASS = process.env.SMTP_PASS || "";
-
-if (!SMTP_USER || !SMTP_PASS) {
-  console.warn("⚠️ [Vercel API Notify] SMTP_USER or SMTP_PASS environment variable is missing.");
-}
+const SMTP_USER = process.env.SMTP_USER || "oavmantra@gmail.com";
+const SMTP_PASS = process.env.SMTP_PASS || "gsyggklkutelrugq";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -15,6 +11,9 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: SMTP_USER,
     pass: SMTP_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
