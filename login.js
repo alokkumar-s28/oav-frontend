@@ -157,7 +157,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function showError(msg) {
-        errorBanner.innerHTML = `<i class="fas fa-exclamation-circle" style="margin-right:6px;"></i> ${msg}`;
+        errorBanner.textContent = "";
+        const icon = document.createElement("i");
+        icon.className = "fas fa-exclamation-circle";
+        icon.style.marginRight = "6px";
+        errorBanner.appendChild(icon);
+        errorBanner.appendChild(document.createTextNode(` ${msg}`));
         errorBanner.style.display = "block";
     }
 });

@@ -210,11 +210,11 @@ async function loadProgressData() {
         const res = await fetch(`${API_BASE}/api/progress`, { credentials: "include" });
         if (res.ok) {
             const data = await res.json();
-            const totalLessons = 18; // Standard curriculum module count per grade
-            const completed = data.completed_lesson_ids ? data.completed_lesson_ids.length : 0;
+            const totalLessons = data.totalLessons || 18;
+            const completed = data.completed_lesson_ids ? data.completed_lesson_ids.length : (data.completedLessons || 0);
             const quizzes = data.quiz_results ? data.quiz_results.length : 0;
 
-            const percent = Math.min(100, Math.round((completed / totalLessons) * 100));
+            const percent = totalLessons > 0 ? Math.min(100, Math.round((completed / totalLessons) * 100)) : 0;
 
             document.getElementById("progressPercentDisplay").textContent = `${percent}%`;
             document.getElementById("progressBarFill").style.width = `${percent}%`;
@@ -289,7 +289,7 @@ function compressImage(file, maxSize = 720, quality = 0.92) {
                 const canvas = document.createElement("canvas");
                 const minSide = Math.min(img.width, img.height);
                 const targetSize = Math.min(maxSize, minSide > 0 ? minSide : maxSize);
-                
+
                 canvas.width = targetSize;
                 canvas.height = targetSize;
                 const ctx = canvas.getContext("2d");
@@ -348,9 +348,9 @@ function setupEventListeners() {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         photo: highQualityPhoto,
-                        highResPhoto: highQualityPhoto 
+                        highResPhoto: highQualityPhoto
                     })
                 });
 
@@ -378,7 +378,7 @@ function setupEventListeners() {
         logoutBtn.addEventListener("click", async () => {
             try {
                 await fetch(`${API_BASE}/api/student/logout`, { method: "POST", credentials: "include" });
-            } catch (e) {}
+            } catch (e) { }
             localStorage.removeItem('oav_current_student');
             localStorage.removeItem('oav_student_session');
             localStorage.removeItem('oav_current_enrollment');

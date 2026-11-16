@@ -96,7 +96,7 @@ function extractYouTubeId(url) {
 async function adminFetch(url, options = {}) {
     let token = adminTokenInput ? adminTokenInput.value.trim() : '';
     if (!token) {
-        token = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
+        token = sessionStorage.getItem("oav_admin_token");
         if (token && adminTokenInput) adminTokenInput.value = token;
     }
     if (!token) throw new Error("Please enter your administrator password.");
@@ -132,7 +132,7 @@ function updateAdminInspectorVisibility(isUnlocked) {
 async function loadAdminData() {
     let token = adminTokenInput ? adminTokenInput.value.trim() : '';
     if (!token) {
-        token = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
+        token = sessionStorage.getItem("oav_admin_token");
         if (token && adminTokenInput) adminTokenInput.value = token;
     }
 
@@ -143,19 +143,12 @@ async function loadAdminData() {
         return;
     }
 
-    if (token !== "oav-mantra.2026") {
-        updateAdminInspectorVisibility(false);
-        statusMessage.style.color = "#dc2626";
-        statusMessage.textContent = "❌ Incorrect password. Access denied.";
-        alert("❌ Incorrect admin password. Please try again.");
-        return;
-    }
+    // Server-side validation will handle incorrect tokens via adminFetch()
 
     statusMessage.style.color = "#2563eb";
     statusMessage.textContent = "Loading secure records...";
 
     try {
-        localStorage.setItem("oav_admin_token", token);
         sessionStorage.setItem("oav_admin_token", token);
         updateAdminInspectorVisibility(true);
 
@@ -776,10 +769,6 @@ document.addEventListener("click", async (e) => {
                     <div style="position:absolute; top:0; left:0; width:100%; height:44px; background:linear-gradient(to bottom, rgba(15,23,42,0.92), transparent); z-index:10; pointer-events:none; display:flex; align-items:center; justify-content:space-between; padding:0 16px;">
                         <span style="color:#ffffff; font-size:12px; font-weight:700; display:flex; align-items:center; gap:8px;"><img src="OAV LOGO.png" alt="OAV Mantra" style="height:22px; width:auto; border-radius:3px;"> OAV Mantra Classes</span>
                         <span style="background:rgba(37,99,235,0.85); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px;">ADMIN PREVIEW</span>
-                    </div>
-                    <!-- Bottom-Right Watermark Shield: Completely masks YouTube watermark -->
-                    <div style="position:absolute; bottom:0; right:0; width:120px; height:48px; background:#000000; z-index:10; pointer-events:none; display:flex; align-items:center; justify-content:center; border-top-left-radius:8px;">
-                        <span style="color:#60a5fa; font-size:11px; font-weight:800; letter-spacing:0.5px;"><i class="fas fa-play" style="font-size:9px; margin-right:4px;"></i> OAV CLASS</span>
                     </div>
                 `;
             } else {
