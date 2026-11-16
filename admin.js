@@ -979,15 +979,93 @@ if (broadcastForm) {
     });
 }
 
-// --- CSV Export ---
-document.getElementById("exportBtn").addEventListener("click", () => {
-    const token = adminTokenInput.value.trim();
-    if (!token) {
-        alert("Please enter the administrator token first.");
+// --- CSV Export (Direct Download to Excel) ---
+function exportToCsv(filename, rows) {
+    if (!rows || !rows.length) {
+        alert("No records to export.");
         return;
     }
-    const type = currentTab === "students" ? "students" : "payments";
-    window.open(`${API_BASE}/api/admin/export?type=${type}&token=${encodeURIComponent(token)}`, "_blank");
+
+    const processRow = (row) => {
+        return row.map(val => {
+            if (val === null || val === undefined) return '""';
+            const str = String(val).replace(/"/g, '""');
+            return `"${str}"`;
+        }).join(",");
+    };
+
+    // UTF-8 BOM (\uFEFF) ensures Excel opens Indian names and symbols correctly
+    const csvContent = "\uFEFF" + rows.map(processRow).join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+document.getElementById("exportBtn").addEventListener("click", () => {
+    const today = new Date().toISOString().slice(0, 10);
+
+    if (currentTab === "students" || currentTab === "photos") {
+        if (!studentsList.length) {
+            alert("No student records loaded. Please unlock the admin panel first.");
+            return;
+        }
+
+        const headers = ["Roll No", "Enrollment ID", "Full Name", "Class", "Mobile", "Email", "School Board", "City / District", "School Name", "Account Status", "Registration Date"];
+        const dataRows = studentsList.map(s => [
+            getStudentRollNo(s),
+            s.enrollment_id || "",
+            s.full_name || "",
+            `Class ${s.student_class || ""}`,
+            s.mobile || "",
+            s.email || "",
+            s.school_type || "Normal",
+            s.city || "",
+            s.school || "",
+            s.status || "",
+            s.created_at || ""
+        ]);
+
+        exportToCsv(`OAV_Students_${today}.csv`, [headers, ...dataRows]);
+    } else if (currentTab === "payments") {
+        if (!paymentsList.length) {
+            alert("No payment records loaded. Please unlock the admin panel first.");
+            return;
+        }
+
+        const headers = ["Payment ID", "Enrollment ID", "Student Name", "Class", "Mobile", "City", "Amount (INR)", "Payment Method", "Transaction / UTR ID", "Has Screenshot", "Payment Date", "Payment Status"];
+        const dataRows = paymentsList.map(p => [
+            p.id || "",
+            p.enrollment_id || "",
+            p.full_name || "",
+            `Class ${p.student_class || ""}`,
+            p.mobile || "",
+            p.city || "",
+            p.amount || 500,
+            p.payment_method || "UPI",
+            p.transaction_id || "None",
+            p.payment_screenshot ? "Yes (Uploaded)" : "No",
+            p.payment_date || "",
+            p.status || ""
+        ]);
+
+        exportToCsv(`OAV_Payments_${today}.csv`, [headers, ...dataRows]);
+    } else {
+        // Fallback: Export all students if on another tab
+        if (studentsList.length) {
+            const headers = ["Enrollment ID", "Full Name", "Class", "Mobile", "Status"];
+            const dataRows = studentsList.map(s => [s.enrollment_id, s.full_name, `Class ${s.student_class}`, s.mobile, s.status]);
+            exportToCsv(`OAV_Export_${today}.csv`, [headers, ...dataRows]);
+        } else {
+            alert("Please unlock the admin panel and select Students or Payments to export.");
+        }
+    }
 });
 
 // --- Search and Filter Listeners ---
