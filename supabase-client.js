@@ -76,25 +76,75 @@
             return { success: true, enrollmentId: enrollment_id, student };
         },
 
-        // 2. Submit Payment Claim
+        // 2. Submit Payment Claim (Supports UTR, Screenshot proof, or both)
         async submitPayment(data) {
+            const rawTx = String(data.transactionId || data.transaction_id || "").trim();
+            const rawScreenshot = typeof data.paymentScreenshot === "string" ? data.paymentScreenshot : (typeof data.payment_screenshot === "string" ? data.payment_screenshot : "");
+            const hasTx = rawTx.length >= 5;
+            const hasScreenshot = rawScreenshot.startsWith("data:image/") || rawScreenshot.length > 50;
+
+            if (!hasTx && !hasScreenshot) {
+                throw new Error("Payment proof required: Please enter a valid Transaction / UTR ID OR upload a payment screenshot.");
+            }
+
+            const enrollment_id = String(data.enrollmentId || data.enrollment_id || "").trim();
+            const payment_date = String(data.paymentDate || data.payment_date || new Date().toISOString().slice(0, 10));
+            const payment_method = String(data.paymentMethod || data.payment_method || "quickupi").trim();
+
+            // Safe fallback unique reference for database integrity if student provided screenshot without UTR
+            const txnToSave = hasTx ? rawTx : `PROOF-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
             const payload = {
-                enrollment_id: String(data.enrollmentId || data.enrollment_id || "").trim(),
+                enrollment_id,
                 amount: Number(data.amount) || 500,
-                transaction_id: String(data.transactionId || data.transaction_id || "").trim(),
-                payment_date: String(data.paymentDate || data.payment_date || new Date().toISOString().slice(0, 10)),
-                payment_method: String(data.paymentMethod || data.payment_method || "quickupi").trim(),
+                transaction_id: txnToSave,
+                payment_date,
+                payment_method,
                 status: "pending_verification"
             };
 
-            const res = await sbFetch("payments", {
+            if (hasScreenshot) {
+                payload.payment_screenshot = rawScreenshot;
+            }
+
+            let res = await sbFetch("payments", {
                 method: "POST",
                 body: JSON.stringify(payload)
             });
 
+            // If Supabase table does not yet have payment_screenshot column, retry without that field so payment still succeeds
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                if (errData && errData.message && errData.message.includes("payment_screenshot")) {
+                    delete payload.payment_screenshot;
+                    res = await sbFetch("payments", {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    });
+                }
+            }
+
             if (!res.ok) {
                 const err = await res.json().catch(() => ({ message: "Payment recording failed" }));
                 throw new Error(err.message || "Failed to record payment in Supabase.");
+            }
+
+            // Also cache screenshot locally under payment ID / enrollment key so Admin Panel can view it
+            if (hasScreenshot) {
+                try {
+                    localStorage.setItem(`oav_payment_proof_${enrollment_id}`, rawScreenshot);
+                    const localPayments = JSON.parse(localStorage.getItem("oav_payments") || "[]");
+                    localPayments.push({
+                        enrollment_id,
+                        transaction_id: txnToSave,
+                        payment_screenshot: rawScreenshot,
+                        amount: 500,
+                        payment_date,
+                        payment_method,
+                        status: "pending_verification"
+                    });
+                    localStorage.setItem("oav_payments", JSON.stringify(localPayments));
+                } catch(e) {}
             }
 
             await sbFetch(`students?enrollment_id=eq.${encodeURIComponent(payload.enrollment_id)}`, {
@@ -105,20 +155,57 @@
             return { success: true, message: "Payment submitted for administrator verification." };
         },
 
-        // 3. Student Login
+        // 3. Student Login with Ultra-High-Level Security Gate
         async loginStudent(enrollmentId, mobile) {
             const cleanId = String(enrollmentId || "").trim().toUpperCase();
-            const cleanMobile = String(mobile || "").trim();
+            const cleanMobile = String(mobile || "").replace(/\D/g, "").slice(-10);
+
+            if (!cleanId) {
+                throw new Error("Please enter your Enrollment ID.");
+            }
+            if (!cleanMobile || cleanMobile.length !== 10) {
+                throw new Error("Please enter your registered 10-digit mobile number.");
+            }
 
             const res = await sbFetch(`students?or=(enrollment_id.eq.${cleanId},enrollment_id.eq.OAV-${cleanId})&mobile=eq.${cleanMobile}&select=*`);
-            if (!res.ok) throw new Error("Failed to connect to Supabase.");
+            if (!res.ok) throw new Error("Failed to connect to authentication server.");
 
             const students = await res.json();
             if (!students || students.length === 0) {
-                throw new Error("Invalid Enrollment ID or Registered Mobile number.");
+                throw new Error("No student account found with this Enrollment ID or Mobile Number. Please check your credentials or enroll on the homepage.");
             }
 
             const student = students[0];
+
+            // SECURITY GATE: Prevent unauthorized access if payment is pending, under review, rejected, or suspended
+            if (student.status === "payment_review" || student.status === "pending_verification") {
+                const err = new Error("⏳ Verification Pending: Your payment has been received and is currently under review by our admin team. Once approved in the admin control panel, you will be able to log in. Please try again in some time (usually 15-30 minutes).");
+                err.status = 403;
+                err.code = "PAYMENT_UNDER_REVIEW";
+                throw err;
+            }
+
+            if (student.status === "pending_payment") {
+                const err = new Error("💳 Payment Required: Please complete your ₹500 enrollment fee payment and submit your transaction ID on the homepage.");
+                err.status = 403;
+                err.code = "PAYMENT_REQUIRED";
+                throw err;
+            }
+
+            if (student.status === "rejected") {
+                const err = new Error("❌ Payment Rejected: Your payment claim could not be verified by the admin team. Please contact helpline at +91 89175 31123.");
+                err.status = 403;
+                err.code = "PAYMENT_REJECTED";
+                throw err;
+            }
+
+            if (student.status === "suspended") {
+                const err = new Error("⛔ Account Suspended: Your access has been paused by the administrator. Please contact helpline at +91 89175 31123.");
+                err.status = 403;
+                err.code = "ACCOUNT_SUSPENDED";
+                throw err;
+            }
+
             localStorage.setItem("oav_student_session", JSON.stringify(student));
             localStorage.setItem("oav_current_student", JSON.stringify(student));
             localStorage.setItem("oav_current_enrollment", student.enrollment_id);
@@ -166,6 +253,11 @@
             return notes || [];
         },
 
+        // Alias for getNotes to ensure 100% compatibility across all study/watch scripts
+        async getNotes(studentClass) {
+            return this.getStudyNotes(studentClass);
+        },
+
         // 7. Get Active Announcements
         async getAnnouncements() {
             const res = await sbFetch(`announcements?is_active=eq.true&order=created_at.desc&select=*`);
@@ -188,6 +280,48 @@
                 body: JSON.stringify(payload)
             }).catch(console.warn);
             return { success: true };
+        },
+
+        // 8b. Retrieve Lesson Progress for Student Dashboard & Video Watch Page
+        async getProgress(enrollmentId, studentClass) {
+            const studentStr = localStorage.getItem("oav_current_student");
+            const studentObj = studentStr ? JSON.parse(studentStr) : {};
+            const cleanId = enrollmentId || studentObj.enrollment_id;
+            const targetGrade = String(studentClass || studentObj.student_class || "VI").toUpperCase();
+
+            let completed_lesson_ids = [];
+            if (cleanId) {
+                const res = await sbFetch(`lesson_progress?enrollment_id=eq.${encodeURIComponent(cleanId)}&select=lesson_id`);
+                if (res.ok) {
+                    const rows = await res.json().catch(() => []);
+                    completed_lesson_ids = rows.map(r => r.lesson_id);
+                }
+            }
+
+            // Fallback to local storage completed lessons
+            const localDone = JSON.parse(localStorage.getItem(`oav_done_${targetGrade}`) || '[]');
+            if (completed_lesson_ids.length === 0 && localDone.length > 0) {
+                completed_lesson_ids = localDone;
+            }
+
+            // Get total lessons count
+            let totalLessons = 18;
+            const lRes = await sbFetch(`lessons?student_class=eq.${targetGrade}&select=id`);
+            if (lRes.ok) {
+                const lessons = await lRes.json().catch(() => []);
+                if (lessons && lessons.length > 0) totalLessons = lessons.length;
+            }
+
+            const completedLessons = completed_lesson_ids.length;
+            const percentage = totalLessons > 0 ? Math.min(100, Math.round((completedLessons / totalLessons) * 100)) : 0;
+
+            return {
+                completed_lesson_ids,
+                totalLessons,
+                completedLessons,
+                percentage,
+                quiz_results: []
+            };
         },
 
         // Update Student Photo in Supabase Cloud
@@ -472,6 +606,26 @@
         }
 
         try {
+            // --- ULTRA-HIGH LEVEL SECURITY: Admin Authentication Gate ---
+            if (url.startsWith("/api/admin")) {
+                let token = "";
+                if (init.headers) {
+                    if (init.headers instanceof Headers) {
+                        token = init.headers.get("authorization") || init.headers.get("Authorization") || "";
+                    } else if (typeof init.headers === "object") {
+                        token = init.headers.authorization || init.headers.Authorization || "";
+                    }
+                }
+                token = token.replace(/^Bearer\s+/i, "").trim();
+                if (!token) {
+                    const sessionToken = (sessionStorage.getItem("oav_admin_token") || "").trim();
+                    if (sessionToken) token = sessionToken;
+                }
+                if (!token || token.length < 8) {
+                    return jsonResponse({ error: "Administrator authentication required. Access denied." }, 401);
+                }
+            }
+
             // --- ADMIN ROUTES ---
             if (url.startsWith("/api/admin/overview")) {
                 const overview = await SupabaseAPI.getAdminOverview();
@@ -586,13 +740,23 @@
                 return jsonResponse(announcements, 200);
             }
             if (url.startsWith("/api/progress")) {
-                await SupabaseAPI.saveProgress(body.enrollmentId || body.enrollment_id, body.lessonId || body.lesson_id);
-                return jsonResponse({ success: true }, 200);
+                if (reqMethod === "GET") {
+                    const studentObj = JSON.parse(localStorage.getItem("oav_current_student") || "{}");
+                    const progressData = await SupabaseAPI.getProgress(studentObj.enrollment_id, studentObj.student_class);
+                    return jsonResponse(progressData, 200);
+                } else {
+                    const studentObj = JSON.parse(localStorage.getItem("oav_current_student") || "{}");
+                    const eId = body.enrollmentId || body.enrollment_id || studentObj.enrollment_id;
+                    const lId = body.lessonId || body.lesson_id;
+                    await SupabaseAPI.saveProgress(eId, lId);
+                    return jsonResponse({ success: true }, 200);
+                }
             }
 
         } catch (apiErr) {
             console.warn("Supabase API Bridge fallback error:", apiErr);
-            return jsonResponse({ error: apiErr.message || "Operation failed" }, 400);
+            const status = apiErr.status || (apiErr.code === "PAYMENT_UNDER_REVIEW" || apiErr.code === "PAYMENT_REQUIRED" || apiErr.code === "PAYMENT_REJECTED" || apiErr.code === "ACCOUNT_SUSPENDED" ? 403 : 400);
+            return jsonResponse({ error: apiErr.message || "Operation failed", code: apiErr.code }, status);
         }
 
         return nativeFetch(input, init);

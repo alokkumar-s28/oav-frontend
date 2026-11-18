@@ -44,10 +44,14 @@ module.exports = async function handler(req, res) {
     let rowsHtml = "";
 
     if (event === "payment") {
+      const hasScreenshot = Boolean(payment.hasScreenshot || payment.paymentScreenshot || payment.has_screenshot);
+      const hasTx = payment.transactionId && payment.transactionId !== "N/A" && !payment.transactionId.includes("Screenshot");
+      const proofSummary = hasScreenshot ? (hasTx ? `UTR: ${payment.transactionId} + 📸 Screenshot` : `📸 Screenshot Attached`) : `UTR: ${payment.transactionId || "N/A"}`;
+
       badgeText = "💰 PAYMENT CLAIM SUBMITTED (₹500)";
       badgeColor = "#f59e0b";
       title = "Student Submitted ₹500 Payment Claim";
-      subject = `[OAV Mantra] 💰 Payment Claim: ${payment.studentName || student.name || "Student"} (${payment.enrollmentId || student.enrollmentId || "N/A"}) - UTR: ${payment.transactionId || "N/A"}`;
+      subject = `[OAV Mantra] 💰 Payment Claim: ${payment.studentName || student.name || "Student"} (${payment.enrollmentId || student.enrollmentId || "N/A"}) - ${proofSummary}`;
       rowsHtml = `
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 10px 0; color: #64748b; width: 150px;">Student Name:</td>
@@ -59,7 +63,13 @@ module.exports = async function handler(req, res) {
         </tr>
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 10px 0; color: #64748b;">Transaction / UTR:</td>
-          <td style="padding: 10px 0; color: #b45309; font-weight: bold; font-family: monospace; font-size: 16px; background: #fef3c7; padding: 6px 10px; border-radius: 6px;">${payment.transactionId || "N/A"}</td>
+          <td style="padding: 10px 0; color: #b45309; font-weight: bold; font-family: monospace; font-size: 16px; background: #fef3c7; padding: 6px 10px; border-radius: 6px;">${payment.transactionId || (hasScreenshot ? "Not provided (Screenshot attached)" : "N/A")}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 10px 0; color: #64748b;">Payment Proof:</td>
+          <td style="padding: 10px 0; font-weight: bold; color: ${hasScreenshot ? '#059669' : '#64748b'};">
+            ${hasScreenshot ? '✅ Payment Screenshot Uploaded (View in Admin Panel)' : 'UTR Reference Number'}
+          </td>
         </tr>
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 10px 0; color: #64748b;">Amount:</td>
@@ -75,7 +85,7 @@ module.exports = async function handler(req, res) {
         </tr>
         <tr>
           <td style="padding: 10px 0; color: #64748b;">Action Required:</td>
-          <td style="padding: 10px 0; color: #dc2626; font-weight: bold;">Verify UTR in bank and approve student in Admin Panel.</td>
+          <td style="padding: 10px 0; color: #dc2626; font-weight: bold;">Check bank / screenshot proof in Admin Panel and approve account.</td>
         </tr>
       `;
     } else if (event === "login") {

@@ -1373,10 +1373,14 @@ if (paymentForm) {
 
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
-                showToast(data.error || 'Failed to submit payment. Please verify your details.', 'error');
-                submitPaymentBtn.innerHTML = origText;
-                submitPaymentBtn.disabled = false;
-                return;
+                if (res.status === 404 || res.status === 502) {
+                    console.warn('Backend payment route unavailable, continuing with client-side fallback');
+                } else {
+                    showToast(data.error || 'Failed to submit payment. Please verify your details.', 'error');
+                    submitPaymentBtn.innerHTML = origText;
+                    submitPaymentBtn.disabled = false;
+                    return;
+                }
             }
         } catch (netErr) {
             console.info('Backend unreachable, saving payment claim locally:', netErr.message);
@@ -1411,6 +1415,8 @@ if (paymentForm) {
                 enrollmentId: currentEnrollmentId,
                 studentName: currentStudentName,
                 transactionId: tx || '(Screenshot attached)',
+                hasScreenshot: hasScreenshot,
+                paymentScreenshot: paymentScreenshotData || '',
                 paymentDate: pDate,
                 paymentMethod: method
             });

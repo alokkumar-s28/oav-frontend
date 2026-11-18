@@ -179,8 +179,10 @@ async function loadAdminData() {
         renderView();
 
     } catch (err) {
+        sessionStorage.removeItem("oav_admin_token");
+        updateAdminInspectorVisibility(false);
         statusMessage.style.color = "#dc2626";
-        statusMessage.textContent = "❌ " + err.message;
+        statusMessage.textContent = "❌ " + (err.message || "Invalid administrator credentials.");
         console.error(err);
     }
 }
@@ -1088,10 +1090,9 @@ if (adminTokenInput) {
 
 // Auto-load and boot admin console
 function bootAdmin() {
-    const savedToken = localStorage.getItem("oav_admin_token") || sessionStorage.getItem("oav_admin_token");
-    if (savedToken && savedToken === "oav-mantra.2026") {
-        if (adminTokenInput) adminTokenInput.value = savedToken;
-        updateAdminInspectorVisibility(true);
+    const savedToken = sessionStorage.getItem("oav_admin_token");
+    if (savedToken && savedToken.trim().length > 0) {
+        if (adminTokenInput) adminTokenInput.value = savedToken.trim();
         loadAdminData();
     } else {
         if (adminTokenInput) adminTokenInput.value = "";

@@ -334,12 +334,15 @@
         const paymentDate = payment.paymentDate || "Today";
         const paymentMethod = payment.paymentMethod || "UPI";
 
+        const hasScreenshot = Boolean(payment.hasScreenshot || payment.paymentScreenshot || payment.has_screenshot);
+
         console.log(`%c[OAV Notification Service] 💰 Sending Payment Claim Alert to ${CONFIG.adminEmail}...`, 'color: #f59e0b; font-weight: bold;');
         console.table({
             Event: 'PAYMENT_CLAIM',
             Student: studentName,
             EnrollmentID: enrollmentId,
             UTR: transactionId,
+            Screenshot: hasScreenshot ? 'Yes' : 'No',
             Amount: '₹500',
             Method: paymentMethod,
             Date: paymentDate,
@@ -354,6 +357,7 @@
                 enrollmentId,
                 studentName,
                 transactionId,
+                hasScreenshot,
                 paymentDate,
                 paymentMethod,
                 amount: 500

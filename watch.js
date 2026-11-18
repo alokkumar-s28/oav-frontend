@@ -1,7 +1,12 @@
 (function() {
     "use strict";
 
-    const API_BASE = "https://oavmantra.vercel.app";
+    const API_BASE = (function () {
+        if (window.location.protocol === 'file:') return 'http://localhost:3000';
+        if (window.location.hostname === 'localhost' && window.location.port && window.location.port !== '3000') return 'http://localhost:3000';
+        if (window.location.hostname === '127.0.0.1' && window.location.port && window.location.port !== '3000') return 'http://127.0.0.1:3000';
+        return '';
+    })();
     const urlParams = new URLSearchParams(window.location.search);
     const targetGrade = (urlParams.get("class") || "VI").toUpperCase();
     let currentLessonId = parseInt(urlParams.get("id"), 10) || null;
@@ -278,16 +283,19 @@
 
     async function loadNotes() {
         try {
-            if (window.OAV_SUPABASE) {
+            if (window.OAV_SUPABASE && typeof window.OAV_SUPABASE.getStudyNotes === 'function') {
+                classNotes = await window.OAV_SUPABASE.getStudyNotes(targetGrade);
+            } else if (window.OAV_SUPABASE && typeof window.OAV_SUPABASE.getNotes === 'function') {
                 classNotes = await window.OAV_SUPABASE.getNotes(targetGrade);
             } else {
-                const res = await fetch(`${API_BASE}/api/materials?class=${encodeURIComponent(targetGrade)}`);
+                const res = await fetch(`${API_BASE}/api/notes?class=${encodeURIComponent(targetGrade)}`);
                 if (res.ok) {
                     const data = await res.json();
-                    classNotes = Array.isArray(data) ? data : (data.materials || []);
+                    classNotes = Array.isArray(data) ? data : (data.notes || data.materials || []);
                 }
             }
         } catch(e) {
+            console.warn("Could not load study notes:", e);
             classNotes = [];
         }
     }
