@@ -344,6 +344,32 @@ function setupEventListeners() {
                 }
 
                 // Save to server and backup to Google Drive
+                let driveUploaded = false;
+                const directWebhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
+                if (directWebhookUrl && directWebhookUrl.startsWith("https://script.google.com/")) {
+                    try {
+                        const driveRes = await fetch(directWebhookUrl, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                action: "upload_photo",
+                                folderType: "photos",
+                                base64Data: highQualityPhoto,
+                                studentName: (currentStudent && currentStudent.full_name) || "Student",
+                                enrollmentId: enrollmentKey || "STUDENT",
+                                studentClass: (currentStudent && currentStudent.student_class) || "VI"
+                            })
+                        });
+                        const driveData = await driveRes.json().catch(() => ({}));
+                        if (driveData && (driveData.fileUrl || driveData.webViewLink)) {
+                            driveUploaded = true;
+                            console.log("[Dashboard] Photo uploaded directly to Google Drive:", driveData.fileUrl || driveData.webViewLink);
+                        }
+                    } catch (driveErr) {
+                        console.warn("[Dashboard] Direct Drive upload warning:", driveErr);
+                    }
+                }
+
                 const res = await fetch(`${API_BASE}/api/student/photo`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -356,15 +382,13 @@ function setupEventListeners() {
                 });
 
                 const data = await res.json().catch(() => ({}));
-                if (res.ok && data.success) {
-                    if (data.driveUploaded) {
-                        alert("✅ Photo uploaded to your ID Card and backed up to Google Drive successfully!");
-                    } else {
-                        alert("✅ Photo uploaded and saved to ID Card successfully!");
-                    }
+                if (data.driveUploaded || driveUploaded) {
+                    alert("✅ Photo uploaded to your ID Card and backed up to Google Drive successfully!");
+                } else if (res.ok && data.success) {
+                    alert("✅ Photo uploaded and saved to ID Card successfully!\n(Note: Connect Google Drive in Admin Panel to enable auto-backup)");
                 } else {
                     console.info("Photo saved to local browser cache:", data.error);
-                    alert("✅ Photo uploaded and saved to ID Card successfully!");
+                    alert("✅ Photo uploaded and saved to ID Card successfully!\n(Note: Connect Google Drive in Admin Panel to enable auto-backup)");
                 }
             } catch (err) {
                 console.error("Photo upload error:", err);

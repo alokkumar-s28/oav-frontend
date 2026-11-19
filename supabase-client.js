@@ -107,16 +107,46 @@
                 payload.payment_screenshot = rawScreenshot;
             }
 
+            // If Google Drive webhook URL is configured, auto-upload payment screenshot
+            let driveFileUrl = null;
+            const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
+            if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && hasScreenshot) {
+                try {
+                    const dRes = await fetch(webhookUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            action: "upload_payment",
+                            folderType: "payments",
+                            base64Data: rawScreenshot,
+                            studentName: data.studentName || data.name || enrollment_id,
+                            enrollmentId: enrollment_id,
+                            transactionId: txnToSave,
+                            amount: 500,
+                            paymentDate: payment_date
+                        })
+                    });
+                    const dData = await dRes.json().catch(() => ({}));
+                    if (dData && (dData.fileUrl || dData.webViewLink)) {
+                        driveFileUrl = dData.fileUrl || dData.webViewLink;
+                        payload.drive_file_url = driveFileUrl;
+                    }
+                } catch (dErr) {
+                    console.warn("[Supabase Bridge] Payment proof Drive upload warning:", dErr);
+                }
+            }
+
             let res = await sbFetch("payments", {
                 method: "POST",
                 body: JSON.stringify(payload)
             });
 
-            // If Supabase table does not yet have payment_screenshot column, retry without that field so payment still succeeds
+            // If Supabase table does not yet have drive_file_url or payment_screenshot column, retry without that field
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
-                if (errData && errData.message && errData.message.includes("payment_screenshot")) {
-                    delete payload.payment_screenshot;
+                if (errData && errData.message && (errData.message.includes("drive_file_url") || errData.message.includes("payment_screenshot"))) {
+                    if (errData.message.includes("drive_file_url")) delete payload.drive_file_url;
+                    if (errData.message.includes("payment_screenshot")) delete payload.payment_screenshot;
                     res = await sbFetch("payments", {
                         method: "POST",
                         body: JSON.stringify(payload)
@@ -718,10 +748,38 @@
                 const saved = JSON.parse(localStorage.getItem("oav_current_student") || "{}");
                 const targetId = body.enrollmentId || body.enrollment_id || saved.enrollment_id;
                 const photo = body.photo || body.highResPhoto;
+                let driveUploaded = false;
+                let driveFileUrl = null;
+
+                const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
+                if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && photo) {
+                    try {
+                        const dRes = await fetch(webhookUrl, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                action: "upload_photo",
+                                folderType: "photos",
+                                base64Data: photo,
+                                studentName: body.studentName || saved.full_name || targetId,
+                                enrollmentId: targetId,
+                                studentClass: body.studentClass || saved.student_class || "VI"
+                            })
+                        });
+                        const dData = await dRes.json().catch(() => ({}));
+                        if (dData && (dData.fileUrl || dData.webViewLink)) {
+                            driveUploaded = true;
+                            driveFileUrl = dData.fileUrl || dData.webViewLink;
+                        }
+                    } catch (dErr) {
+                        console.warn("[Supabase Bridge] Drive webhook error:", dErr);
+                    }
+                }
+
                 if (targetId && photo) {
                     await SupabaseAPI.updateStudentPhoto(targetId, photo);
                 }
-                return jsonResponse({ success: true, photo }, 200);
+                return jsonResponse({ success: true, photo, driveUploaded, driveFileUrl }, 200);
             }
             if (url.startsWith("/api/lessons")) {
                 const params = new URLSearchParams(url.includes("?") ? url.slice(url.indexOf("?")) : "");

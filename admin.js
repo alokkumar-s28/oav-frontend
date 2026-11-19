@@ -246,6 +246,22 @@ function renderView() {
         photoFilterEl.style.display = (currentTab === "photos" || currentTab === "students") ? "block" : "none";
     }
 
+    // Google Drive Cloud Tab
+    const driveSection = document.getElementById("driveSection");
+    if (currentTab === "drive") {
+        filterToolbar.style.display = "none";
+        tableContent.style.display = "none";
+        if (lessonsSection) lessonsSection.style.display = "none";
+        if (notesSection) notesSection.style.display = "none";
+        if (broadcastSection) broadcastSection.style.display = "none";
+        if (driveSection) {
+            driveSection.style.display = "block";
+            renderDriveSection();
+        }
+        return;
+    }
+    if (driveSection) driveSection.style.display = "none";
+
     // 1. Broadcast Tab
     if (currentTab === "broadcast") {
         filterToolbar.style.display = "none";
@@ -1104,8 +1120,162 @@ if (adminTokenInput) {
     });
 }
 
+// --- Google Drive Cloud Settings Manager ---
+async function renderDriveSection() {
+    const input = document.getElementById("driveWebhookUrlInput");
+    const banner = document.getElementById("driveStatusBanner");
+    const icon = document.getElementById("driveStatusIcon");
+    const text = document.getElementById("driveStatusText");
+
+    const savedUrl = localStorage.getItem("oav_drive_webhook_url") || "";
+    if (input && !input.value) {
+        input.value = savedUrl;
+    }
+
+    let backendConfigured = false;
+    try {
+        const res = await adminFetch("/api/admin/drive-config");
+        if (res && res.configured) {
+            backendConfigured = true;
+            if (res.fullWebhookUrl && input) input.value = res.fullWebhookUrl;
+        }
+    } catch (e) {
+        // Backend offline or on Vercel
+    }
+
+    const isConnected = Boolean((input && input.value && input.value.startsWith("https://script.google.com/")) || backendConfigured);
+
+    if (banner && icon && text) {
+        if (isConnected) {
+            banner.style.background = "#dcfce7";
+            banner.style.color = "#166534";
+            banner.style.border = "1px solid #bbf7d0";
+            icon.className = "fas fa-check-circle";
+            icon.style.color = "#16a34a";
+            text.innerHTML = `<strong>Google Drive Connected & Active!</strong> Photos and payment proofs are automatically backed up directly into your <strong>oavmantra@gmail.com</strong> Google Drive.`;
+        } else {
+            banner.style.background = "#fef3c7";
+            banner.style.color = "#92400e";
+            banner.style.border = "1px solid #fde68a";
+            icon.className = "fas fa-exclamation-triangle";
+            icon.style.color = "#d97706";
+            text.innerHTML = `<strong>Google Drive Not Connected:</strong> Paste your Google Apps Script Web App URL below to automatically store student photos and payment screenshots directly into your Google Drive.`;
+        }
+    }
+}
+
+function setupDriveSectionListeners() {
+    const saveBtn = document.getElementById("saveDriveWebhookBtn");
+    const testBtn = document.getElementById("testDriveWebhookBtn");
+    const copyBtn = document.getElementById("copyScriptCodeBtn");
+    const input = document.getElementById("driveWebhookUrlInput");
+    const feedback = document.getElementById("driveFeedbackMsg");
+
+    if (saveBtn && input) {
+        saveBtn.addEventListener("click", async () => {
+            const url = input.value.trim();
+            if (!url || !url.startsWith("https://script.google.com/")) {
+                alert("Please enter a valid Google Apps Script Web App URL (starts with https://script.google.com/).");
+                return;
+            }
+
+            localStorage.setItem("oav_drive_webhook_url", url);
+            window.OAV_DRIVE_WEBHOOK_URL = url;
+
+            try {
+                await adminFetch("/api/admin/drive-config", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ webhookUrl: url })
+                });
+            } catch (e) {
+                // Ignore if backend offline
+            }
+
+            if (feedback) {
+                feedback.style.color = "#16a34a";
+                feedback.textContent = "✅ Google Drive Webhook URL saved successfully!";
+            }
+            renderDriveSection();
+            alert("✅ Google Drive Webhook URL saved! All photo and screenshot uploads will now automatically save into your oavmantra@gmail.com Google Drive.");
+        });
+    }
+
+    if (testBtn && input) {
+        testBtn.addEventListener("click", async () => {
+            const url = input.value.trim() || localStorage.getItem("oav_drive_webhook_url");
+            if (!url) {
+                alert("Please enter a Google Apps Script Web App URL first.");
+                return;
+            }
+
+            testBtn.disabled = true;
+            testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing Upload...';
+            if (feedback) {
+                feedback.style.color = "#2563eb";
+                feedback.textContent = "Sending test upload to Google Drive...";
+            }
+
+            try {
+                const testPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "upload_photo",
+                        folderType: "photos",
+                        base64Data: testPixel,
+                        fileName: `CONNECTION_TEST_${Date.now()}.png`,
+                        studentName: "Test_Admin_Connection",
+                        enrollmentId: "TEST-DRIVE-OAV",
+                        description: "Verification test file created by OAV Mantra Admin Panel."
+                    })
+                });
+
+                const data = await res.json().catch(() => ({}));
+                if (data && (data.fileUrl || data.webViewLink || data.success)) {
+                    const link = data.fileUrl || data.webViewLink;
+                    if (feedback) {
+                        feedback.style.color = "#16a34a";
+                        feedback.innerHTML = `✅ <strong>Success!</strong> Test file uploaded to Google Drive. <a href="${link}" target="_blank" style="color:#2563eb; text-decoration:underline;">View uploaded file in Drive</a>`;
+                    }
+                    renderDriveSection();
+                    alert("🎉 Google Drive connected successfully!\nA test file was created in your '📁 OAV Mantra - Student Photos' folder in Google Drive.");
+                } else {
+                    throw new Error(data.error || "Invalid response from Google Apps Script.");
+                }
+            } catch (err) {
+                console.error("Drive test error:", err);
+                if (feedback) {
+                    feedback.style.color = "#dc2626";
+                    feedback.textContent = `❌ Test failed: ${err.message}. Please verify the Web App URL and ensure "Who has access: Anyone" is selected.`;
+                }
+                alert(`❌ Connection test failed:\n${err.message}\n\nPlease verify that your deployment is set to "Who has access: Anyone".`);
+            } finally {
+                testBtn.disabled = false;
+                testBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Test Upload';
+            }
+        });
+    }
+
+    if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+            fetch("google-apps-script/GoogleDriveUploader.gs")
+                .then(r => r.text())
+                .then(code => {
+                    navigator.clipboard.writeText(code);
+                    alert("📋 Google Apps Script code copied to clipboard! Paste it into script.google.com and deploy.");
+                })
+                .catch(() => {
+                    alert("Open file 'google-apps-script/GoogleDriveUploader.gs' in your editor to copy the code.");
+                });
+        });
+    }
+}
+
 // Auto-load and boot admin console
 function bootAdmin() {
+    setupDriveSectionListeners();
     const savedToken = sessionStorage.getItem("oav_admin_token");
     if (savedToken && savedToken.trim().length > 0) {
         if (adminTokenInput) adminTokenInput.value = savedToken.trim();
