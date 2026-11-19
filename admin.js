@@ -193,8 +193,15 @@ function getRecordPhoto(r) {
     const enrollmentKey = String(r.enrollment_id || "").trim().toUpperCase();
     const studentObj = studentsList.find(s => String(s.enrollment_id || "").trim().toUpperCase() === enrollmentKey) || {};
     const localPhoto = localStorage.getItem(`oav_student_photo_${enrollmentKey}`);
-    const photo = r.photo || studentObj.photo || localPhoto;
+    const photo = r.photo || r.drive_photo_url || studentObj.photo || studentObj.drive_photo_url || localPhoto;
     return (photo && (photo.startsWith('data:image/') || photo.startsWith('http') || photo.startsWith('/'))) ? photo : null;
+}
+
+function getRecordDrivePhoto(r) {
+    if (!r) return null;
+    const enrollmentKey = String(r.enrollment_id || "").trim().toUpperCase();
+    const studentObj = studentsList.find(s => String(s.enrollment_id || "").trim().toUpperCase() === enrollmentKey) || {};
+    return r.drive_photo_url || studentObj.drive_photo_url || null;
 }
 
 // --- Filter and Search ---
@@ -305,14 +312,17 @@ function renderView() {
                 <tbody>
                     ${filtered.map(p => {
                         const pPhoto = getRecordPhoto(p);
+                        const pDrivePhoto = getRecordDrivePhoto(p);
                         const hasPPhoto = Boolean(pPhoto);
-                        const hasScreenshot = Boolean(p.payment_screenshot);
+                        const proofImg = p.payment_screenshot || p.drive_file_url || '';
+                        const hasScreenshot = Boolean(proofImg);
+                        const hasDrive = Boolean(p.drive_file_url);
 
                         return `
                         <tr>
                             <td>
                                 <div style="display:flex; align-items:center; gap:10px;">
-                                    <div style="width:38px; height:38px; min-width:38px; border-radius:50%; overflow:hidden; background:#e2e8f0; display:flex; align-items:center; justify-content:center; border:1.5px solid #cbd5e1; cursor:pointer;" onclick="${hasPPhoto ? `viewAdminStudentPhoto('${escapeHtml(p.full_name)}', '${pPhoto}')` : ''}" title="${hasPPhoto ? 'Click to view photo' : 'No photo uploaded'}">
+                                    <div style="width:38px; height:38px; min-width:38px; border-radius:50%; overflow:hidden; background:#e2e8f0; display:flex; align-items:center; justify-content:center; border:1.5px solid #cbd5e1; cursor:pointer;" onclick="${hasPPhoto ? `viewAdminStudentPhoto('${escapeHtml(p.full_name)}', '${pPhoto}', '${escapeHtml(pDrivePhoto || '')}')` : ''}" title="${hasPPhoto ? 'Click to view photo' : 'No photo uploaded'}">
                                         ${hasPPhoto ? `<img src="${pPhoto}" alt="Photo" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fas fa-user-graduate" style="color:#64748b; font-size:1rem;"></i>`}
                                     </div>
                                     <div>
@@ -326,9 +336,12 @@ function renderView() {
                             <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:600;">${escapeHtml(p.transaction_id || '—')}</code></td>
                             <td>
                                 ${hasScreenshot ? `
-                                    <button class="btn-admin btn-admin-primary" style="padding:4px 10px; font-size:0.8rem; display:inline-flex; align-items:center; gap:6px;" onclick="viewAdminPaymentScreenshot('${escapeHtml(p.full_name)}', '${p.payment_screenshot}', '${escapeHtml(p.transaction_id || '')}', '${escapeHtml(p.enrollment_id)}')">
-                                        <i class="fas fa-image"></i> View Proof
-                                    </button>
+                                    <div style="display:inline-flex; align-items:center; gap:6px;">
+                                        <button class="btn-admin btn-admin-primary" style="padding:4px 10px; font-size:0.8rem; display:inline-flex; align-items:center; gap:6px;" onclick="viewAdminPaymentScreenshot('${escapeHtml(p.full_name)}', '${proofImg}', '${escapeHtml(p.transaction_id || '')}', '${escapeHtml(p.enrollment_id)}', '${escapeHtml(p.drive_file_url || '')}')">
+                                            <i class="fas fa-image"></i> View Proof
+                                        </button>
+                                        ${hasDrive ? `<a href="${p.drive_file_url}" target="_blank" rel="noopener" title="Open in Google Drive" style="display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:#e8f5e9; color:#1b5e20; text-decoration:none;"><i class="fab fa-google-drive"></i></a>` : ''}
+                                    </div>
                                 ` : `
                                     <span style="color:#94a3b8; font-size:0.82rem; font-style:italic;">No image</span>
                                 `}
@@ -384,6 +397,7 @@ function renderView() {
                 <tbody>
                     ${filtered.map(s => {
                         const studentPhoto = getRecordPhoto(s);
+                        const studentDrivePhoto = getRecordDrivePhoto(s);
                         const hasPhoto = Boolean(studentPhoto);
 
                         return `
@@ -395,7 +409,7 @@ function renderView() {
                             </td>
                             <td>
                                 <div style="display:flex; align-items:center; gap:12px;">
-                                    <div style="width:44px; height:44px; min-width:44px; border-radius:50%; overflow:hidden; background:#e2e8f0; display:flex; align-items:center; justify-content:center; border:2px solid ${hasPhoto ? '#2563eb' : '#cbd5e1'}; box-shadow:0 1px 4px rgba(0,0,0,0.1); cursor:pointer;" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${studentPhoto}')` : ''}" title="${hasPhoto ? 'Click to enlarge HD photo' : 'No photo uploaded'}">
+                                    <div style="width:44px; height:44px; min-width:44px; border-radius:50%; overflow:hidden; background:#e2e8f0; display:flex; align-items:center; justify-content:center; border:2px solid ${hasPhoto ? '#2563eb' : '#cbd5e1'}; box-shadow:0 1px 4px rgba(0,0,0,0.1); cursor:pointer;" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${studentPhoto}', '${escapeHtml(studentDrivePhoto || '')}')` : ''}" title="${hasPhoto ? 'Click to enlarge HD photo' : 'No photo uploaded'}">
                                         ${hasPhoto ? `<img src="${studentPhoto}" alt="Photo" style="width:100%; height:100%; object-fit:cover; display:block;">` : `<i class="fas fa-user-graduate" style="color:#64748b; font-size:1.15rem;"></i>`}
                                     </div>
                                     <div>
@@ -468,14 +482,16 @@ function renderView() {
             <div class="photo-gallery-grid">
                 ${filtered.map(s => {
                     const photoUrl = getRecordPhoto(s);
+                    const studentDrivePhoto = getRecordDrivePhoto(s);
                     const hasPhoto = Boolean(photoUrl);
 
                     return `
                     <div class="photo-card">
-                        <div class="photo-card-img-wrap" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${photoUrl}')` : ''}" title="${hasPhoto ? 'Click to inspect HD photo' : 'No photo uploaded'}">
+                        <div class="photo-card-img-wrap" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${photoUrl}', '${escapeHtml(studentDrivePhoto || '')}')` : ''}" title="${hasPhoto ? 'Click to inspect HD photo' : 'No photo uploaded'}">
                             ${hasPhoto ? `
                                 <img src="${photoUrl}" alt="${escapeHtml(s.full_name)}" loading="lazy">
                                 <span class="photo-card-badge" style="background:#dcfce7; color:#166534;"><i class="fas fa-check-circle"></i> HD Photo</span>
+                                ${studentDrivePhoto ? `<span class="photo-card-badge" style="background:#e8f5e9; color:#1b5e20; top:36px;"><i class="fab fa-google-drive"></i> In Drive</span>` : ''}
                             ` : `
                                 <div class="photo-card-placeholder">
                                     <i class="fas fa-user-graduate"></i>
@@ -499,7 +515,7 @@ function renderView() {
 
                             <div style="margin-top:auto; padding-top:10px;">
                                 ${hasPhoto ? `
-                                    <button class="btn-admin btn-admin-primary" style="width:100%; justify-content:center; padding:7px 10px; font-size:0.8rem;" onclick="viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${photoUrl}')">
+                                    <button class="btn-admin btn-admin-primary" style="width:100%; justify-content:center; padding:7px 10px; font-size:0.8rem;" onclick="viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${photoUrl}', '${escapeHtml(studentDrivePhoto || '')}')">
                                         <i class="fas fa-search-plus"></i> View Full Photo
                                     </button>
                                 ` : `
@@ -1139,8 +1155,9 @@ function bootAdmin() {
 }
 
 // Modal helper to enlarge student photo in Admin panel
-window.viewAdminStudentPhoto = function(studentName, photoUrl) {
-    if (!photoUrl) return;
+window.viewAdminStudentPhoto = function(studentName, photoUrl, driveUrl) {
+    if (!photoUrl && !driveUrl) return;
+    const activePhoto = photoUrl || driveUrl;
     let modal = document.getElementById("adminPhotoModal");
     if (!modal) {
         modal = document.createElement("div");
@@ -1157,10 +1174,15 @@ window.viewAdminStudentPhoto = function(studentName, photoUrl) {
                 <i class="fas fa-id-badge" style="color:#2563eb;"></i> ${escapeHtml(studentName)}
             </h3>
             <div style="width:260px; height:260px; margin:0 auto 18px; border-radius:14px; overflow:hidden; border:3px solid #2563eb; box-shadow:0 10px 25px rgba(37,99,235,0.2); background:#f8fafc; display:flex; align-items:center; justify-content:center;">
-                <img src="${photoUrl}" alt="Student Photo" style="width:100%; height:100%; object-fit:cover; display:block;">
+                <img src="${activePhoto}" alt="Student Photo" style="width:100%; height:100%; object-fit:cover; display:block;">
             </div>
-            <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
-                <a href="${photoUrl}" download="${encodeURIComponent(studentName)}_Photo.jpg" class="btn-admin btn-admin-primary" style="padding:8px 16px; font-size:0.85rem; text-decoration:none;">
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                ${driveUrl ? `
+                    <a href="${driveUrl}" target="_blank" rel="noopener" class="btn-admin" style="background:#0f9d58; color:#ffffff; padding:8px 16px; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="fab fa-google-drive"></i> Open in Drive
+                    </a>
+                ` : ''}
+                <a href="${activePhoto}" download="${encodeURIComponent(studentName)}_Photo.jpg" class="btn-admin btn-admin-primary" style="padding:8px 16px; font-size:0.85rem; text-decoration:none;">
                     <i class="fas fa-download"></i> Download HD Photo
                 </a>
                 <button onclick="document.getElementById('adminPhotoModal').style.display='none'" class="btn-admin btn-admin-secondary" style="padding:8px 16px; font-size:0.85rem;">
@@ -1174,8 +1196,9 @@ window.viewAdminStudentPhoto = function(studentName, photoUrl) {
 };
 
 // Modal helper to view payment screenshot in Admin panel
-window.viewAdminPaymentScreenshot = function(studentName, screenshotUrl, txId, enrollmentId) {
-    if (!screenshotUrl) return;
+window.viewAdminPaymentScreenshot = function(studentName, screenshotUrl, txId, enrollmentId, driveUrl) {
+    if (!screenshotUrl && !driveUrl) return;
+    const activeProof = screenshotUrl || driveUrl;
     let modal = document.getElementById("adminScreenshotModal");
     if (!modal) {
         modal = document.createElement("div");
@@ -1194,10 +1217,15 @@ window.viewAdminPaymentScreenshot = function(studentName, screenshotUrl, txId, e
             <p style="margin:0 0 10px; color:#64748b; font-size:0.88rem;">Student: <strong>${escapeHtml(studentName)}</strong> (${escapeHtml(enrollmentId || 'N/A')})</p>
             ${txId ? `<div style="margin:0 0 14px;"><span style="background:#f1f5f9; padding:6px 12px; border-radius:6px; font-size:0.85rem; font-family:monospace; display:inline-block;">UTR / Txn: <strong>${escapeHtml(txId)}</strong></span></div>` : ''}
             <div style="max-height:460px; overflow:hidden; border-radius:12px; border:2px solid #e2e8f0; background:#0f172a; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
-                <img src="${screenshotUrl}" alt="Payment Screenshot" style="max-width:100%; max-height:460px; object-fit:contain; display:block;">
+                <img src="${activeProof}" alt="Payment Screenshot" style="max-width:100%; max-height:460px; object-fit:contain; display:block;">
             </div>
-            <div style="display:flex; justify-content:center; gap:10px;">
-                <a href="${screenshotUrl}" download="${encodeURIComponent(studentName)}_Payment_Proof.jpg" class="btn-admin btn-admin-primary" style="padding:8px 16px; font-size:0.85rem; text-decoration:none;">
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                ${driveUrl ? `
+                    <a href="${driveUrl}" target="_blank" rel="noopener" class="btn-admin" style="background:#0f9d58; color:#ffffff; padding:8px 16px; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="fab fa-google-drive"></i> Open in Google Drive
+                    </a>
+                ` : ''}
+                <a href="${activeProof}" download="${encodeURIComponent(studentName)}_Payment_Proof.jpg" class="btn-admin btn-admin-primary" style="padding:8px 16px; font-size:0.85rem; text-decoration:none;">
                     <i class="fas fa-download"></i> Download Screenshot
                 </a>
                 <button onclick="document.getElementById('adminScreenshotModal').style.display='none'" class="btn-admin btn-admin-secondary" style="padding:8px 16px; font-size:0.85rem;">

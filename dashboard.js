@@ -350,7 +350,8 @@ function setupEventListeners() {
                     credentials: "include",
                     body: JSON.stringify({
                         photo: highQualityPhoto,
-                        highResPhoto: highQualityPhoto
+                        highResPhoto: highQualityPhoto,
+                        enrollmentId: enrollmentKey || (currentStudent ? currentStudent.enrollment_id : "")
                     })
                 });
 

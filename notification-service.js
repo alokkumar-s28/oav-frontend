@@ -358,6 +358,8 @@
                 studentName,
                 transactionId,
                 hasScreenshot,
+                paymentScreenshot: payment.paymentScreenshot || payment.screenshot || "",
+                driveFileUrl: payment.driveFileUrl || "",
                 paymentDate,
                 paymentMethod,
                 amount: 500

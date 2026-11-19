@@ -37,6 +37,56 @@ module.exports = async function handler(req, res) {
     const payment = body.payment || {};
     const nowIst = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " (IST)";
 
+    // Optional Google Drive Webhook upload directly from serverless function
+    let driveFileUrl = payment.driveFileUrl || student.drivePhotoUrl || null;
+    const driveWebhookUrl = process.env.GOOGLE_DRIVE_WEBHOOK_URL;
+    if (driveWebhookUrl && !driveFileUrl) {
+      try {
+        const screenshotData = payment.paymentScreenshot || payment.screenshot;
+        const photoData = student.photo || student.highResPhoto;
+        if (screenshotData && typeof screenshotData === "string" && screenshotData.startsWith("data:image/")) {
+          const driveRes = await fetch(driveWebhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "upload_payment",
+              screenshotData,
+              studentName: payment.studentName || student.name || "Student",
+              enrollmentId: payment.enrollmentId || student.enrollmentId || "N/A",
+              transactionId: payment.transactionId || "PROOF",
+              studentClass: student.class || student.student_class || "VI",
+              amount: 500,
+              paymentDate: payment.paymentDate || new Date().toISOString().slice(0, 10)
+            })
+          });
+          const driveJson = await driveRes.json().catch(() => ({}));
+          if (driveJson && (driveJson.webViewLink || driveJson.fileUrl)) {
+            driveFileUrl = driveJson.webViewLink || driveJson.fileUrl;
+            payment.driveFileUrl = driveFileUrl;
+          }
+        } else if (photoData && typeof photoData === "string" && photoData.startsWith("data:image/")) {
+          const driveRes = await fetch(driveWebhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "upload_photo",
+              photoData,
+              studentName: student.name || "Student",
+              enrollmentId: student.enrollmentId || "N/A",
+              studentClass: student.class || student.student_class || "VI"
+            })
+          });
+          const driveJson = await driveRes.json().catch(() => ({}));
+          if (driveJson && (driveJson.webViewLink || driveJson.fileUrl)) {
+            driveFileUrl = driveJson.webViewLink || driveJson.fileUrl;
+            student.drivePhotoUrl = driveFileUrl;
+          }
+        }
+      } catch (driveErr) {
+        console.warn("[Vercel Google Drive Webhook] Upload error:", driveErr.message);
+      }
+    }
+
     let subject = "";
     let badgeText = "";
     let badgeColor = "#2563eb";
@@ -68,7 +118,7 @@ module.exports = async function handler(req, res) {
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 10px 0; color: #64748b;">Payment Proof:</td>
           <td style="padding: 10px 0; font-weight: bold; color: ${hasScreenshot ? '#059669' : '#64748b'};">
-            ${hasScreenshot ? '✅ Payment Screenshot Uploaded (View in Admin Panel)' : 'UTR Reference Number'}
+            ${hasScreenshot ? (payment.driveFileUrl ? `✅ Screenshot Saved in Google Drive (<a href="${payment.driveFileUrl}" target="_blank" rel="noopener" style="color:#2563eb; text-decoration:underline;">Open in Google Drive</a>)` : '✅ Payment Screenshot Uploaded (View in Admin Panel)') : 'UTR Reference Number'}
           </td>
         </tr>
         <tr style="border-bottom: 1px solid #f1f5f9;">
