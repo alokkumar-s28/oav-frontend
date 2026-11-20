@@ -1229,22 +1229,43 @@ function setupDriveSectionListeners() {
 
             try {
                 const testPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
-                const res = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        secretKey: secretKey,
-                        action: "upload_photo",
-                        folderType: "photos",
-                        base64Data: testPixel,
-                        fileName: `CONNECTION_TEST_${Date.now()}.png`,
-                        studentName: "Test_Admin_Connection",
-                        enrollmentId: "TEST-DRIVE-OAV",
-                        description: "Verification test file created by OAV Mantra Admin Panel."
-                    })
-                });
+                const testPayload = {
+                    secretKey: secretKey,
+                    action: "upload_photo",
+                    folderType: "photos",
+                    base64Data: testPixel,
+                    fileName: `CONNECTION_TEST_${Date.now()}.png`,
+                    studentName: "Test_Admin_Connection",
+                    enrollmentId: "TEST-DRIVE-OAV",
+                    description: "Verification test file created by OAV Mantra Admin Panel."
+                };
 
-                const data = await res.json().catch(() => ({}));
+                let data = null;
+
+                // Method 1: Try serverless proxy on Vercel (100% bypasses browser CORS)
+                try {
+                    const proxyRes = await fetch("/api/drive-upload", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ webhookUrl: url, ...testPayload })
+                    });
+                    if (proxyRes.ok) {
+                        data = await proxyRes.json().catch(() => null);
+                    }
+                } catch (proxyErr) {
+                    // Fall back to direct fetch
+                }
+
+                // Method 2: Direct browser fetch using text/plain (CORS simple request - avoids OPTIONS preflight rejection)
+                if (!data || (!data.fileUrl && !data.webViewLink && !data.success)) {
+                    const res = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify(testPayload)
+                    });
+                    data = await res.json().catch(() => ({}));
+                }
+
                 if (data && (data.fileUrl || data.webViewLink || data.success)) {
                     const link = data.fileUrl || data.webViewLink;
                     if (feedback) {

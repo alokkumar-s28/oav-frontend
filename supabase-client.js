@@ -40,6 +40,40 @@
         });
     }
 
+    // Ultra-reliable Google Drive upload helper (Vercel Serverless Relay + Direct text/plain CORS fallback)
+    async function relayToGoogleDrive(webhookUrl, payload) {
+        if (!webhookUrl || !webhookUrl.startsWith("https://script.google.com/")) return null;
+        const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
+        const securePayload = { secretKey, ...payload };
+
+        // 1. Try Vercel Serverless Relay (Same-origin, 100% bypasses browser CORS)
+        try {
+            const vRes = await window.fetch("/api/drive-upload", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ webhookUrl, ...securePayload }),
+                __supabase_direct: true
+            });
+            if (vRes.ok) {
+                const vData = await vRes.json().catch(() => ({}));
+                if (vData && (vData.fileUrl || vData.webViewLink || vData.success)) return vData;
+            }
+        } catch (e) {}
+
+        // 2. Direct browser fetch with text/plain (CORS simple request - prevents OPTIONS preflight error)
+        try {
+            const dRes = await window.fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(securePayload),
+                __supabase_direct: true
+            });
+            return await dRes.json().catch(() => ({}));
+        } catch (e) {
+            return null;
+        }
+    }
+
     const SupabaseAPI = {
         url: SUPABASE_URL,
         key: SUPABASE_ANON_KEY,
@@ -112,23 +146,16 @@
             const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
             if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && hasScreenshot) {
                 try {
-                    const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
-                    const dRes = await fetch(webhookUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            secretKey,
-                            action: "upload_payment",
-                            folderType: "payments",
-                            base64Data: rawScreenshot,
-                            studentName: data.studentName || data.name || enrollment_id,
-                            enrollmentId: enrollment_id,
-                            transactionId: txnToSave,
-                            amount: 500,
-                            paymentDate: payment_date
-                        })
+                    const dData = await relayToGoogleDrive(webhookUrl, {
+                        action: "upload_payment",
+                        folderType: "payments",
+                        base64Data: rawScreenshot,
+                        studentName: data.studentName || data.name || enrollment_id,
+                        enrollmentId: enrollment_id,
+                        transactionId: txnToSave,
+                        amount: 500,
+                        paymentDate: payment_date
                     });
-                    const dData = await dRes.json().catch(() => ({}));
                     if (dData && (dData.fileUrl || dData.webViewLink)) {
                         driveFileUrl = dData.fileUrl || dData.webViewLink;
                         payload.drive_file_url = driveFileUrl;
@@ -774,21 +801,14 @@
                 const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
                 if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && photo) {
                     try {
-                        const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
-                        const dRes = await fetch(webhookUrl, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                secretKey,
-                                action: "upload_photo",
-                                folderType: "photos",
-                                base64Data: photo,
-                                studentName: body.studentName || saved.full_name || targetId,
-                                enrollmentId: targetId,
-                                studentClass: body.studentClass || saved.student_class || "VI"
-                            })
+                        const dData = await relayToGoogleDrive(webhookUrl, {
+                            action: "upload_photo",
+                            folderType: "photos",
+                            base64Data: photo,
+                            studentName: body.studentName || saved.full_name || targetId,
+                            enrollmentId: targetId,
+                            studentClass: body.studentClass || saved.student_class || "VI"
                         });
-                        const dData = await dRes.json().catch(() => ({}));
                         if (dData && (dData.fileUrl || dData.webViewLink)) {
                             driveUploaded = true;
                             driveFileUrl = dData.fileUrl || dData.webViewLink;

@@ -349,20 +349,37 @@ function setupEventListeners() {
                 if (directWebhookUrl && directWebhookUrl.startsWith("https://script.google.com/")) {
                     try {
                         const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
-                        const driveRes = await fetch(directWebhookUrl, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                secretKey,
-                                action: "upload_photo",
-                                folderType: "photos",
-                                base64Data: highQualityPhoto,
-                                studentName: (currentStudent && currentStudent.full_name) || "Student",
-                                enrollmentId: enrollmentKey || "STUDENT",
-                                studentClass: (currentStudent && currentStudent.student_class) || "VI"
-                            })
-                        });
-                        const driveData = await driveRes.json().catch(() => ({}));
+                        const drivePayload = {
+                            secretKey,
+                            action: "upload_photo",
+                            folderType: "photos",
+                            base64Data: highQualityPhoto,
+                            studentName: (currentStudent && currentStudent.full_name) || "Student",
+                            enrollmentId: enrollmentKey || "STUDENT",
+                            studentClass: (currentStudent && currentStudent.student_class) || "VI"
+                        };
+
+                        let driveData = null;
+                        // Try same-origin Vercel serverless relay first
+                        try {
+                            const vRes = await fetch("/api/drive-upload", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ webhookUrl: directWebhookUrl, ...drivePayload })
+                            });
+                            if (vRes.ok) driveData = await vRes.json().catch(() => null);
+                        } catch (e) {}
+
+                        // Fallback to direct fetch with text/plain (CORS simple request)
+                        if (!driveData || (!driveData.fileUrl && !driveData.webViewLink)) {
+                            const driveRes = await fetch(directWebhookUrl, {
+                                method: "POST",
+                                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                                body: JSON.stringify(drivePayload)
+                            });
+                            driveData = await driveRes.json().catch(() => ({}));
+                        }
+
                         if (driveData && (driveData.fileUrl || driveData.webViewLink)) {
                             driveUploaded = true;
                             console.log("[Dashboard] Photo uploaded directly to Google Drive:", driveData.fileUrl || driveData.webViewLink);
