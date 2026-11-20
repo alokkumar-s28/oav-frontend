@@ -178,7 +178,7 @@
                         status: "pending_verification"
                     });
                     localStorage.setItem("oav_payments", JSON.stringify(localPayments));
-                } catch(e) {}
+                } catch (e) { }
             }
 
             await sbFetch(`students?enrollment_id=eq.${encodeURIComponent(payload.enrollment_id)}`, {
@@ -392,7 +392,7 @@
                 }
                 localStorage.setItem(`oav_student_photo_${cleanId}`, photo);
                 if (drivePhotoUrl) localStorage.setItem(`oav_student_drive_photo_${cleanId}`, drivePhotoUrl);
-            } catch (e) {}
+            } catch (e) { }
 
             return { success: true, photo, drivePhotoUrl };
         },
@@ -652,7 +652,7 @@
         // Parse body if present
         let body = {};
         if (init.body) {
-            try { body = typeof init.body === "string" ? JSON.parse(init.body) : init.body; } catch (e) {}
+            try { body = typeof init.body === "string" ? JSON.parse(init.body) : init.body; } catch (e) { }
         }
 
         try {

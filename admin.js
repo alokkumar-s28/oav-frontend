@@ -327,14 +327,14 @@ function renderView() {
                 </thead>
                 <tbody>
                     ${filtered.map(p => {
-                        const pPhoto = getRecordPhoto(p);
-                        const pDrivePhoto = getRecordDrivePhoto(p);
-                        const hasPPhoto = Boolean(pPhoto);
-                        const proofImg = p.payment_screenshot || p.drive_file_url || '';
-                        const hasScreenshot = Boolean(proofImg);
-                        const hasDrive = Boolean(p.drive_file_url);
+            const pPhoto = getRecordPhoto(p);
+            const pDrivePhoto = getRecordDrivePhoto(p);
+            const hasPPhoto = Boolean(pPhoto);
+            const proofImg = p.payment_screenshot || p.drive_file_url || '';
+            const hasScreenshot = Boolean(proofImg);
+            const hasDrive = Boolean(p.drive_file_url);
 
-                        return `
+            return `
                         <tr>
                             <td>
                                 <div style="display:flex; align-items:center; gap:10px;">
@@ -380,7 +380,7 @@ function renderView() {
                             </td>
                         </tr>
                         `;
-                    }).join("")}
+        }).join("")}
                 </tbody>
             </table>
         `;
@@ -412,11 +412,11 @@ function renderView() {
                 </thead>
                 <tbody>
                     ${filtered.map(s => {
-                        const studentPhoto = getRecordPhoto(s);
-                        const studentDrivePhoto = getRecordDrivePhoto(s);
-                        const hasPhoto = Boolean(studentPhoto);
+            const studentPhoto = getRecordPhoto(s);
+            const studentDrivePhoto = getRecordDrivePhoto(s);
+            const hasPhoto = Boolean(studentPhoto);
 
-                        return `
+            return `
                         <tr>
                             <td style="text-align:center;">
                                 <span style="font-family:monospace; font-weight:800; color:#2563eb; background:#eff6ff; padding:4px 8px; border-radius:6px; border:1px solid #bfdbfe; font-size:0.88rem; display:inline-block;">
@@ -456,7 +456,7 @@ function renderView() {
                             </td>
                         </tr>
                         `;
-                    }).join("")}
+        }).join("")}
                 </tbody>
             </table>
         `;
@@ -497,11 +497,11 @@ function renderView() {
 
             <div class="photo-gallery-grid">
                 ${filtered.map(s => {
-                    const photoUrl = getRecordPhoto(s);
-                    const studentDrivePhoto = getRecordDrivePhoto(s);
-                    const hasPhoto = Boolean(photoUrl);
+            const photoUrl = getRecordPhoto(s);
+            const studentDrivePhoto = getRecordDrivePhoto(s);
+            const hasPhoto = Boolean(photoUrl);
 
-                    return `
+            return `
                     <div class="photo-card">
                         <div class="photo-card-img-wrap" onclick="${hasPhoto ? `viewAdminStudentPhoto('${escapeHtml(s.full_name)}', '${photoUrl}', '${escapeHtml(studentDrivePhoto || '')}')` : ''}" title="${hasPhoto ? 'Click to inspect HD photo' : 'No photo uploaded'}">
                             ${hasPhoto ? `
@@ -543,7 +543,7 @@ function renderView() {
                         </div>
                     </div>
                     `;
-                }).join("")}
+        }).join("")}
             </div>
         `;
         return;
@@ -581,10 +581,10 @@ function renderLessonsTable() {
             </thead>
             <tbody>
                 ${filtered.map(l => {
-                    const isLive = l.lesson_type === 'live';
-                    const ytId = extractYouTubeId(l.video_url);
-                    const directWatchUrl = ytId ? `https://www.youtube.com/watch?v=${ytId}` : (l.video_url || '#');
-                    return `
+        const isLive = l.lesson_type === 'live';
+        const ytId = extractYouTubeId(l.video_url);
+        const directWatchUrl = ytId ? `https://www.youtube.com/watch?v=${ytId}` : (l.video_url || '#');
+        return `
                         <tr>
                             <td>
                                 <span style="background:${isLive ? '#fee2e2' : '#dbeafe'}; color:${isLive ? '#dc2626' : '#1d4ed8'}; padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:800; display:inline-flex; align-items:center; gap:4px;">
@@ -609,7 +609,7 @@ function renderLessonsTable() {
                             </td>
                         </tr>
                     `;
-                }).join("")}
+    }).join("")}
             </tbody>
         </table>
     `;
@@ -828,12 +828,12 @@ document.addEventListener("click", async (e) => {
                 if (!target) return;
                 const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
                 if (!isFs) {
-                    if (target.requestFullscreen) target.requestFullscreen().catch(() => {});
+                    if (target.requestFullscreen) target.requestFullscreen().catch(() => { });
                     else if (target.webkitRequestFullscreen) target.webkitRequestFullscreen();
                     else if (target.mozRequestFullScreen) target.mozRequestFullScreen();
                     else if (target.msRequestFullscreen) target.msRequestFullscreen();
                 } else {
-                    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+                    if (document.exitFullscreen) document.exitFullscreen().catch(() => { });
                     else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
                     else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
                     else if (document.msExitFullscreen) document.msExitFullscreen();
@@ -1303,7 +1303,7 @@ function bootAdmin() {
     const videoInput = document.getElementById("lessonVideoUrl");
     const previewBox = document.getElementById("videoUrlPreviewBox");
     if (videoInput && previewBox) {
-        videoInput.addEventListener("input", function() {
+        videoInput.addEventListener("input", function () {
             const val = this.value.trim();
             if (!val) {
                 previewBox.style.display = "none";
@@ -1337,7 +1337,7 @@ function bootAdmin() {
 }
 
 // Modal helper to enlarge student photo in Admin panel
-window.viewAdminStudentPhoto = function(studentName, photoUrl, driveUrl) {
+window.viewAdminStudentPhoto = function (studentName, photoUrl, driveUrl) {
     if (!photoUrl && !driveUrl) return;
     const activePhoto = photoUrl || driveUrl;
     let modal = document.getElementById("adminPhotoModal");
@@ -1378,7 +1378,7 @@ window.viewAdminStudentPhoto = function(studentName, photoUrl, driveUrl) {
 };
 
 // Modal helper to view payment screenshot in Admin panel
-window.viewAdminPaymentScreenshot = function(studentName, screenshotUrl, txId, enrollmentId, driveUrl) {
+window.viewAdminPaymentScreenshot = function (studentName, screenshotUrl, txId, enrollmentId, driveUrl) {
     if (!screenshotUrl && !driveUrl) return;
     const activeProof = screenshotUrl || driveUrl;
     let modal = document.getElementById("adminScreenshotModal");
