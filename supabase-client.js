@@ -107,15 +107,17 @@
                 payload.payment_screenshot = rawScreenshot;
             }
 
-            // If Google Drive webhook URL is configured, auto-upload payment screenshot
+            // If Google Drive webhook URL is configured, auto-upload payment screenshot with Secret Key
             let driveFileUrl = null;
             const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
             if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && hasScreenshot) {
                 try {
+                    const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
                     const dRes = await fetch(webhookUrl, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
+                            secretKey,
                             action: "upload_payment",
                             folderType: "payments",
                             base64Data: rawScreenshot,
@@ -130,6 +132,8 @@
                     if (dData && (dData.fileUrl || dData.webViewLink)) {
                         driveFileUrl = dData.fileUrl || dData.webViewLink;
                         payload.drive_file_url = driveFileUrl;
+                        // Supabase Free Tier Protection: Save only ~60-byte Drive URL instead of 2 MB raw base64!
+                        payload.payment_screenshot = driveFileUrl;
                     }
                 } catch (dErr) {
                     console.warn("[Supabase Bridge] Payment proof Drive upload warning:", dErr);
@@ -354,27 +358,43 @@
             };
         },
 
-        // Update Student Photo in Supabase Cloud
-        async updateStudentPhoto(enrollmentId, photo) {
+        // Update Student Photo in Supabase Cloud (Lean Storage: Store Drive URL to protect Supabase 500MB free quota)
+        async updateStudentPhoto(enrollmentId, photo, drivePhotoUrl) {
             if (!enrollmentId) return { success: false, error: "No enrollment ID" };
             const cleanId = String(enrollmentId).trim().toUpperCase();
 
-            await sbFetch(`students?enrollment_id=eq.${encodeURIComponent(cleanId)}`, {
+            const photoToStore = drivePhotoUrl || photo;
+            const patchPayload = { photo: photoToStore };
+            if (drivePhotoUrl) {
+                patchPayload.drive_photo_url = drivePhotoUrl;
+            }
+
+            let pRes = await sbFetch(`students?enrollment_id=eq.${encodeURIComponent(cleanId)}`, {
                 method: "PATCH",
-                body: JSON.stringify({ photo })
-            }).catch(console.warn);
+                body: JSON.stringify(patchPayload)
+            });
+
+            // If table doesn't have drive_photo_url column yet, retry with photo only
+            if (!pRes.ok && drivePhotoUrl) {
+                await sbFetch(`students?enrollment_id=eq.${encodeURIComponent(cleanId)}`, {
+                    method: "PATCH",
+                    body: JSON.stringify({ photo: photoToStore })
+                }).catch(console.warn);
+            }
 
             try {
                 const localStudents = JSON.parse(localStorage.getItem("oav_students") || "[]");
                 const idx = localStudents.findIndex(s => String(s.enrollment_id || s.enrollmentId || "").trim().toUpperCase() === cleanId);
                 if (idx !== -1) {
                     localStudents[idx].photo = photo;
+                    if (drivePhotoUrl) localStudents[idx].drive_photo_url = drivePhotoUrl;
                     localStorage.setItem("oav_students", JSON.stringify(localStudents));
                 }
                 localStorage.setItem(`oav_student_photo_${cleanId}`, photo);
+                if (drivePhotoUrl) localStorage.setItem(`oav_student_drive_photo_${cleanId}`, drivePhotoUrl);
             } catch (e) {}
 
-            return { success: true, photo };
+            return { success: true, photo, drivePhotoUrl };
         },
 
         // 9. Complete Admin Operations
@@ -754,10 +774,12 @@
                 const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
                 if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && photo) {
                     try {
+                        const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
                         const dRes = await fetch(webhookUrl, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
+                                secretKey,
                                 action: "upload_photo",
                                 folderType: "photos",
                                 base64Data: photo,
@@ -777,7 +799,7 @@
                 }
 
                 if (targetId && photo) {
-                    await SupabaseAPI.updateStudentPhoto(targetId, photo);
+                    await SupabaseAPI.updateStudentPhoto(targetId, photo, driveFileUrl);
                 }
                 return jsonResponse({ success: true, photo, driveUploaded, driveFileUrl }, 200);
             }

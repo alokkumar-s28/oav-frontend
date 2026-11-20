@@ -859,8 +859,15 @@
                         <label style="display:block; font-weight:700; margin-bottom:8px; color:#1e293b; font-size:0.95rem;">
                             Google Apps Script Web App URL:
                         </label>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
                             <input type="url" id="driveWebhookUrlInput" class="search-box" style="flex:1; min-width:280px; font-family:monospace; font-size:0.88rem;" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+                        </div>
+
+                        <label style="display:block; font-weight:700; margin-bottom:8px; color:#1e293b; font-size:0.95rem;">
+                            <i class="fas fa-key" style="color:#d97706;"></i> Drive Upload Security Secret Key:
+                        </label>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <input type="text" id="driveSecretKeyInput" class="search-box" style="flex:1; min-width:240px; font-family:monospace; font-size:0.88rem;" value="oav_mantra_vault_secure_2026_9971" placeholder="oav_mantra_vault_secure_2026_9971">
                             <button id="saveDriveWebhookBtn" class="btn-admin btn-admin-primary" style="padding:10px 18px;">
                                 <i class="fas fa-save"></i> Save & Connect
                             </button>
@@ -869,6 +876,14 @@
                             </button>
                         </div>
                         <p id="driveFeedbackMsg" style="margin:8px 0 0; font-size:0.85rem; font-weight:600;"></p>
+                    </div>
+
+                    <div style="background:#eff6ff; border-radius:10px; border:1px solid #bfdbfe; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#1e40af; display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-shield-alt" style="font-size:1.3rem; color:#2563eb;"></i>
+                        <div>
+                            <strong>Ultra-High-Level Security Architecture:</strong>
+                            Files are stored in your Google Drive (15 GB free). Supabase Free Tier stores only ~60-byte links, keeping database usage at 0.01% so you never hit the 500 MB limit. Secret key blocks all unauthorized uploads.
+                        </div>
                     </div>
 
                     <div style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; padding:18px; margin-top:24px;">

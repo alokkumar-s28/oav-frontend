@@ -348,10 +348,12 @@ function setupEventListeners() {
                 const directWebhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
                 if (directWebhookUrl && directWebhookUrl.startsWith("https://script.google.com/")) {
                     try {
+                        const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
                         const driveRes = await fetch(directWebhookUrl, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
+                                secretKey,
                                 action: "upload_photo",
                                 folderType: "photos",
                                 base64Data: highQualityPhoto,

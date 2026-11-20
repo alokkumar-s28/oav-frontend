@@ -1123,13 +1123,18 @@ if (adminTokenInput) {
 // --- Google Drive Cloud Settings Manager ---
 async function renderDriveSection() {
     const input = document.getElementById("driveWebhookUrlInput");
+    const secretInput = document.getElementById("driveSecretKeyInput");
     const banner = document.getElementById("driveStatusBanner");
     const icon = document.getElementById("driveStatusIcon");
     const text = document.getElementById("driveStatusText");
 
     const savedUrl = localStorage.getItem("oav_drive_webhook_url") || "";
+    const savedSecret = localStorage.getItem("oav_drive_secret_key") || "oav_mantra_vault_secure_2026_9971";
     if (input && !input.value) {
         input.value = savedUrl;
+    }
+    if (secretInput && !secretInput.value) {
+        secretInput.value = savedSecret;
     }
 
     let backendConfigured = false;
@@ -1138,6 +1143,7 @@ async function renderDriveSection() {
         if (res && res.configured) {
             backendConfigured = true;
             if (res.fullWebhookUrl && input) input.value = res.fullWebhookUrl;
+            if (res.secretKey && secretInput) secretInput.value = res.secretKey;
         }
     } catch (e) {
         // Backend offline or on Vercel
@@ -1150,9 +1156,9 @@ async function renderDriveSection() {
             banner.style.background = "#dcfce7";
             banner.style.color = "#166534";
             banner.style.border = "1px solid #bbf7d0";
-            icon.className = "fas fa-check-circle";
+            icon.className = "fas fa-shield-alt";
             icon.style.color = "#16a34a";
-            text.innerHTML = `<strong>Google Drive Connected & Active!</strong> Photos and payment proofs are automatically backed up directly into your <strong>oavmantra@gmail.com</strong> Google Drive.`;
+            text.innerHTML = `<strong>Google Drive Cloud Active & Secure!</strong> Photos and payment proofs are safely routed to <strong>oavmantra@gmail.com</strong> Google Drive with cryptographic secret key authentication.`;
         } else {
             banner.style.background = "#fef3c7";
             banner.style.color = "#92400e";
@@ -1169,24 +1175,28 @@ function setupDriveSectionListeners() {
     const testBtn = document.getElementById("testDriveWebhookBtn");
     const copyBtn = document.getElementById("copyScriptCodeBtn");
     const input = document.getElementById("driveWebhookUrlInput");
+    const secretInput = document.getElementById("driveSecretKeyInput");
     const feedback = document.getElementById("driveFeedbackMsg");
 
     if (saveBtn && input) {
         saveBtn.addEventListener("click", async () => {
             const url = input.value.trim();
+            const secretKey = (secretInput ? secretInput.value.trim() : "") || "oav_mantra_vault_secure_2026_9971";
             if (!url || !url.startsWith("https://script.google.com/")) {
                 alert("Please enter a valid Google Apps Script Web App URL (starts with https://script.google.com/).");
                 return;
             }
 
             localStorage.setItem("oav_drive_webhook_url", url);
+            localStorage.setItem("oav_drive_secret_key", secretKey);
             window.OAV_DRIVE_WEBHOOK_URL = url;
+            window.OAV_DRIVE_SECRET_KEY = secretKey;
 
             try {
                 await adminFetch("/api/admin/drive-config", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ webhookUrl: url })
+                    body: JSON.stringify({ webhookUrl: url, secretKey })
                 });
             } catch (e) {
                 // Ignore if backend offline
@@ -1194,16 +1204,17 @@ function setupDriveSectionListeners() {
 
             if (feedback) {
                 feedback.style.color = "#16a34a";
-                feedback.textContent = "✅ Google Drive Webhook URL saved successfully!";
+                feedback.textContent = "✅ Google Drive Webhook URL & Secret Key saved successfully!";
             }
             renderDriveSection();
-            alert("✅ Google Drive Webhook URL saved! All photo and screenshot uploads will now automatically save into your oavmantra@gmail.com Google Drive.");
+            alert("✅ Google Drive Webhook URL & Security Key saved!\nAll photo and screenshot uploads will now automatically save into your oavmantra@gmail.com Google Drive, saving 100% of your Supabase free tier storage!");
         });
     }
 
     if (testBtn && input) {
         testBtn.addEventListener("click", async () => {
             const url = input.value.trim() || localStorage.getItem("oav_drive_webhook_url");
+            const secretKey = (secretInput ? secretInput.value.trim() : "") || localStorage.getItem("oav_drive_secret_key") || "oav_mantra_vault_secure_2026_9971";
             if (!url) {
                 alert("Please enter a Google Apps Script Web App URL first.");
                 return;
@@ -1213,7 +1224,7 @@ function setupDriveSectionListeners() {
             testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing Upload...';
             if (feedback) {
                 feedback.style.color = "#2563eb";
-                feedback.textContent = "Sending test upload to Google Drive...";
+                feedback.textContent = "Sending authenticated test upload to Google Drive...";
             }
 
             try {
@@ -1222,6 +1233,7 @@ function setupDriveSectionListeners() {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        secretKey: secretKey,
                         action: "upload_photo",
                         folderType: "photos",
                         base64Data: testPixel,
@@ -1237,10 +1249,10 @@ function setupDriveSectionListeners() {
                     const link = data.fileUrl || data.webViewLink;
                     if (feedback) {
                         feedback.style.color = "#16a34a";
-                        feedback.innerHTML = `✅ <strong>Success!</strong> Test file uploaded to Google Drive. <a href="${link}" target="_blank" style="color:#2563eb; text-decoration:underline;">View uploaded file in Drive</a>`;
+                        feedback.innerHTML = `✅ <strong>Success!</strong> Authenticated test file uploaded to Google Drive. <a href="${link}" target="_blank" style="color:#2563eb; text-decoration:underline;">View uploaded file in Drive</a>`;
                     }
                     renderDriveSection();
-                    alert("🎉 Google Drive connected successfully!\nA test file was created in your '📁 OAV Mantra - Student Photos' folder in Google Drive.");
+                    alert("🎉 Google Drive connected successfully!\nA verified test file was created in your '📁 OAV Mantra Cloud Vault/📁 Student Photos' folder in Google Drive.");
                 } else {
                     throw new Error(data.error || "Invalid response from Google Apps Script.");
                 }

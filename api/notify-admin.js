@@ -44,11 +44,13 @@ module.exports = async function handler(req, res) {
       try {
         const screenshotData = payment.paymentScreenshot || payment.screenshot;
         const photoData = student.photo || student.highResPhoto;
+        const secretKey = process.env.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";
         if (screenshotData && typeof screenshotData === "string" && screenshotData.startsWith("data:image/")) {
           const driveRes = await fetch(driveWebhookUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              secretKey,
               action: "upload_payment",
               screenshotData,
               studentName: payment.studentName || student.name || "Student",
@@ -69,6 +71,7 @@ module.exports = async function handler(req, res) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              secretKey,
               action: "upload_photo",
               photoData,
               studentName: student.name || "Student",
