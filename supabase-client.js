@@ -40,6 +40,18 @@
         });
     }
 
+    // Helper: format Google Drive URLs for direct <img> display via Google CDN
+    function formatDriveImageUrl(url) {
+        if (!url || typeof url !== "string") return "";
+        if (url.startsWith("data:image/") || url.startsWith("blob:")) return url;
+        const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (driveMatch && driveMatch[1]) {
+            return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+        }
+        return url;
+    }
+    window.formatDriveImageUrl = formatDriveImageUrl;
+
     // Ultra-reliable Google Drive upload helper (Vercel Serverless Relay + Direct text/plain CORS fallback)
     async function relayToGoogleDrive(webhookUrl, payload) {
         if (!webhookUrl || !webhookUrl.startsWith("https://script.google.com/")) return null;
@@ -58,7 +70,7 @@
                 const vData = await vRes.json().catch(() => ({}));
                 if (vData && (vData.fileUrl || vData.webViewLink || vData.success)) return vData;
             }
-        } catch (e) {}
+        } catch (e) { }
 
         // 2. Direct browser fetch with text/plain (CORS simple request - prevents OPTIONS preflight error)
         try {
@@ -699,7 +711,7 @@
                     const sessionToken = (sessionStorage.getItem("oav_admin_token") || "").trim();
                     if (sessionToken) token = sessionToken;
                 }
-                if (!token || token.length < 8) {
+                if (!token || token !== "oav-mantra.2026") {
                     return jsonResponse({ error: "Administrator authentication required. Access denied." }, 401);
                 }
             }

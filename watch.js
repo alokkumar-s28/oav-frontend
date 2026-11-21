@@ -219,6 +219,59 @@
         }, { passive: true });
     }
 
+    function isDeviceAdminUnlocked() {
+        try {
+            const token = sessionStorage.getItem("oav_admin_token");
+            return Boolean(token && token.trim() === "oav-mantra.2026");
+        } catch(e) {
+            return false;
+        }
+    }
+
+    async function verifyStudentAccess() {
+        if (isDeviceAdminUnlocked()) {
+            return { allowed: true, isAdmin: true };
+        }
+
+        let student = null;
+        try {
+            const res = await fetch(`${API_BASE}/api/student/me`, { credentials: "include" });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.authenticated && data.student) {
+                    student = data.student;
+                }
+            }
+        } catch (e) {}
+
+        if (!student) {
+            const saved = JSON.parse(localStorage.getItem('oav_current_student') || 'null');
+            if (saved && (saved.status === 'active' || saved.status === 'verified')) {
+                student = saved;
+            }
+        }
+
+        if (!student) {
+            return { allowed: false, reason: "not_logged_in" };
+        }
+
+        if (student.status !== 'active' && student.status !== 'verified') {
+            return { allowed: false, reason: student.status, student };
+        }
+
+        if (student.student_class) {
+            const enrolledClass = String(student.student_class).toUpperCase().replace(/CLASS/i, '').trim();
+            const classNormalMap = { "6": "VI", "7": "VII", "8": "VIII", "9": "IX", "10": "X", "VI": "VI", "VII": "VII", "VIII": "VIII", "IX": "IX", "X": "X" };
+            const myClass = classNormalMap[enrolledClass] || enrolledClass;
+            const currentTarget = classNormalMap[targetGrade] || targetGrade;
+            if (myClass && currentTarget && myClass !== currentTarget) {
+                return { allowed: false, reason: "wrong_class", studentClass: myClass };
+            }
+        }
+
+        return { allowed: true, student };
+    }
+
     async function init() {
         const backBtn = document.getElementById("navBackBtn");
         const studyRoomLink = document.getElementById("watchStudyRoomLink");
@@ -226,6 +279,49 @@
 
         if (backBtn) backBtn.href = studyPage;
         if (studyRoomLink) studyRoomLink.href = studyPage;
+
+        const access = await verifyStudentAccess();
+        if (!access.allowed) {
+            if (access.reason === "wrong_class") {
+                alert(`Access Restricted: Your registered enrollment is for Class ${access.studentClass}. Redirecting to your Class ${access.studentClass} watch room.`);
+                window.location.replace(`watch.html?class=${access.studentClass}`);
+                return;
+            }
+
+            const viewport = document.getElementById("watchViewport");
+            const watchTitle = document.getElementById("watchTitle");
+            if (watchTitle) watchTitle.textContent = `Class ${targetGrade} Video Lectures`;
+            if (viewport) {
+                viewport.innerHTML = `
+                    <div style="position:absolute; inset:0; background:#0b1329; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px; text-align:center; color:#ffffff; z-index:50;">
+                        <div style="width:68px; height:68px; border-radius:50%; background:rgba(220,38,38,0.15); border:2px solid #ef4444; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+                            <i class="fas fa-lock" style="font-size:2rem; color:#ef4444;"></i>
+                        </div>
+                        <h2 style="margin:0 0 10px; font-size:1.4rem; color:#ffffff; font-weight:800;">Student Portal Verification Required</h2>
+                        <p style="color:#94a3b8; max-width:480px; font-size:0.95rem; margin:0 0 22px; line-height:1.5;">
+                            This lecture is reserved for registered students of the OAV Mantra Academic Batch. Please log in with your verified enrollment ID to unlock all video classes and study notes.
+                        </p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                            <a href="login.html" class="watch-btn" style="background:#2563eb; color:#ffffff; padding:12px 24px; font-weight:700; font-size:0.95rem; text-decoration:none; display:inline-flex; align-items:center; gap:8px; border-radius:8px; box-shadow:0 4px 14px rgba(37,99,235,0.4);">
+                                <i class="fas fa-sign-in-alt"></i> Student Login
+                            </a>
+                            <a href="index.html#enrollmentSection" class="watch-btn" style="background:#10b981; color:#ffffff; padding:12px 24px; font-weight:700; font-size:0.95rem; text-decoration:none; display:inline-flex; align-items:center; gap:8px; border-radius:8px; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
+                                <i class="fas fa-user-plus"></i> Enroll in Class ${targetGrade}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+            return;
+        }
+
+        if (access.isAdmin) {
+            const statusBadge = document.querySelector(".watch-tag-status");
+            if (statusBadge) {
+                statusBadge.innerHTML = `<i class="fas fa-shield-alt"></i> Admin Inspector`;
+                statusBadge.style.background = "#f59e0b";
+            }
+        }
 
         setupTabs();
         setupSearch();

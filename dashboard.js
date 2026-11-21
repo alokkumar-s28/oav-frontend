@@ -249,7 +249,18 @@ async function loadAnnouncements() {
     }
 }
 
-function renderStudentPhoto(photoData) {
+function formatDriveImageUrl(url) {
+    if (!url || typeof url !== "string") return "";
+    if (url.startsWith("data:image/") || url.startsWith("blob:")) return url;
+    const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (driveMatch && driveMatch[1]) {
+        return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+    }
+    return url;
+}
+
+function renderStudentPhoto(rawPhotoData) {
+    const photoData = formatDriveImageUrl(rawPhotoData);
     const avatarEl = document.getElementById("profileAvatar");
     const photoImg = document.getElementById("idCardPhotoImg");
     const photoIcon = document.getElementById("idCardPhotoIcon");
@@ -369,7 +380,7 @@ function setupEventListeners() {
                                 body: JSON.stringify({ webhookUrl: directWebhookUrl, ...drivePayload })
                             });
                             if (vRes.ok) driveData = await vRes.json().catch(() => null);
-                        } catch (e) {}
+                        } catch (e) { }
 
                         // Fallback to direct fetch with text/plain (CORS simple request)
                         if (!driveData || (!driveData.fileUrl && !driveData.webViewLink)) {

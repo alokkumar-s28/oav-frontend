@@ -37,6 +37,16 @@ const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c]
 );
 
+function formatDriveImageUrl(url) {
+    if (!url || typeof url !== "string") return "";
+    if (url.startsWith("data:image/") || url.startsWith("blob:")) return url;
+    const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (driveMatch && driveMatch[1]) {
+        return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+    }
+    return url;
+}
+
 const ENROLLMENT_ROLL_MAP = {
     "OAV-615491-TO96": "01",
     "OAV-699191-TSUP": "02",
@@ -194,7 +204,10 @@ function getRecordPhoto(r) {
     const studentObj = studentsList.find(s => String(s.enrollment_id || "").trim().toUpperCase() === enrollmentKey) || {};
     const localPhoto = localStorage.getItem(`oav_student_photo_${enrollmentKey}`);
     const photo = r.photo || r.drive_photo_url || studentObj.photo || studentObj.drive_photo_url || localPhoto;
-    return (photo && (photo.startsWith('data:image/') || photo.startsWith('http') || photo.startsWith('/'))) ? photo : null;
+    if (photo && (photo.startsWith('data:image/') || photo.startsWith('http') || photo.startsWith('/'))) {
+        return formatDriveImageUrl(photo);
+    }
+    return null;
 }
 
 function getRecordDrivePhoto(r) {
@@ -330,7 +343,7 @@ function renderView() {
             const pPhoto = getRecordPhoto(p);
             const pDrivePhoto = getRecordDrivePhoto(p);
             const hasPPhoto = Boolean(pPhoto);
-            const proofImg = p.payment_screenshot || p.drive_file_url || '';
+            const proofImg = formatDriveImageUrl(p.payment_screenshot || p.drive_file_url || '');
             const hasScreenshot = Boolean(proofImg);
             const hasDrive = Boolean(p.drive_file_url);
 
@@ -1214,7 +1227,11 @@ function setupDriveSectionListeners() {
 
     if (testBtn && input) {
         testBtn.addEventListener("click", async () => {
-            const url = input.value.trim() || localStorage.getItem("oav_drive_webhook_url");
+            let rawUrl = (input.value.trim() || localStorage.getItem("oav_drive_webhook_url") || "").trim();
+            // Automatically clean /dev URLs if accidentally copied from Apps Script editor
+            let url = rawUrl.replace(/\/dev(\?.*)?$/, "/exec");
+            if (url !== rawUrl && input) input.value = url;
+
             const secretKey = (secretInput ? secretInput.value.trim() : "") || localStorage.getItem("oav_drive_secret_key") || "oav_mantra_vault_secure_2026_9971";
             if (!url) {
                 alert("Please enter a Google Apps Script Web App URL first.");
@@ -1229,12 +1246,13 @@ function setupDriveSectionListeners() {
             }
 
             try {
-                const testPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+                // Real 120x40 verification PNG badge (renders in Google Drive web viewer without preview errors)
+                const testPng = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAoCAIAAAC6iKlyAAAAZElEQVR4nO3QAQkAIADAMMuYzPiWsIXCHTzA2Zhr60Lj+cEngQbdCjToVqBBtwINuhVo0K1Ag24FGnQr0KBbgQbdCjToVqBBtwINuhVo0K1Ag24FGnQr0KBbgQbdCjToVqBBtzqeDi3WAhyn8gAAAABJRU5ErkJggg==";
                 const testPayload = {
                     secretKey: secretKey,
                     action: "upload_photo",
                     folderType: "photos",
-                    base64Data: testPixel,
+                    base64Data: testPng,
                     fileName: `CONNECTION_TEST_${Date.now()}.png`,
                     studentName: "Test_Admin_Connection",
                     enrollmentId: "TEST-DRIVE-OAV",
@@ -1248,7 +1266,8 @@ function setupDriveSectionListeners() {
                     const proxyRes = await fetch("/api/drive-upload", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ webhookUrl: url, ...testPayload })
+                        body: JSON.stringify({ webhookUrl: url, ...testPayload }),
+                        __supabase_direct: true
                     });
                     if (proxyRes.ok) {
                         data = await proxyRes.json().catch(() => null);
@@ -1402,7 +1421,7 @@ window.viewAdminStudentPhoto = function (studentName, photoUrl, driveUrl) {
 // Modal helper to view payment screenshot in Admin panel
 window.viewAdminPaymentScreenshot = function (studentName, screenshotUrl, txId, enrollmentId, driveUrl) {
     if (!screenshotUrl && !driveUrl) return;
-    const activeProof = screenshotUrl || driveUrl;
+    const activeProof = formatDriveImageUrl(screenshotUrl || driveUrl);
     let modal = document.getElementById("adminScreenshotModal");
     if (!modal) {
         modal = document.createElement("div");

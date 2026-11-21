@@ -204,7 +204,7 @@ window.studyEngine = (function () {
     function isDeviceAdminUnlocked() {
         try {
             const token = sessionStorage.getItem("oav_admin_token");
-            return Boolean(token && token.trim().length >= 8);
+            return Boolean(token && token.trim() === "oav-mantra.2026");
         } catch(e) {
             return false;
         }

@@ -4,6 +4,15 @@
   "trailingSlash": false,
   "headers": [
     {
+      "source": "/(.*\\.html|/|/admin|/login|/dashboard|/watch|/study-.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/(favicon.*|apple-touch-icon.*|.*\\.png|.*\\.ico|.*\\.webmanifest|site\\.webmanifest|manifest\\.json|robots\\.txt|sitemap\\.xml)",
       "headers": [
         {
@@ -29,6 +38,10 @@
     {
       "source": "/dashboard",
       "destination": "/dashboard.html"
+    },
+    {
+      "source": "/watch",
+      "destination": "/watch.html"
     },
     {
       "source": "/study-VI",

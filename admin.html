@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>Admin Console - OAV Mantra</title>
-        <link rel="icon" type="image/png" href="OAV LOGO.png">
-        <link rel="shortcut icon" type="image/png" href="OAV LOGO.png">
-        <link rel="apple-touch-icon" href="OAV LOGO.png">
-        <link rel="icon" type="image/x-icon" href="/favicon.ico">
-        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-        <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
+    <link rel="icon" type="image/png" href="OAV LOGO.png">
+    <link rel="shortcut icon" type="image/png" href="OAV LOGO.png">
+    <link rel="apple-touch-icon" href="OAV LOGO.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
     <link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
-<link rel="canonical" href="https://oavmantra.vercel.app/admin">
+    <link rel="canonical" href="https://oavmantra.vercel.app/admin">
     <meta name="application-name" content="OAV Mantra">
     <meta name="apple-mobile-web-app-title" content="OAV Mantra">
     <meta name="theme-color" content="#1e3a8a">
@@ -59,7 +60,7 @@
             background: #091a38;
             color: #ffffff;
             padding: 16px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .admin-nav-container {
@@ -78,7 +79,7 @@
             background: #ffffff;
             border-radius: 16px;
             padding: 22px 28px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             border: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
@@ -127,6 +128,7 @@
             background: #2563eb;
             color: #ffffff;
         }
+
         .btn-admin-primary:hover {
             background: #1d4ed8;
         }
@@ -136,6 +138,7 @@
             border: 1px solid #cbd5e1;
             color: #334155;
         }
+
         .btn-admin-secondary:hover {
             background: #e2e8f0;
         }
@@ -144,6 +147,7 @@
             background: #10b981;
             color: #ffffff;
         }
+
         .btn-admin-danger {
             background: #ef4444;
             color: #ffffff;
@@ -160,7 +164,7 @@
             background: #ffffff;
             border-radius: 14px;
             padding: 22px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
         }
 
@@ -183,7 +187,7 @@
             background: #ffffff;
             border-radius: 16px;
             padding: 28px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             border: 1px solid #e2e8f0;
         }
 
@@ -292,9 +296,22 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .status-badge.verified, .status-badge.active { background: #dcfce7; color: #166534; }
-        .status-badge.pending_verification { background: #fef3c7; color: #92400e; }
-        .status-badge.rejected { background: #fee2e2; color: #991b1b; }
+
+        .status-badge.verified,
+        .status-badge.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.pending_verification {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         /* Student Photo Identification Gallery */
         .photo-gallery-grid {
@@ -365,7 +382,7 @@
             border-radius: 6px;
             font-size: 0.72rem;
             font-weight: 700;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .photo-card-body {
@@ -377,46 +394,87 @@
         }
 
         @media (max-width: 992px) {
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-            .admin-container { padding: 0 16px; margin: 20px auto; }
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .admin-container {
+                padding: 0 16px;
+                margin: 20px auto;
+            }
         }
 
         @media (max-width: 768px) {
-            .auth-bar { padding: 16px; gap: 12px; }
-            .auth-input-group { min-width: 100%; flex-wrap: wrap; }
-            .auth-input-group input { min-width: 100%; }
-            .auth-input-group button { width: 100%; justify-content: center; }
+            .auth-bar {
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .auth-input-group {
+                min-width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .auth-input-group input {
+                min-width: 100%;
+            }
+
+            .auth-input-group button {
+                width: 100%;
+                justify-content: center;
+            }
+
             .nav-tabs {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 flex-wrap: nowrap;
                 padding-bottom: 6px;
             }
+
             .tab-btn {
                 white-space: nowrap;
                 padding: 10px 14px;
                 font-size: 0.9rem;
             }
+
             .filter-toolbar {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .filter-controls {
                 flex-direction: column;
             }
+
             .search-box {
                 min-width: 100%;
             }
+
             .workspace-card {
                 padding: 18px 14px;
             }
         }
 
         @media (max-width: 480px) {
-            .metrics-grid { grid-template-columns: 1fr; gap: 12px; }
-            .metric-card { padding: 16px; }
-            .metric-card strong { font-size: 1.8rem; }
-            th, td { padding: 10px 8px; font-size: 0.85rem; }
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .metric-card {
+                padding: 16px;
+            }
+
+            .metric-card strong {
+                font-size: 1.8rem;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
         }
 
         /* Live Study Rooms Inspector Bar */
@@ -424,7 +482,7 @@
             background: #ffffff;
             border-radius: 14px;
             padding: 16px 22px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
@@ -457,36 +515,83 @@
             align-items: center;
             gap: 6px;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
         .admin-study-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
 
-        .btn-class-vi { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
-        .btn-class-vi:hover { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+        .btn-class-vi {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1.5px solid #bfdbfe;
+        }
 
-        .btn-class-vii { background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0; }
-        .btn-class-vii:hover { background: #059669; color: #ffffff; border-color: #059669; }
+        .btn-class-vi:hover {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
 
-        .btn-class-viii { background: #f5f3ff; color: #6d28d9; border: 1.5px solid #ddd6fe; }
-        .btn-class-viii:hover { background: #7c3aed; color: #ffffff; border-color: #7c3aed; }
+        .btn-class-vii {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1.5px solid #a7f3d0;
+        }
 
-        .btn-class-ix { background: #fff7ed; color: #c2410c; border: 1.5px solid #fed7aa; }
-        .btn-class-ix:hover { background: #ea580c; color: #ffffff; border-color: #ea580c; }
+        .btn-class-vii:hover {
+            background: #059669;
+            color: #ffffff;
+            border-color: #059669;
+        }
 
-        .btn-class-x { background: #fef2f2; color: #b91c1c; border: 1.5px solid #fecaca; }
-        .btn-class-x:hover { background: #dc2626; color: #ffffff; border-color: #dc2626; }
+        .btn-class-viii {
+            background: #f5f3ff;
+            color: #6d28d9;
+            border: 1.5px solid #ddd6fe;
+        }
+
+        .btn-class-viii:hover {
+            background: #7c3aed;
+            color: #ffffff;
+            border-color: #7c3aed;
+        }
+
+        .btn-class-ix {
+            background: #fff7ed;
+            color: #c2410c;
+            border: 1.5px solid #fed7aa;
+        }
+
+        .btn-class-ix:hover {
+            background: #ea580c;
+            color: #ffffff;
+            border-color: #ea580c;
+        }
+
+        .btn-class-x {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1.5px solid #fecaca;
+        }
+
+        .btn-class-x:hover {
+            background: #dc2626;
+            color: #ffffff;
+            border-color: #dc2626;
+        }
     </style>
 </head>
+
 <body>
     <header class="admin-nav">
         <div class="container admin-nav-container">
             <div style="display:flex; align-items:center; gap:12px;">
                 <a href="index.html" style="text-decoration:none;">
-                    <img src="OAV LOGO.png" alt="OAV Mantra Logo" height="56" style="height:56px; width:auto; border-radius:6px;">
+                    <img src="OAV LOGO.png" alt="OAV Mantra Logo" height="56"
+                        style="height:56px; width:auto; border-radius:6px;">
                 </a>
                 <div>
                     <strong style="color:#ffffff; font-size:1.1rem;">OAV MANTRA</strong>
@@ -494,13 +599,25 @@
                 </div>
             </div>
             <div style="display:flex; align-items:center; gap:14px;">
-                <div id="adminHeaderStudyLinks" style="display:none; align-items:center; gap:6px; background:rgba(255,255,255,0.08); padding:5px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);">
-                    <span style="color:#93c5fd; font-size:0.8rem; font-weight:700;"><i class="fas fa-eye"></i> Study Rooms:</span>
-                    <a href="study-VI.html" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class VI Study Page">VI</a>
-                    <a href="study-VII.html" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class VII Study Page">VII</a>
-                    <a href="study-VIII.html" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class VIII Study Page">VIII</a>
-                    <a href="study-IX.html" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class IX Study Page">IX</a>
-                    <a href="study-X.html" target="_blank" style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);" title="Check Class X Study Page">X</a>
+                <div id="adminHeaderStudyLinks"
+                    style="display:none; align-items:center; gap:6px; background:rgba(255,255,255,0.08); padding:5px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);">
+                    <span style="color:#93c5fd; font-size:0.8rem; font-weight:700;"><i class="fas fa-eye"></i> Study
+                        Rooms:</span>
+                    <a href="study-VI.html" target="_blank"
+                        style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);"
+                        title="Check Class VI Study Page">VI</a>
+                    <a href="study-VII.html" target="_blank"
+                        style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);"
+                        title="Check Class VII Study Page">VII</a>
+                    <a href="study-VIII.html" target="_blank"
+                        style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);"
+                        title="Check Class VIII Study Page">VIII</a>
+                    <a href="study-IX.html" target="_blank"
+                        style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);"
+                        title="Check Class IX Study Page">IX</a>
+                    <a href="study-X.html" target="_blank"
+                        style="color:#ffffff; text-decoration:none; font-size:0.8rem; font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.12);"
+                        title="Check Class X Study Page">X</a>
                 </div>
                 <a href="index.html" style="color:#cbd5e1; text-decoration:none; font-size:0.9rem; font-weight:600;">
                     <i class="fas fa-home"></i> Home
@@ -513,13 +630,15 @@
         <!-- Auth Bar -->
         <div class="auth-bar">
             <div class="auth-input-group">
-                <label for="adminToken" style="font-weight:700; font-size:0.9rem;"><i class="fas fa-key"></i> Password:</label>
-                <input type="password" id="adminToken" placeholder="Enter Admin Password" autocomplete="current-password">
+                <label for="adminToken" style="font-weight:700; font-size:0.9rem;"><i class="fas fa-key"></i>
+                    Password:</label>
+                <input type="password" id="adminToken" placeholder="Enter Admin Password"
+                    autocomplete="current-password">
                 <button class="btn-admin btn-admin-primary" id="unlockBtn">
                     <i class="fas fa-unlock"></i> Unlock
                 </button>
             </div>
-            
+
             <div style="display:flex; gap:10px;">
                 <button class="btn-admin btn-admin-secondary" id="refreshBtn">
                     <i class="fas fa-sync-alt"></i> Refresh Data
@@ -535,28 +654,35 @@
         <!-- Live Study Rooms Inspector (Only visible when unlocked on this device) -->
         <div class="admin-study-preview-bar" id="adminStudyPreviewBar" style="display:none;">
             <div class="admin-study-preview-title">
-                <div style="width:40px; height:40px; border-radius:10px; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                <div
+                    style="width:40px; height:40px; border-radius:10px; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
                     <i class="fas fa-chalkboard-teacher"></i>
                 </div>
                 <div>
                     <strong style="color:#0f172a; font-size:0.98rem; display:block;">Live Study Pages Inspector</strong>
-                    <span style="color:#64748b; font-size:0.84rem;">Click any class below to inspect its live video classes, study notes, and quizzes:</span>
+                    <span style="color:#64748b; font-size:0.84rem;">Click any class below to inspect its live video
+                        classes, study notes, and quizzes:</span>
                 </div>
             </div>
             <div class="admin-study-links">
-                <a href="study-VI.html?preview=true" target="_blank" class="admin-study-btn btn-class-vi" title="Open Class VI Study Page">
+                <a href="study-VI.html?preview=true" target="_blank" class="admin-study-btn btn-class-vi"
+                    title="Open Class VI Study Page">
                     <i class="fas fa-external-link-alt"></i> Visit Class VI
                 </a>
-                <a href="study-VII.html?preview=true" target="_blank" class="admin-study-btn btn-class-vii" title="Open Class VII Study Page">
+                <a href="study-VII.html?preview=true" target="_blank" class="admin-study-btn btn-class-vii"
+                    title="Open Class VII Study Page">
                     <i class="fas fa-external-link-alt"></i> Visit Class VII
                 </a>
-                <a href="study-VIII.html?preview=true" target="_blank" class="admin-study-btn btn-class-viii" title="Open Class VIII Study Page">
+                <a href="study-VIII.html?preview=true" target="_blank" class="admin-study-btn btn-class-viii"
+                    title="Open Class VIII Study Page">
                     <i class="fas fa-external-link-alt"></i> Visit Class VIII
                 </a>
-                <a href="study-IX.html?preview=true" target="_blank" class="admin-study-btn btn-class-ix" title="Open Class IX Study Page">
+                <a href="study-IX.html?preview=true" target="_blank" class="admin-study-btn btn-class-ix"
+                    title="Open Class IX Study Page">
                     <i class="fas fa-external-link-alt"></i> Visit Class IX
                 </a>
-                <a href="study-X.html?preview=true" target="_blank" class="admin-study-btn btn-class-x" title="Open Class X Study Page">
+                <a href="study-X.html?preview=true" target="_blank" class="admin-study-btn btn-class-x"
+                    title="Open Class X Study Page">
                     <i class="fas fa-external-link-alt"></i> Visit Class X
                 </a>
             </div>
@@ -638,28 +764,34 @@
                     </select>
                 </div>
 
-                <input type="text" id="searchInput" class="search-box" placeholder="Search student, subject, topic, or UTR...">
+                <input type="text" id="searchInput" class="search-box"
+                    placeholder="Search student, subject, topic, or UTR...">
             </div>
 
             <!-- Data Table Container (For Payments & Students) -->
             <div id="tableContent" class="table-responsive">
-                <p style="color:#64748b; padding:20px 0;">Enter your administrator token above and click "Unlock" to view records.</p>
+                <p style="color:#64748b; padding:20px 0;">Enter your administrator token above and click "Unlock" to
+                    view records.</p>
             </div>
 
             <!-- Video & Live Classes Section -->
             <div id="lessonsSection" style="display:none; padding:10px 0;">
-                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:24px; margin-bottom:28px;">
+                <div
+                    style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:24px; margin-bottom:28px;">
                     <h3 style="margin-top:0; color:#1e3a8a; display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-plus-circle" style="color:#2563eb;"></i> Add Video Lesson or Live Stream
                     </h3>
                     <p style="color:#64748b; font-size:0.9rem; margin-bottom:18px;">
-                        Provide recorded video lectures or live class stream links for students. Standard YouTube links, YouTube Live, YouTube Shorts, Google Meet, or Zoom links are automatically formatted.
+                        Provide recorded video lectures or live class stream links for students. Standard YouTube links,
+                        YouTube Live, YouTube Shorts, Google Meet, or Zoom links are automatically formatted.
                     </p>
 
                     <form id="addLessonForm">
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
                             <div>
-                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Target Grade / Class *</label>
+                                <label
+                                    style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Target
+                                    Grade / Class *</label>
                                 <select id="lessonClass" class="filter-select" style="width:100%;" required>
                                     <option value="VI">Class VI</option>
                                     <option value="VII">Class VII</option>
@@ -670,7 +802,9 @@
                             </div>
 
                             <div>
-                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Academic Subject *</label>
+                                <label
+                                    style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Academic
+                                    Subject *</label>
                                 <select id="lessonSubject" class="filter-select" style="width:100%;" required>
                                     <option value="Mathematics">Mathematics</option>
                                     <option value="Science">Science</option>
@@ -684,7 +818,9 @@
                             </div>
 
                             <div>
-                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Content Type *</label>
+                                <label
+                                    style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Content
+                                    Type *</label>
                                 <select id="lessonType" class="filter-select" style="width:100%;" required>
                                     <option value="video">🎬 Recorded Video Lesson</option>
                                     <option value="live">🔴 Live Class / Live Stream</option>
@@ -693,24 +829,37 @@
                         </div>
 
                         <div style="margin-bottom:16px;">
-                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Lesson / Class Title *</label>
-                            <input type="text" id="lessonTitle" class="search-box" style="width:100%;" placeholder="e.g. Chapter 1: Real Numbers - Fundamental Theorem of Arithmetic" required>
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Lesson
+                                / Class Title *</label>
+                            <input type="text" id="lessonTitle" class="search-box" style="width:100%;"
+                                placeholder="e.g. Chapter 1: Real Numbers - Fundamental Theorem of Arithmetic" required>
                         </div>
 
                         <div style="margin-bottom:16px;">
-                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Video Link / Stream URL *</label>
-                            <input type="text" id="lessonVideoUrl" class="search-box" style="width:100%;" placeholder="Paste YouTube link, Google Drive video link, Direct MP4 URL, or Google Meet" required>
-                            <div style="margin-top:6px; font-size:0.8rem; color:#64748b; display:flex; gap:12px; flex-wrap:wrap;">
-                                <span><i class="fab fa-youtube" style="color:#ef4444;"></i> <strong>YouTube:</strong> Paste watch or embed link</span>
-                                <span><i class="fab fa-google-drive" style="color:#10b981;"></i> <strong>Google Drive:</strong> Paste share link</span>
-                                <span><i class="fas fa-file-video" style="color:#2563eb;"></i> <strong>Direct MP4:</strong> Paste video URL (100% watermark-free)</span>
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Video
+                                Link / Stream URL *</label>
+                            <input type="text" id="lessonVideoUrl" class="search-box" style="width:100%;"
+                                placeholder="Paste YouTube link, Google Drive video link, Direct MP4 URL, or Google Meet"
+                                required>
+                            <div
+                                style="margin-top:6px; font-size:0.8rem; color:#64748b; display:flex; gap:12px; flex-wrap:wrap;">
+                                <span><i class="fab fa-youtube" style="color:#ef4444;"></i> <strong>YouTube:</strong>
+                                    Paste watch or embed link</span>
+                                <span><i class="fab fa-google-drive" style="color:#10b981;"></i> <strong>Google
+                                        Drive:</strong> Paste share link</span>
+                                <span><i class="fas fa-file-video" style="color:#2563eb;"></i> <strong>Direct
+                                        MP4:</strong> Paste video URL (100% watermark-free)</span>
                             </div>
-                            <div id="videoUrlPreviewBox" style="display:none; margin-top:10px; padding:12px; border-radius:10px; background:#eff6ff; border:1px solid #bfdbfe;"></div>
+                            <div id="videoUrlPreviewBox"
+                                style="display:none; margin-top:10px; padding:12px; border-radius:10px; background:#eff6ff; border:1px solid #bfdbfe;">
+                            </div>
                         </div>
 
                         <div style="margin-bottom:20px;">
-                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Class Description & Key Summary</label>
-                            <textarea id="lessonDescription" class="search-box" style="width:100%;" rows="3" placeholder="Brief summary of topics or live meeting instructions..."></textarea>
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Class
+                                Description & Key Summary</label>
+                            <textarea id="lessonDescription" class="search-box" style="width:100%;" rows="3"
+                                placeholder="Brief summary of topics or live meeting instructions..."></textarea>
                         </div>
 
                         <button type="submit" class="btn-admin btn-admin-primary" id="saveLessonBtn">
@@ -719,11 +868,15 @@
                     </form>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                     <h3 style="color:#1e3a8a; margin:0;">Published Classes & Videos</h3>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:0.84rem; font-weight:700; color:#475569;"><i class="fas fa-external-link-alt" style="color:#2563eb;"></i> Check Study Page:</span>
-                        <select id="quickVisitVideoClassSelect" class="filter-select" style="padding:6px 10px; font-size:0.84rem; font-weight:600;" onchange="if(this.value) window.open(this.value, '_blank')">
+                        <span style="font-size:0.84rem; font-weight:700; color:#475569;"><i
+                                class="fas fa-external-link-alt" style="color:#2563eb;"></i> Check Study Page:</span>
+                        <select id="quickVisitVideoClassSelect" class="filter-select"
+                            style="padding:6px 10px; font-size:0.84rem; font-weight:600;"
+                            onchange="if(this.value) window.open(this.value, '_blank')">
                             <option value="">Select Class to Visit...</option>
                             <option value="study-VI.html?preview=true">Class VI Study Page</option>
                             <option value="study-VII.html?preview=true">Class VII Study Page</option>
@@ -740,18 +893,22 @@
 
             <!-- Notes & Study Materials Section -->
             <div id="notesSection" style="display:none; padding:10px 0;">
-                <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:24px; margin-bottom:28px;">
+                <div
+                    style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:24px; margin-bottom:28px;">
                     <h3 style="margin-top:0; color:#1e3a8a; display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-file-pdf" style="color:#ef4444;"></i> Provide Notes & Study Materials
                     </h3>
                     <p style="color:#64748b; font-size:0.9rem; margin-bottom:18px;">
-                        Upload revision PDF links, Google Drive links, formula cheat sheets, or chapter summaries for students.
+                        Upload revision PDF links, Google Drive links, formula cheat sheets, or chapter summaries for
+                        students.
                     </p>
 
                     <form id="addNoteForm">
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
                             <div>
-                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Target Grade / Class *</label>
+                                <label
+                                    style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Target
+                                    Grade / Class *</label>
                                 <select id="noteClass" class="filter-select" style="width:100%;" required>
                                     <option value="VI">Class VI</option>
                                     <option value="VII">Class VII</option>
@@ -762,7 +919,9 @@
                             </div>
 
                             <div>
-                                <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Academic Subject *</label>
+                                <label
+                                    style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Academic
+                                    Subject *</label>
                                 <select id="noteSubject" class="filter-select" style="width:100%;" required>
                                     <option value="Mathematics">Mathematics</option>
                                     <option value="Science">Science</option>
@@ -777,18 +936,25 @@
                         </div>
 
                         <div style="margin-bottom:16px;">
-                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Note / Document Title *</label>
-                            <input type="text" id="noteTitle" class="search-box" style="width:100%;" placeholder="e.g. Chapter 1: Real Numbers - Handwritten Formula Sheet & Summary" required>
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Note /
+                                Document Title *</label>
+                            <input type="text" id="noteTitle" class="search-box" style="width:100%;"
+                                placeholder="e.g. Chapter 1: Real Numbers - Handwritten Formula Sheet & Summary"
+                                required>
                         </div>
 
                         <div style="margin-bottom:16px;">
-                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">PDF / File URL / Google Drive Link (Optional)</label>
-                            <input type="url" id="noteFileUrl" class="search-box" style="width:100%;" placeholder="e.g. https://drive.google.com/file/d/... or PDF direct link">
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">PDF /
+                                File URL / Google Drive Link (Optional)</label>
+                            <input type="url" id="noteFileUrl" class="search-box" style="width:100%;"
+                                placeholder="e.g. https://drive.google.com/file/d/... or PDF direct link">
                         </div>
 
                         <div style="margin-bottom:20px;">
-                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Note Content / Key Summary Points</label>
-                            <textarea id="noteContent" class="search-box" style="width:100%;" rows="4" placeholder="Enter key formulas, important board questions, or study pointers for students..."></textarea>
+                            <label style="display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px;">Note
+                                Content / Key Summary Points</label>
+                            <textarea id="noteContent" class="search-box" style="width:100%;" rows="4"
+                                placeholder="Enter key formulas, important board questions, or study pointers for students..."></textarea>
                         </div>
 
                         <button type="submit" class="btn-admin btn-admin-primary" id="saveNoteBtn">
@@ -797,11 +963,15 @@
                     </form>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                     <h3 style="color:#1e3a8a; margin:0;">Published Study Materials</h3>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:0.84rem; font-weight:700; color:#475569;"><i class="fas fa-external-link-alt" style="color:#2563eb;"></i> Check Study Page:</span>
-                        <select id="quickVisitNoteClassSelect" class="filter-select" style="padding:6px 10px; font-size:0.84rem; font-weight:600;" onchange="if(this.value) window.open(this.value, '_blank')">
+                        <span style="font-size:0.84rem; font-weight:700; color:#475569;"><i
+                                class="fas fa-external-link-alt" style="color:#2563eb;"></i> Check Study Page:</span>
+                        <select id="quickVisitNoteClassSelect" class="filter-select"
+                            style="padding:6px 10px; font-size:0.84rem; font-weight:600;"
+                            onchange="if(this.value) window.open(this.value, '_blank')">
                             <option value="">Select Class to Visit...</option>
                             <option value="study-VI.html?preview=true">Class VI Study Page</option>
                             <option value="study-VII.html?preview=true">Class VII Study Page</option>
@@ -819,15 +989,20 @@
             <!-- Broadcast Section (Hidden by default) -->
             <div id="broadcastSection" style="display:none; padding:10px 0;">
                 <h3 style="margin-bottom:14px; color:#1e3a8a;">Publish Live Notice / Announcement</h3>
-                <p style="font-size:0.9rem; color:#64748b; margin-bottom:18px;">This notice will appear on the student dashboard and homepage banner ticker in real time.</p>
+                <p style="font-size:0.9rem; color:#64748b; margin-bottom:18px;">This notice will appear on the student
+                    dashboard and homepage banner ticker in real time.</p>
                 <form id="broadcastForm">
                     <div style="margin-bottom:16px;">
                         <label style="display:block; font-weight:700; margin-bottom:6px;">Notice Title *</label>
-                        <input type="text" id="noticeTitle" class="search-box" style="width:100%;" placeholder="e.g. Class X Mathematics Live Class Scheduled for 6 PM" required>
+                        <input type="text" id="noticeTitle" class="search-box" style="width:100%;"
+                            placeholder="e.g. Class X Mathematics Live Class Scheduled for 6 PM" required>
                     </div>
                     <div style="margin-bottom:20px;">
-                        <label style="display:block; font-weight:700; margin-bottom:6px;">Notice Message Details *</label>
-                        <textarea id="noticeMessage" class="search-box" style="width:100%;" rows="4" placeholder="Enter complete details, joining instructions, or updates..." required></textarea>
+                        <label style="display:block; font-weight:700; margin-bottom:6px;">Notice Message Details
+                            *</label>
+                        <textarea id="noticeMessage" class="search-box" style="width:100%;" rows="4"
+                            placeholder="Enter complete details, joining instructions, or updates..."
+                            required></textarea>
                     </div>
                     <button type="submit" class="btn-admin btn-admin-primary">
                         <i class="fas fa-paper-plane"></i> Publish Live Announcement
@@ -837,67 +1012,94 @@
 
             <!-- Google Drive Cloud Section (Hidden by default) -->
             <div id="driveSection" style="display:none; padding:10px 0;">
-                <div style="background:#ffffff; border-radius:14px; border:1px solid #e2e8f0; padding:24px; box-shadow:0 4px 16px rgba(0,0,0,0.03); max-width:760px;">
+                <div
+                    style="background:#ffffff; border-radius:14px; border:1px solid #e2e8f0; padding:24px; box-shadow:0 4px 16px rgba(0,0,0,0.03); max-width:760px;">
                     <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-                        <div style="width:48px; height:48px; border-radius:12px; background:#e8f5e9; color:#0f9d58; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
+                        <div
+                            style="width:48px; height:48px; border-radius:12px; background:#e8f5e9; color:#0f9d58; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
                             <i class="fab fa-google-drive"></i>
                         </div>
                         <div>
-                            <h3 style="margin:0; color:#0f172a; font-size:1.25rem;">Google Drive Cloud Storage Bridge</h3>
-                            <p style="margin:4px 0 0; color:#64748b; font-size:0.88rem;">Connected Account: <strong>oavmantra@gmail.com</strong></p>
+                            <h3 style="margin:0; color:#0f172a; font-size:1.25rem;">Google Drive Cloud Storage Bridge
+                            </h3>
+                            <p style="margin:4px 0 0; color:#64748b; font-size:0.88rem;">Connected Account:
+                                <strong>oavmantra@gmail.com</strong></p>
                         </div>
                     </div>
 
-                    <div id="driveStatusBanner" style="padding:14px 18px; border-radius:10px; margin-bottom:20px; font-size:0.92rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:#fef3c7; color:#92400e; border:1px solid #fde68a;">
+                    <div id="driveStatusBanner"
+                        style="padding:14px 18px; border-radius:10px; margin-bottom:20px; font-size:0.92rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:#fef3c7; color:#92400e; border:1px solid #fde68a;">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <i id="driveStatusIcon" class="fas fa-exclamation-triangle" style="font-size:1.2rem;"></i>
-                            <span id="driveStatusText"><strong>Google Drive Not Connected:</strong> Paste your Google Apps Script Web App URL below to automatically store student photos and payment screenshots directly into your Google Drive.</span>
+                            <span id="driveStatusText"><strong>Google Drive Not Connected:</strong> Paste your Google
+                                Apps Script Web App URL below to automatically store student photos and payment
+                                screenshots directly into your Google Drive.</span>
                         </div>
                     </div>
 
                     <div style="margin-bottom:20px;">
-                        <label style="display:block; font-weight:700; margin-bottom:8px; color:#1e293b; font-size:0.95rem;">
+                        <label
+                            style="display:block; font-weight:700; margin-bottom:8px; color:#1e293b; font-size:0.95rem;">
                             Google Apps Script Web App URL:
                         </label>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
-                            <input type="url" id="driveWebhookUrlInput" class="search-box" style="flex:1; min-width:280px; font-family:monospace; font-size:0.88rem;" value="https://script.google.com/macros/s/AKfycbyi9sbhUiJSupYRo-KfXC5XDOwbO3Jt9rEQ2baq53K6c5wtYoDwCPs8OpXmJ88gwTuVKQ/exec" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+                            <input type="url" id="driveWebhookUrlInput" class="search-box"
+                                style="flex:1; min-width:280px; font-family:monospace; font-size:0.88rem;"
+                                value="https://script.google.com/macros/s/AKfycbyi9sbhUiJSupYRo-KfXC5XDOwbO3Jt9rEQ2baq53K6c5wtYoDwCPs8OpXmJ88gwTuVKQ/exec"
+                                placeholder="https://script.google.com/macros/s/AKfycb.../exec">
                         </div>
 
-                        <label style="display:block; font-weight:700; margin-bottom:8px; color:#1e293b; font-size:0.95rem;">
+                        <label
+                            style="display:block; font-weight:700; margin-bottom:8px; color:#1e293b; font-size:0.95rem;">
                             <i class="fas fa-key" style="color:#d97706;"></i> Drive Upload Security Secret Key:
                         </label>
                         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <input type="text" id="driveSecretKeyInput" class="search-box" style="flex:1; min-width:240px; font-family:monospace; font-size:0.88rem;" value="oav_mantra_vault_secure_2026_9971" placeholder="oav_mantra_vault_secure_2026_9971">
-                            <button id="saveDriveWebhookBtn" class="btn-admin btn-admin-primary" style="padding:10px 18px;">
+                            <input type="text" id="driveSecretKeyInput" class="search-box"
+                                style="flex:1; min-width:240px; font-family:monospace; font-size:0.88rem;"
+                                value="oav_mantra_vault_secure_2026_9971"
+                                placeholder="oav_mantra_vault_secure_2026_9971">
+                            <button id="saveDriveWebhookBtn" class="btn-admin btn-admin-primary"
+                                style="padding:10px 18px;">
                                 <i class="fas fa-save"></i> Save & Connect
                             </button>
-                            <button id="testDriveWebhookBtn" class="btn-admin btn-admin-secondary" style="padding:10px 18px; background:#0f9d58; color:#fff; border-color:#0f9d58;">
+                            <button id="testDriveWebhookBtn" class="btn-admin btn-admin-secondary"
+                                style="padding:10px 18px; background:#0f9d58; color:#fff; border-color:#0f9d58;">
                                 <i class="fas fa-paper-plane"></i> Test Upload
                             </button>
                         </div>
                         <p id="driveFeedbackMsg" style="margin:8px 0 0; font-size:0.85rem; font-weight:600;"></p>
                     </div>
 
-                    <div style="background:#eff6ff; border-radius:10px; border:1px solid #bfdbfe; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#1e40af; display:flex; align-items:center; gap:10px;">
+                    <div
+                        style="background:#eff6ff; border-radius:10px; border:1px solid #bfdbfe; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#1e40af; display:flex; align-items:center; gap:10px;">
                         <i class="fas fa-shield-alt" style="font-size:1.3rem; color:#2563eb;"></i>
                         <div>
                             <strong>Ultra-High-Level Security Architecture:</strong>
-                            Files are stored in your Google Drive (15 GB free). Supabase Free Tier stores only ~60-byte links, keeping database usage at 0.01% so you never hit the 500 MB limit. Secret key blocks all unauthorized uploads.
+                            Files are stored in your Google Drive (15 GB free). Supabase Free Tier stores only ~60-byte
+                            links, keeping database usage at 0.01% so you never hit the 500 MB limit. Secret key blocks
+                            all unauthorized uploads.
                         </div>
                     </div>
 
-                    <div style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; padding:18px; margin-top:24px;">
-                        <h4 style="margin:0 0 10px; color:#1e293b; font-size:0.98rem; display:flex; align-items:center; gap:8px;">
+                    <div
+                        style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; padding:18px; margin-top:24px;">
+                        <h4
+                            style="margin:0 0 10px; color:#1e293b; font-size:0.98rem; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-magic" style="color:#2563eb;"></i> Quick 60-Second Setup Instructions:
                         </h4>
                         <ol style="margin:0 0 14px 20px; padding:0; color:#475569; font-size:0.88rem; line-height:1.6;">
                             <li>Log in to your <strong>oavmantra@gmail.com</strong> Google account in your browser.</li>
-                            <li>Go to <a href="https://script.google.com" target="_blank" rel="noopener" style="color:#2563eb; font-weight:700;">script.google.com</a> and click <strong>New project</strong>.</li>
-                            <li>Paste the code from <code>google-apps-script/GoogleDriveUploader.gs</code> (click button below to copy).</li>
-                            <li>Click <strong>Deploy</strong> (top-right) &rarr; <strong>New deployment</strong> &rarr; Type: <strong>Web app</strong> &rarr; Who has access: <strong>Anyone</strong>.</li>
+                            <li>Go to <a href="https://script.google.com" target="_blank" rel="noopener"
+                                    style="color:#2563eb; font-weight:700;">script.google.com</a> and click <strong>New
+                                    project</strong>.</li>
+                            <li>Paste the code from <code>google-apps-script/GoogleDriveUploader.gs</code> (click button
+                                below to copy).</li>
+                            <li>Click <strong>Deploy</strong> (top-right) &rarr; <strong>New deployment</strong> &rarr;
+                                Type: <strong>Web app</strong> &rarr; Who has access: <strong>Anyone</strong>.</li>
                             <li>Copy the resulting Web App URL and paste it in the box above!</li>
                         </ol>
-                        <button id="copyScriptCodeBtn" class="btn-admin btn-admin-secondary" style="font-size:0.84rem; padding:6px 14px;">
+                        <button id="copyScriptCodeBtn" class="btn-admin btn-admin-secondary"
+                            style="font-size:0.84rem; padding:6px 14px;">
                             <i class="fas fa-copy"></i> Copy Google Apps Script Code
                         </button>
                     </div>
@@ -907,23 +1109,34 @@
     </main>
 
     <!-- Video & Live Preview Modal -->
-    <div id="adminVideoModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
-        <div style="background:#0f172a; width:92%; max-width:850px; border-radius:16px; overflow:hidden; box-shadow:0 25px 50px rgba(0,0,0,0.6); max-height:92vh; display:flex; flex-direction:column; border:1px solid rgba(255,255,255,0.15);">
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#1e293b; border-bottom:1px solid rgba(255,255,255,0.1);">
+    <div id="adminVideoModal"
+        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
+        <div
+            style="background:#0f172a; width:92%; max-width:850px; border-radius:16px; overflow:hidden; box-shadow:0 25px 50px rgba(0,0,0,0.6); max-height:92vh; display:flex; flex-direction:column; border:1px solid rgba(255,255,255,0.15);">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#1e293b; border-bottom:1px solid rgba(255,255,255,0.1);">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <span id="adminModalBadge" style="background:#2563eb; color:#fff; font-size:0.75rem; font-weight:800; padding:3px 8px; border-radius:4px;">VIDEO</span>
+                    <span id="adminModalBadge"
+                        style="background:#2563eb; color:#fff; font-size:0.75rem; font-weight:800; padding:3px 8px; border-radius:4px;">VIDEO</span>
                     <strong id="adminModalTitle" style="color:#ffffff; font-size:1.05rem;">Video Preview</strong>
                 </div>
-                <button id="closeAdminVideoModalBtn" style="background:none; border:none; color:#cbd5e1; font-size:1.8rem; cursor:pointer; line-height:1;">&times;</button>
+                <button id="closeAdminVideoModalBtn"
+                    style="background:none; border:none; color:#cbd5e1; font-size:1.8rem; cursor:pointer; line-height:1;">&times;</button>
             </div>
             <div id="videoContainerBox" style="position:relative; padding-bottom:56.25%; height:0; background:#000;">
-                <iframe id="adminVideoFrame" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <iframe id="adminVideoFrame"
+                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
-            <div style="padding:14px 20px; background:#1e293b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid rgba(255,255,255,0.1);">
-                <button id="adminFullscreenBtn" style="background:#2563eb; color:#ffffff; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+            <div
+                style="padding:14px 20px; background:#1e293b; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid rgba(255,255,255,0.1);">
+                <button id="adminFullscreenBtn"
+                    style="background:#2563eb; color:#ffffff; border:none; padding:8px 16px; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
                     <i class="fas fa-expand"></i> Fullscreen
                 </button>
-                <span style="color:#94a3b8; font-size:0.82rem;"><i class="fas fa-info-circle"></i> In-App Player • Press ESC to Close</span>
+                <span style="color:#94a3b8; font-size:0.82rem;"><i class="fas fa-info-circle"></i> In-App Player • Press
+                    ESC to Close</span>
             </div>
         </div>
     </div>
@@ -932,6 +1145,5 @@
     <script src="supabase-client.js?v=3.2"></script>
     <script src="admin.js?v=3.4"></script>
 </body>
+
 </html>
-
-
