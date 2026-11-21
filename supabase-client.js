@@ -143,7 +143,8 @@
 
             // If Google Drive webhook URL is configured, auto-upload payment screenshot with Secret Key
             let driveFileUrl = null;
-            const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
+            const DEFAULT_DRIVE_WEBHOOK = "https://script.google.com/macros/s/AKfycbyi9sbhUiJSupYRo-KfXC5XDOwbO3Jt9rEQ2baq53K6c5wtYoDwCPs8OpXmJ88gwTuVKQ/exec";
+            const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || DEFAULT_DRIVE_WEBHOOK;
             if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && hasScreenshot) {
                 try {
                     const dData = await relayToGoogleDrive(webhookUrl, {
@@ -798,7 +799,8 @@
                 let driveUploaded = false;
                 let driveFileUrl = null;
 
-                const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
+                const DEFAULT_DRIVE_WEBHOOK = "https://script.google.com/macros/s/AKfycbyi9sbhUiJSupYRo-KfXC5XDOwbO3Jt9rEQ2baq53K6c5wtYoDwCPs8OpXmJ88gwTuVKQ/exec";
+                const webhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || DEFAULT_DRIVE_WEBHOOK;
                 if (webhookUrl && webhookUrl.startsWith("https://script.google.com/") && photo) {
                     try {
                         const dData = await relayToGoogleDrive(webhookUrl, {

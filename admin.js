@@ -1128,7 +1128,8 @@ async function renderDriveSection() {
     const icon = document.getElementById("driveStatusIcon");
     const text = document.getElementById("driveStatusText");
 
-    const savedUrl = localStorage.getItem("oav_drive_webhook_url") || "";
+    const DEFAULT_DRIVE_WEBHOOK = "https://script.google.com/macros/s/AKfycbyi9sbhUiJSupYRo-KfXC5XDOwbO3Jt9rEQ2baq53K6c5wtYoDwCPs8OpXmJ88gwTuVKQ/exec";
+    const savedUrl = localStorage.getItem("oav_drive_webhook_url") || DEFAULT_DRIVE_WEBHOOK;
     const savedSecret = localStorage.getItem("oav_drive_secret_key") || "oav_mantra_vault_secure_2026_9971";
     if (input && !input.value) {
         input.value = savedUrl;

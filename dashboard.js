@@ -345,7 +345,8 @@ function setupEventListeners() {
 
                 // Save to server and backup to Google Drive
                 let driveUploaded = false;
-                const directWebhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || "";
+                const DEFAULT_DRIVE_WEBHOOK = "https://script.google.com/macros/s/AKfycbyi9sbhUiJSupYRo-KfXC5XDOwbO3Jt9rEQ2baq53K6c5wtYoDwCPs8OpXmJ88gwTuVKQ/exec";
+                const directWebhookUrl = localStorage.getItem("oav_drive_webhook_url") || window.OAV_DRIVE_WEBHOOK_URL || DEFAULT_DRIVE_WEBHOOK;
                 if (directWebhookUrl && directWebhookUrl.startsWith("https://script.google.com/")) {
                     try {
                         const secretKey = localStorage.getItem("oav_drive_secret_key") || window.OAV_DRIVE_SECRET_KEY || "oav_mantra_vault_secure_2026_9971";

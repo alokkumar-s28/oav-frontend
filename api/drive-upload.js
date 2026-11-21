@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
-    const targetUrl = body.webhookUrl || process.env.GOOGLE_DRIVE_WEBHOOK_URL;
+    const targetUrl = body.webhookUrl || process.env.GOOGLE_DRIVE_WEBHOOK_URL || "https://script.google.com/macros/s/AKfycbyi9sbhUiJSupYRo-KfXC5XDOwbO3Jt9rEQ2baq53K6c5wtYoDwCPs8OpXmJ88gwTuVKQ/exec";
     if (!targetUrl || !targetUrl.startsWith("https://script.google.com/")) {
       return res.status(400).json({ error: "Invalid or missing Google Apps Script Web App URL." });
     }
@@ -51,3 +51,4 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err.message || "Failed to relay upload to Google Drive" });
   }
 };
+
